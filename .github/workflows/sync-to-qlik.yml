@@ -29,4 +29,5 @@ jobs:
         env:
           QLIK_API_KEY: ${{ secrets.QLIK_API_KEY }}
           QLIK_CONNECTION_ID: ${{ secrets.QLIK_CONNECTION_ID }}
+          QLIK_TENNANT_URL: ${{ secrets.QLIK_CONNECTIONQLIK_TENNANT_URL_ID }}
         run: python upload_files_to_qlik.py
