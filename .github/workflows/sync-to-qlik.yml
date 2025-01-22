@@ -1,0 +1,32 @@
+name: Sync All Files to Qlik Cloud (CI/CD)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  upload-all-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install requests library
+        run: |
+          python -m pip install requests
+
+      - name: Run Upload Script
+        env:
+          QLIK_API_KEY: ${{ secrets.QLIK_API_KEY }}
+          QLIK_CONNECTION_ID: ${{ secrets.QLIK_CONNECTION_ID }}
+        run: python upload_files_to_qlik.py
