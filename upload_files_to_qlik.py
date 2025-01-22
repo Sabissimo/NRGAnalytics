@@ -5,7 +5,7 @@ import json  # Import the json module
 import requests
 
 # Define your Qlik Cloud URL and API endpoint
-qlik_url = "https://" + os.environ['QLIK_TENNANT_URL'] + "/api/v1/data-files" # Update with your Qlik Cloud URL
+qlik_url = "https://" + os.environ['QLIK_TENNANT_URL'] + "/api/v1/data-files"
 
 # Set up headers with the API key
 headers = {
