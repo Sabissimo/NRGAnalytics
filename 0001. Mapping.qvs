@@ -78,3 +78,21 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникКлассификаторЕдиницИзмерения.qvd]
 (qvd);
+
+MapСправочникСценарииПланирования:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникСценарииПланирования.qvd]
+(qvd);
+
+MapСправочникВалюты:
+Mapping LOAD
+    [Ссылка],
+    [სიმბოლური კოდი];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникВалюты.qvd]
+(qvd);
