@@ -1,14 +1,14 @@
 //Mapping
-$(include=[lib://github:DataFiles/0001. Mapping.qvs]);
+$(include=[lib://NRG:DataFiles/0001. Mapping.qvs]);
 
 //Mapping Custom
-$(include=[lib://github:DataFiles/0002. Mapping Custom.qvs]);
+$(include=[lib://NRG:DataFiles/0002. Mapping Custom.qvs]);
 
 //Cat. Items
-$(include=[lib://github:DataFiles/0101. Cat. Items.qvs]);
+$(include=[lib://NRG:DataFiles/0101. Cat. Items.qvs]);
 
 //Reg. Calculation
-$(include=[lib://github:DataFiles/0201. Reg. Inventory.qvs]);
+$(include=[lib://NRG:DataFiles/0201. Reg. Inventory.qvs]);
 
 //Reg. Calculation
-$(include=[lib://github:DataFiles/0202. Inventory Calendar.qvs]);
+$(include=[lib://NRG:DataFiles/0202. Inventory Calendar.qvs]);
