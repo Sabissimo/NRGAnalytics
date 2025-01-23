@@ -21,6 +21,7 @@ for root, _, files in os.walk(base_directory):
     for file_name in files:
         # Only process .qvs files
         if file_name.endswith(".qvs"):
+            print(file_name)
             file_path = os.path.join(root, file_name)
 
             # Define the JSON metadata payload
@@ -34,13 +35,27 @@ for root, _, files in os.walk(base_directory):
                 "File": (file_name, open(file_path, 'rb')),
                 "Json": (None, json.dumps(json_payload), "application/json")
             }
+            
+            file_id = ""
+            response = requests.get(f"{qlik_url}?connectionId={qlik_connection_id}&name={file_name}", headers=headers)
+            if response.status_code == 200:
+                if len(response.json()['data']) > 0:
+                    file_id = response.json()['data'][0]['id']
 
-            # Send the POST request
-            response = requests.post(
-                qlik_url,
-                headers=headers,
-                files=files_payload
-            )
+            if file_id != "":
+                # Send the POST request
+                response = requests.put(
+                    f"{qlik_url}/{file_id}",
+                    headers=headers,
+                    files=files_payload
+                )
+            else:
+                # Send the POST request
+                response = requests.post(
+                    qlik_url,
+                    headers=headers,
+                    files=files_payload
+                )
 
             # Check if the upload was successful
             if response.status_code == 201:
