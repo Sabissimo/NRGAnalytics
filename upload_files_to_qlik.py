@@ -16,12 +16,15 @@ headers = {
 base_directory = "."
 qlik_connection_id = os.environ['QLIK_CONNECTION_ID']
 
+file_names = []
+
 # Iterate through each file in the repository
 for root, _, files in os.walk(base_directory):
     for file_name in files:
         # Only process .qvs files
         if file_name.endswith(".qvs"):
-            print(file_name)
+            file_names.append(file_name)
+           
             file_path = os.path.join(root, file_name)
 
             # Define the JSON metadata payload
@@ -62,3 +65,20 @@ for root, _, files in os.walk(base_directory):
                 print(f"File '{file_name}' uploaded successfully!")
             else:
                 print(f"Failed to upload '{file_name}':", response.status_code, response.text)
+
+response = requests.get(f"{qlik_url}?connectionId={qlik_connection_id}&baseNameWildcard=*.qvs", headers=headers)
+if response.status_code == 200:
+    if len(response.json()['data']) > 0:
+        for file in response.json()['data']:
+            if not file['name'] in file_names:
+                # Send the POST request
+                response = requests.delete(
+                    f"{qlik_url}/{file['id']}",
+                    headers=headers
+                )
+
+                # Check if the upload was successful
+                if response.status_code == 204:
+                    print(f"File '{file['name']}' deleted successfully!")
+                else:
+                    print(f"Failed to delete '{file['name']}':", response.status_code, response.text)
