@@ -96,3 +96,12 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникВалюты.qvd]
 (qvd);
+
+MapСправочникВидыСчетовБаланса:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникВидыСчетовБаланса.qvd]
+(qvd);
