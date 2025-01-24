@@ -1,5 +1,5 @@
 Dates:
-Load [AccountingDate] as NewDate Resident РегистрНакопленияЗапасы;
+Load [AccountingDate] as NewDate Resident РегистрБухгалтерииУправленческий;
 
 
 StartAndEndDates:
