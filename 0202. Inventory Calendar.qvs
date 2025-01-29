@@ -10,6 +10,7 @@ Resident Dates;
 
 drop table Dates;
 
+
 LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
 LET vMaxDate = NUM(PEEK('MaxDate',0,'StartAndEndDates'));
 
