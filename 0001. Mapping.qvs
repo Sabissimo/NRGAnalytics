@@ -105,3 +105,51 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникВидыСчетовБаланса.qvd]
 (qvd);
+
+MapСправочникСтатьиДвиженияДенежныхСредств:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСтатьиДвиженияДенежныхСредств.qvd]
+(qvd);
+
+MapСправочникБанковскиеСчета:
+Mapping LOAD
+    [მინიშნება],
+    [შესავალი];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникБанковскиеСчета.qvd]
+(qvd);
+
+MapСправочникБанки:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникБанки.qvd]
+(qvd);
+
+MapСправочникКассы:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКассы.qvd]
+(qvd);
+
+MapПеречислениеТипыДенежныхСредств:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыДенежныхСредств.qvd]
+(qvd);
+
+
+

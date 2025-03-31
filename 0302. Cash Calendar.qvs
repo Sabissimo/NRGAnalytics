@@ -1,0 +1,54 @@
+Dates:
+Load [CashDate] as NewDate Resident РегистрНакопленияДенежныеСредства;
+
+
+StartAndEndDates:
+Load
+	MIN(NewDate) as MinDate,
+    MAX(NewDate) as MaxDate
+Resident Dates;
+
+drop table Dates;
+
+LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
+LET vMaxDate = NUM(PEEK('MaxDate',0,'StartAndEndDates'));
+
+TemporaryCalendar: 
+LOAD 
+	 $(vMinDate) + recno() - 1 AS TempDate 
+AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 1);
+    
+
+CashCalendar:
+Load	
+    TempDate  as [CashDate],
+    date(TempDate) as [Date Cash],
+    YEAR(TempDate)*100 + MONTH(TempDate) as [ym Cash],
+    //Year	(TempDate) & floor (Month	(TempDate)) as YM,
+    'W'&Week	(TempDate)  	as [Week Cash],
+    Year	(TempDate)  	as [Year Cash],
+    Month	(TempDate)		as [Month Cash],
+    pick( match( num(month([TempDate])),1,2,3,4,5,6,7,8,9,10,11,12),
+        dual('იან',1),
+        dual('თებ',2),
+        dual( 'მარ',3),
+        dual('აპრ',4),
+        dual('მაი',5),
+        dual('ივნ',6),
+        dual('ივლ',7),
+        dual('აგვ',8),
+        dual('სექ',9),
+        dual('ოქტ',10),
+        dual('ნოე',11),
+        dual('დეკ',12)
+    ) as [თვე Cash],
+    Day		(TempDate) 		as [Day Cash],
+    Weekday (TempDate) 		as [Weekday Cash],
+    num(month(TempDate))  as [MONTH_NUM Cash],
+    Year	(TempDate) *10 + Ceil(Month(TempDate)/3)  as [yq Cash],
+    'Q' & Ceil(Month(TempDate)/3) as [Quarter Cash],
+    dual( Month(TempDate) &'-'& right(Year(TempDate),2) , Year(TempDate) *100 + month(TempDate) )  as [Year/Month Cash]
+ 
+Resident TemporaryCalendar;
+
+drop tables StartAndEndDates,TemporaryCalendar;
