@@ -7,7 +7,7 @@ LOAD * Inline [
 РегистрНакопленияЗапасыPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_РегистрНакопленияЗапасы-*.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрНакопленияЗапасы-*.qvd]
 (qvd)
 WHERE Exists([აღრიცხვის ანგარიშის ტიპიTemp],ApplyMap('MapПланСчетовУправленческийТипСчета',[აღრიცხვის ანგარიში],Null()));
 

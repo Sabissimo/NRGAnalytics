@@ -8,5 +8,5 @@ LOAD
 	ApplyMap('MapСправочникКатегорииНоменклатуры',[კატეგორია],Null()) AS [კატეგორია (ნომენკლატურა,ცნობარი)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникНоменклатура.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникНоменклатура.qvd]
 (qvd);

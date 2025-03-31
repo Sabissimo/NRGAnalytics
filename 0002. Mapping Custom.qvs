@@ -1,7 +1,7 @@
 MapПланСчетовУправленческийPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_ПланСчетовУправленческий.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПланСчетовУправленческий.qvd]
 (qvd);
 
 MapПланСчетовУправленческий:
@@ -27,7 +27,7 @@ Drop Table MapПланСчетовУправленческийPre;
 MapСправочникЕдиницыИзмеренияPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникЕдиницыИзмерения.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникЕдиницыИзмерения.qvd]
 (qvd);
 
 MapСправочникЕдиницыИзмерения:

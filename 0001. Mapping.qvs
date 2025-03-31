@@ -4,7 +4,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникНоменклатура.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникНоменклатура.qvd]
 (qvd);
 
 MapСправочникКонтрагенты:
@@ -13,7 +13,7 @@ Mapping LOAD
     [(არ გამოიყენება)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникКонтрагенты.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКонтрагенты.qvd]
 (qvd);
 
 MapСправочникОрганизации:
@@ -22,7 +22,7 @@ Mapping LOAD
     [(არ გამოიყენება)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникОрганизации.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникОрганизации.qvd]
 (qvd);
 
 MapСправочникКатегорииНоменклатуры:
@@ -31,7 +31,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
 (qvd);
 
 MapПеречислениеТипыСчетов:
@@ -40,7 +40,7 @@ Mapping LOAD
     Value;
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_ПеречислениеТипыСчетов.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыСчетов.qvd]
 (qvd);
 
 MapСправочникСтруктурныеЕдиницы:
@@ -49,7 +49,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
 (qvd);
 
 MapСправочникХарактеристикиНоменклатуры:
@@ -58,7 +58,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникХарактеристикиНоменклатуры.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникХарактеристикиНоменклатуры.qvd]
 (qvd);
 
 MapСправочникПартииНоменклатуры:
@@ -67,7 +67,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникПартииНоменклатуры.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникПартииНоменклатуры.qvd]
 (qvd);
 
 MapСправочникКлассификаторЕдиницИзмерения:
@@ -76,7 +76,7 @@ Mapping LOAD
     [მოკლე დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникКлассификаторЕдиницИзмерения.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКлассификаторЕдиницИзмерения.qvd]
 (qvd);
 
 MapСправочникСценарииПланирования:
@@ -85,7 +85,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникСценарииПланирования.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСценарииПланирования.qvd]
 (qvd);
 
 MapСправочникВалюты:
@@ -94,7 +94,7 @@ Mapping LOAD
     [სიმბოლური კოდი];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникВалюты.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВалюты.qvd]
 (qvd);
 
 MapСправочникВидыСчетовБаланса:
@@ -103,7 +103,7 @@ Mapping LOAD
     [Наименование];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_СправочникВидыСчетовБаланса.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыСчетовБаланса.qvd]
 (qvd);
 
 MapСправочникСтатьиДвиженияДенежныхСредств:

@@ -1,20 +1,20 @@
 //Mapping
-$(include=[lib://NRG:DataFiles/0001. Mapping.qvs]);
+$(include=[lib://Elvare:DataFiles/0001. Mapping.qvs]);
 
 //Mapping Custom
-$(include=[lib://NRG:DataFiles/0002. Mapping Custom.qvs]);
+$(include=[lib://Elvare:DataFiles/0002. Mapping Custom.qvs]);
 
 //Cat. Items
-$(include=[lib://NRG:DataFiles/0101. Cat. Items.qvs]);
+$(include=[lib://Elvare:DataFiles/0101. Cat. Items.qvs]);
 
 //Reg. Calculation
-$(include=[lib://NRG:DataFiles/0201. Reg. Inventory.qvs]);
+$(include=[lib://Elvare:DataFiles/0201. Reg. Inventory.qvs]);
 
 //Reg. Calculation
-$(include=[lib://NRG:DataFiles/0202. Inventory Calendar.qvs]);
+$(include=[lib://Elvare:DataFiles/0202. Inventory Calendar.qvs]);
 
 //Reg. Calculation
-$(include=[lib://NRG:DataFiles/0203. Reg. Accounting.qvs]);
+$(include=[lib://Elvare:DataFiles/0203. Reg. Accounting.qvs]);
 
 //Reg. Calculation
-$(include=[lib://NRG:DataFiles/0204. Accounting Calendar.qvs]);
+$(include=[lib://Elvare:DataFiles/0204. Accounting Calendar.qvs]);

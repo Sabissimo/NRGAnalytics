@@ -1,7 +1,7 @@
 РегистрБухгалтерииУправленческийPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/NRG_$(vPrefix)_РегистрБухгалтерииУправленческий-*.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрБухгалтерииУправленческий-*.qvd]
 (qvd);
 
 РегистрБухгалтерииУправленческий:
