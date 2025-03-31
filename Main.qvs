@@ -7,14 +7,20 @@ $(include=[lib://Elvare:DataFiles/0002. Mapping Custom.qvs]);
 //Cat. Items
 $(include=[lib://Elvare:DataFiles/0101. Cat. Items.qvs]);
 
-//Reg. Calculation
+//Reg. Inventory
 $(include=[lib://Elvare:DataFiles/0201. Reg. Inventory.qvs]);
 
-//Reg. Calculation
+//Inventory Calendar
 $(include=[lib://Elvare:DataFiles/0202. Inventory Calendar.qvs]);
 
-//Reg. Calculation
+//Reg. Accounting
 $(include=[lib://Elvare:DataFiles/0203. Reg. Accounting.qvs]);
 
-//Reg. Calculation
+//Accounting Calendar
 $(include=[lib://Elvare:DataFiles/0204. Accounting Calendar.qvs]);
+
+//Reg. Cash
+$(include=[lib://Elvare:DataFiles/0301. Reg. Cash]);
+
+//Cash Calendar
+$(include=[lib://Elvare:DataFiles/0302. Cash Calendar.qvs]);
