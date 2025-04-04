@@ -1,33 +1,124 @@
-Dates:
-Load [CashDate] as NewDate Resident РегистрНакопленияДенежныеСредства;
+AllDatesCash:
+Load distinct
+	[CashDateOst] as %lnk_CashDate
+Resident РегистрНакопленияДенежныеСредстваОстатки;
 
+AllDatesCash:
+Load distinct
+	[LoanDateOst] as %lnk_CashDate
+Resident РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки;
+
+AllOrgsAndValsCash:
+Load distinct
+	[%lnk_ორგანიზაცია (ფულადი სახსრები,დაგრ. რეგისტრი, ნაშთები)] as [%lnk_ორგანიზაცია cash],
+	[%lnk_ვალუტა (ფულადი სახსრები,დაგრ. რეგისტრი, ნაშთები)] as [%lnk_ვალუტა cash]
+Resident РегистрНакопленияДенежныеСредстваОстатки;
+
+AllOrgsAndValsCash:
+Load distinct
+	[%lnk_ორგანიზაცია (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი, ნაშთები)] as [%lnk_ორგანიზაცია cash],
+	[%lnk_ვალუტა (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი, ნაშთები)] as [%lnk_ვალუტა cash]
+Resident РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки;
+
+AllOrgsAndValsCashDistinct:
+Load distinct 
+	[%lnk_ორგანიზაცია cash],
+    [%lnk_ვალუტა cash],
+    RowNo()
+Resident AllOrgsAndValsCash;
+
+Drop Table AllOrgsAndValsCash;
+
+Left Join (AllDatesCash)
+Load 
+	[%lnk_ორგანიზაცია cash],
+    [%lnk_ვალუტა cash]
+Resident AllOrgsAndValsCashDistinct;
 
 StartAndEndDates:
 Load
-	MIN(NewDate) as MinDate,
-    MAX(NewDate) as MaxDate
-Resident Dates;
+	MIN([%lnk_CashDate]) as MinDate,
+    MAX([%lnk_CashDate]) as MaxDate
+Resident AllDatesCash;
 
-drop table Dates;
+BridgeTableCashOst:
+Load 
+	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & %lnk_CashDate as [%lnk_BridgeTableCashOst],
+    //ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია cash],Null()) AS [ორგანიზაცია (cash)],
+	//ApplyMap('MapСправочникВалюты',[%lnk_ვალუტა cash],Null()) AS [ვალუტა (cash)],
+	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияДенежныеСредстваОстатки],
+    [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки],
+    [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] AS [%bridge_ДокументДоговорКредитаИЗайма]
+Resident AllDatesCash;
+
+BridgeTableCash:
+Load 
+	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & %lnk_CashDate as [%lnk_BridgeTableCash],
+    //ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია cash],Null()) AS [ორგანიზაცია (cash ob)],
+	//ApplyMap('MapСправочникВалюты',[%lnk_ვალუტა cash],Null()) AS [ვალუტა (cash ob)],
+	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияДенежныеСредства]
+Resident AllDatesCash;
+
+Drop Table AllDatesCash;
+
 
 LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
 LET vMaxDate = NUM(PEEK('MaxDate',0,'StartAndEndDates'));
+
+drop tables StartAndEndDates;
+
+
+
+
+
 
 TemporaryCalendar: 
 LOAD 
 	 $(vMinDate) + recno() - 1 AS TempDate 
 AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 1);
-    
 
-CashCalendar:
+AsOfTemporaryCalendarTotal:
+LOAD DISTINCT
+    MonthStart(TempDate) AS [As Of TempDate]
+RESIDENT TemporaryCalendar;
+
+JOIN (AsOfTemporaryCalendarTotal)
+LOAD DISTINCT
+    TempDate
+RESIDENT TemporaryCalendar;
+
+AsOfTemporaryCalendarTemp:
+LOAD
+	[As Of TempDate] as [%lnk_CashDateOst],
+    TempDate as [%lnk_BridgeTableCashOst]
+RESIDENT AsOfTemporaryCalendarTotal
+WHERE MonthStart(TempDate) <= [As Of TempDate];
+
+DROP TABLE AsOfTemporaryCalendarTotal;
+    
+Left Join (AsOfTemporaryCalendarTemp)
+Load 
+	[%lnk_ორგანიზაცია cash],
+    [%lnk_ვალუტა cash]
+Resident AllOrgsAndValsCashDistinct;
+
+AsOfTemporaryCalendar:
+Load
+	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDateOst] as [%lnk_CashDateOst],
+	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_BridgeTableCashOst] as [%lnk_BridgeTableCashOst]
+Resident AsOfTemporaryCalendarTemp;
+
+Drop table AsOfTemporaryCalendarTemp;
+
+CashCalendarTemp:
 Load	
-    TempDate  as [CashDate],
-    date(TempDate) as [Date Cash],
-    YEAR(TempDate)*100 + MONTH(TempDate) as [ym Cash],
-    //Year	(TempDate) & floor (Month	(TempDate)) as YM,
-    'W'&Week	(TempDate)  	as [Week Cash],
-    Year	(TempDate)  	as [Year Cash],
-    Month	(TempDate)		as [Month Cash],
+    [TempDate]  as [TempDate],
+    date([TempDate]) as [Date Cash],
+    YEAR([TempDate])*100 + MONTH([TempDate]) as [ym Cash],
+    //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
+    'W'&Week	([TempDate])  	as [Week Cash],
+    Year	([TempDate])  	as [Year Cash],
+    Month	([TempDate])		as [Month Cash],
     pick( match( num(month([TempDate])),1,2,3,4,5,6,7,8,9,10,11,12),
         dual('იან',1),
         dual('თებ',2),
@@ -42,13 +133,32 @@ Load
         dual('ნოე',11),
         dual('დეკ',12)
     ) as [თვე Cash],
-    Day		(TempDate) 		as [Day Cash],
-    Weekday (TempDate) 		as [Weekday Cash],
-    num(month(TempDate))  as [MONTH_NUM Cash],
-    Year	(TempDate) *10 + Ceil(Month(TempDate)/3)  as [yq Cash],
-    'Q' & Ceil(Month(TempDate)/3) as [Quarter Cash],
-    dual( Month(TempDate) &'-'& right(Year(TempDate),2) , Year(TempDate) *100 + month(TempDate) )  as [Year/Month Cash]
- 
+    Day		([TempDate]) 		as [Day Cash],
+    Weekday ([TempDate]) 		as [Weekday Cash],
+    num(month([TempDate]))  as [MONTH_NUM Cash],
+    Year	([TempDate]) *10 + Ceil(Month([TempDate])/3)  as [yq Cash],
+    'Q' & Ceil(Month([TempDate])/3) as [Quarter Cash],
+    dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month Cash],
+    If([TempDate] < MonthStart(Today()), 1, 0) AS IncludeInForecastCash 
 Resident TemporaryCalendar;
 
-drop tables StartAndEndDates,TemporaryCalendar;
+Left Join (CashCalendarTemp)
+Load 
+	[%lnk_ორგანიზაცია cash],
+    [%lnk_ვალუტა cash]
+Resident AllOrgsAndValsCashDistinct;
+
+CashCalendar:
+Load 
+	*,
+    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია cash],Null()) AS [ორგანიზაცია (cash)],
+	ApplyMap('MapСправочникВалюты',[%lnk_ვალუტა cash],Null()) AS [ვალუტა (cash)],
+	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [TempDate]  as [%lnk_CashDateOst],
+    [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [TempDate] as [%lnk_BridgeTableCash]
+Resident CashCalendarTemp;
+
+drop table CashCalendarTemp;
+
+drop table TemporaryCalendar;
+
+drop table AllOrgsAndValsCashDistinct;

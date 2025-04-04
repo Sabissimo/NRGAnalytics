@@ -106,15 +106,6 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыСчетовБаланса.qvd]
 (qvd);
 
-MapСправочникСтатьиДвиженияДенежныхСредств:
-Mapping LOAD
-    [მინიშნება],
-    [დასახელება];
-LOAD
-    *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСтатьиДвиженияДенежныхСредств.qvd]
-(qvd);
-
 MapСправочникБанковскиеСчета:
 Mapping LOAD
     [მინიშნება],
