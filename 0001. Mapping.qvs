@@ -142,5 +142,15 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыДенежныхСредств.qvd]
 (qvd);
 
+MapСправочникВидыСтатейДДСДляКлик:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыСтатейДДСДляКлик.qvd]
+(qvd);
+
+
 
 

@@ -1,21 +1,3 @@
-LIB CONNECT TO 'Elvare:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
-
-MapГруппаСтатьиПоКоду:
-Mapping LOAD 
-	[მუხლის კოდი] as [GetWorksheetV2.მუხლის კოდი], 
-	[მუხლის ჯგუფი] as [GetWorksheetV2.მუხლის ჯგუფი];
-
-SELECT [მუხლის დასახელება],
-	[მუხლის კოდი],
-	[მუხლის ჯგუფი]
-FROM GetWorksheetV2
-WITH PROPERTIES (
-worksheetKey='1pVxdmyn2XHDmkxxnE_jJB_Fi9yXYJgoBnVFQOON3gvg:_0',
-gidOverride='',
-generatedNumberedColumns='false',
-skipRows=''
-);
-
 MapПланСчетовУправленческийPre:
 LOAD
     *
@@ -105,7 +87,7 @@ FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСтать
 MapГруппаСтатьи:
 Mapping LOAD
     [მინიშნება],
-    ApplyMap('MapГруппаСтатьиПоКоду', [კოდი], Null()) as Value
+    ApplyMap('MapСправочникВидыСтатейДДСДляКлик', [მუხლის სახეობა (Qlik)], Null()) as Value
 Resident СправочникСтатьиДвиженияДенежныхСредствPre;
 
 MapСправочникСтатьиДвиженияДенежныхСредств:
