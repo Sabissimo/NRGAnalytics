@@ -8,6 +8,11 @@ Load distinct
 	[LoanDateOst] as %lnk_CashDate
 Resident РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки;
 
+AllDatesCash:
+Load distinct
+	[BuyerDateOst] as %lnk_CashDate
+Resident РегистрНакопленияРасчетыСПокупателямиОстатки;
+
 AllOrgsAndValsCash:
 Load distinct
 	[%lnk_ორგანიზაცია (ფულადი სახსრები,დაგრ. რეგისტრი, ნაშთები)] as [%lnk_ორგანიზაცია cash],
@@ -20,16 +25,30 @@ Load distinct
 	[%lnk_ვალუტა (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი, ნაშთები)] as [%lnk_ვალუტა cash]
 Resident РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки;
 
+AllOrgsAndValsCash:
+Load distinct
+	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი, ნაშთები)] as [%lnk_ორგანიზაცია cash],
+	[%lnk_ვალუტა (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი, ნაშთები)] as [%lnk_ვალუტა cash]
+Resident РегистрНакопленияРасчетыСПокупателямиОстатки;
+
 AllOrgsAndValsCashDistinct:
 Load distinct 
 	[%lnk_ორგანიზაცია cash],
     [%lnk_ვალუტა cash],
-    RowNo()
+    1 as RowNo
 Resident AllOrgsAndValsCash;
 
 Drop Table AllOrgsAndValsCash;
 
-Left Join (AllDatesCash)
+AllDatesCashDistinct:
+Load distinct 
+	[%lnk_CashDate],
+    1 as RowNo
+Resident AllDatesCash;
+
+Drop Table AllDatesCash;
+
+Left Join (AllDatesCashDistinct)
 Load 
 	[%lnk_ორგანიზაცია cash],
     [%lnk_ვალუტა cash]
@@ -39,7 +58,7 @@ StartAndEndDates:
 Load
 	MIN([%lnk_CashDate]) as MinDate,
     MAX([%lnk_CashDate]) as MaxDate
-Resident AllDatesCash;
+Resident AllDatesCashDistinct;
 
 BridgeTableCashOst:
 Load 
@@ -48,8 +67,9 @@ Load
 	//ApplyMap('MapСправочникВалюты',[%lnk_ვალუტა cash],Null()) AS [ვალუტა (cash)],
 	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияДенежныеСредстваОстатки],
     [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки],
+    [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияРасчетыСПокупателямиОстатки],
     [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] AS [%bridge_ДокументДоговорКредитаИЗайма]
-Resident AllDatesCash;
+Resident AllDatesCashDistinct;
 
 BridgeTableCash:
 Load 
@@ -57,9 +77,9 @@ Load
     //ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია cash],Null()) AS [ორგანიზაცია (cash ob)],
 	//ApplyMap('MapСправочникВалюты',[%lnk_ვალუტა cash],Null()) AS [ვალუტა (cash ob)],
 	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияДенежныеСредства]
-Resident AllDatesCash;
+Resident AllDatesCashDistinct;
 
-Drop Table AllDatesCash;
+Drop Table AllDatesCashDistinct;
 
 
 LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));

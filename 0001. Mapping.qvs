@@ -151,6 +151,11 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыСтатейДДСДляКлик.qvd]
 (qvd);
 
-
-
-
+MapПеречислениеТипыРасчетов:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыРасчетов.qvd]
+(qvd);
