@@ -1,0 +1,53 @@
+BridgeTableOrgValDateNonDistinct:
+Load distinct
+	[CashDate] as [Date (BridgeTableOrgValDate)],
+    [ნაშთია (ფულადი სახსრები,დაგრ. რეგისტრი)] as [ნაშთია (BridgeTableOrgValDate)],
+    [%lnk_ორგანიზაცია (ფულადი სახსრები,დაგრ. რეგისტრი)] as [%lnk_ორგანიზაცია (BridgeTableOrgValDate)],
+    [%lnk_ვალუტა (ფულადი სახსრები,დაგრ. რეგისტრი)] as [%lnk_ვალუტა (BridgeTableOrgValDate)],
+    [%lnk_ორგანიზაცია (ფულადი სახსრები,დაგრ. რეგისტრი)] & '|' & [%lnk_ვალუტა (ფულადი სახსრები,დაგრ. რეგისტრი)] & '|' & CashDate & '|' & [ნაშთია (ფულადი სახსრები,დაგრ. რეგისტრი)] as [ორგანიზაცია_ვალუტა_პერიოდი_ნაშთია],  
+    [%lnk_ორგანიზაცია (ფულადი სახსრები,დაგრ. რეგისტრი)] & '|' & [%lnk_ვალუტა (ფულადი სახსრები,დაგრ. რეგისტრი)] as [ორგანიზაცია_ვალუტა],  
+    [%lnk_ორგანიზაცია (ფულადი სახსრები,დაგრ. რეგისტრი)] & '|' & CashDate & '|' & [ნაშთია (ფულადი სახსრები,დაგრ. რეგისტრი)] as [ორგანიზაცია_პერიოდი_ნაშთია]
+Resident РегистрНакопленияДенежныеСредства;
+
+BridgeTableOrgValDateNonDistinct:
+Load distinct
+	[LoanDateOst] as [Date (BridgeTableOrgValDate)],
+    [ნაშთია (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] as [ნაშთია (BridgeTableOrgValDate)],
+    [%lnk_ორგანიზაცია (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] as [%lnk_ორგანიზაცია (BridgeTableOrgValDate)],
+    [%lnk_ვალუტა (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] as [%lnk_ვალუტა (BridgeTableOrgValDate)],
+    [%lnk_ორგანიზაცია (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] & '|' & [%lnk_ვალუტა (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] & '|' & LoanDateOst & '|' & [ნაშთია (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] as [ორგანიზაცია_ვალუტა_პერიოდი_ნაშთია],  
+    [%lnk_ორგანიზაცია (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] & '|' & [%lnk_ვალუტა (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] as [ორგანიზაცია_ვალუტა],  
+    [%lnk_ორგანიზაცია (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] & '|' & LoanDateOst & '|' & [ნაშთია (ანგარიში სესხებით და კრედიტებით,დაგრ. რეგისტრი)] as [ორგანიზაცია_პერიოდი_ნაშთია]
+Resident РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки;
+
+BridgeTableOrgValDate:
+Load distinct
+    *,
+	ApplyMap('MapСправочникВалюты',[%lnk_ვალუტა (BridgeTableOrgValDate)],Null()) AS [ვალუტა (ფილტრი)]
+Resident BridgeTableOrgValDateNonDistinct;
+
+Drop Table BridgeTableOrgValDateNonDistinct;
+
+BridgeTableOrgDateNonDistinct:
+Load distinct
+    [BuyerDateOst] as [Date (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი)] & '|' & BuyerDateOst & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი)] as [ორგანიზაცია_პერიოდი_ნაშთია],
+    [BuyerDateOst] & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი)] as [DateForConnect]
+Resident РегистрНакопленияРасчетыСПокупателями;
+
+BridgeTableOrgDateNonDistinct:
+Load distinct
+    [Date (BridgeTableOrgValDate)] as [Date (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (BridgeTableOrgValDate)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (BridgeTableOrgValDate)] & '|' & [Date (BridgeTableOrgValDate)] & '|' & [ნაშთია (BridgeTableOrgValDate)] as [ორგანიზაცია_პერიოდი_ნაშთია],
+    [Date (BridgeTableOrgValDate)] & '|' & [ნაშთია (BridgeTableOrgValDate)] as [DateForConnect]
+Resident BridgeTableOrgValDate;
+
+BridgeTableOrgDate:
+Load distinct
+    *,
+    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია (ფილტრი)]
+Resident BridgeTableOrgDateNonDistinct;
+
+Drop Table BridgeTableOrgDateNonDistinct;
