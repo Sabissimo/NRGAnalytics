@@ -67,7 +67,7 @@ Load
 	//ApplyMap('MapСправочникВалюты',[%lnk_ვალუტა cash],Null()) AS [ვალუტა (cash)],
 	[%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияДенежныеСредстваОстатки],
     [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки],
-    [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияРасчетыСПокупателямиОстатки],
+    [%lnk_ორგანიზაცია cash] & '|' & [%lnk_CashDate] AS [%bridge_РегистрНакопленияРасчетыСПокупателямиОстатки],
     [%lnk_ორგანიზაცია cash] & '|' & [%lnk_ვალუტა cash] AS [%bridge_ДокументДоговорКредитаИЗайма]
 Resident AllDatesCashDistinct;
 
