@@ -1,14 +1,14 @@
 //Mapping
-$(include=[lib://Elvare:DataFiles/Debitorsflow 0001. Mapping.qvs]);
+$(include=[lib://Elvare:DataFiles/Debitors 0001. Mapping.qvs]);
 
 //Mapping Custom
-$(include=[lib://Elvare:DataFiles/Debitorsflow 0002. Mapping Custom.qvs]);
+$(include=[lib://Elvare:DataFiles/Debitors 0002. Mapping Custom.qvs]);
 
 //Reg. Debitors
-$(include=[lib://Elvare:DataFiles/Debitorsflow 0201. Reg. Debitors.qvs]);
+$(include=[lib://Elvare:DataFiles/Debitors 0201. Reg. Debitors.qvs]);
 
 //Bridge
-$(include=[lib://Elvare:DataFiles/Debitorsflow 0301. Bridge.qvs]);
+$(include=[lib://Elvare:DataFiles/Debitors 0301. Bridge.qvs]);
 
 //Calendar
-$(include=[lib://Elvare:DataFiles/Debitorsflow 0401. Calendar.qvs]);
+$(include=[lib://Elvare:DataFiles/Debitors 0401. Calendar.qvs]);
