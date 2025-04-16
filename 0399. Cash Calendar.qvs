@@ -80,7 +80,8 @@ Load
     Year	([TempDate]) *10 + Ceil(Month([TempDate])/3)  as [yq Cash],
     'Q' & Ceil(Month([TempDate])/3) as [Quarter Cash],
     dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month Cash],
-    If([TempDate] < MonthStart(Today()) and [TempDate] >= MakeDate(2024,1,1), 1, 0) AS IncludeInForecastCash
+    If([TempDate] < MonthStart(Today()) and [TempDate] >= MakeDate(2024,1,1), 1, 0) AS IncludeInForecastCash,
+    If([TempDate] >= MakeDate(2024,2,1), 1, 0) AS ActualDataForCash
 Resident TemporaryCalendar;
 
 drop table TemporaryCalendar;

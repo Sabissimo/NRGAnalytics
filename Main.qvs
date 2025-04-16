@@ -25,6 +25,9 @@ $(include=[lib://Elvare:DataFiles/0301. Reg. Cash.qvs]);
 //Reg. Buyers
 $(include=[lib://Elvare:DataFiles/0302. Reg. Buyers.qvs]);
 
+//Reg. Buyers
+$(include=[lib://Elvare:DataFiles/0303. Reg. Stock.qvs]);
+
 //Cash Bridge
 $(include=[lib://Elvare:DataFiles/0398. Cash Bridge.qvs]);
 

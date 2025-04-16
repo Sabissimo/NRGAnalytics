@@ -159,3 +159,12 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыРасчетов.qvd]
 (qvd);
+
+MapПеречислениеВидыОперацийПеремещениеЗапасов:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеВидыОперацийПеремещениеЗапасов.qvd]
+(qvd);
