@@ -4,6 +4,9 @@ $(include=[lib://Elvare:DataFiles/Cashflow 0001. Mapping.qvs]);
 //Mapping Custom
 $(include=[lib://Elvare:DataFiles/Cashflow 0002. Mapping Custom.qvs]);
 
+//Cat. Articles
+$(include=[lib://Elvare:DataFiles/Cashflow 0101. Cat. Articles.qvs]);
+
 //Reg. Cash
 $(include=[lib://Elvare:DataFiles/Cashflow 0201. Reg. Cash.qvs]);
 
