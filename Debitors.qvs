@@ -7,8 +7,8 @@ $(include=[lib://Elvare:DataFiles/Debitorsflow 0002. Mapping Custom.qvs]);
 //Reg. Debitors
 $(include=[lib://Elvare:DataFiles/Debitorsflow 0201. Reg. Debitors.qvs]);
 
-//Debitors Bridge
+//Bridge
 $(include=[lib://Elvare:DataFiles/Debitorsflow 0301. Bridge.qvs]);
 
-//Debitors Calendar
+//Calendar
 $(include=[lib://Elvare:DataFiles/Debitorsflow 0401. Calendar.qvs]);

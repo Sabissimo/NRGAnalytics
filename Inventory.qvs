@@ -1,35 +1,17 @@
 //Mapping
-$(include=[lib://Elvare:DataFiles/0001. Mapping.qvs]);
+$(include=[lib://Elvare:DataFiles/Inventory 0001. Mapping.qvs]);
 
 //Mapping Custom
-$(include=[lib://Elvare:DataFiles/0002. Mapping Custom.qvs]);
+$(include=[lib://Elvare:DataFiles/Inventory 0002. Mapping Custom.qvs]);
 
 //Cat. Items
-//$(include=[lib://Elvare:DataFiles/0101. Cat. Items.qvs]);
+$(include=[lib://Elvare:DataFiles/Inventory 0101. Cat. Items.qvs]);
 
 //Reg. Inventory
-//$(include=[lib://Elvare:DataFiles/0201. Reg. Inventory.qvs]);
+$(include=[lib://Elvare:DataFiles/Inventory 0201. Reg. Inventory.qvs]);
 
-//Inventory Calendar
-//$(include=[lib://Elvare:DataFiles/0202. Inventory Calendar.qvs]);
+//Bridge
+$(include=[lib://Elvare:DataFiles/Inventory 0301. Bridge.qvs]);
 
-//Reg. Accounting
-//$(include=[lib://Elvare:DataFiles/0203. Reg. Accounting.qvs]);
-
-//Accounting Calendar
-//$(include=[lib://Elvare:DataFiles/0204. Accounting Calendar.qvs]);
-
-//Reg. Cash
-$(include=[lib://Elvare:DataFiles/0301. Reg. Cash.qvs]);
-
-//Reg. Buyers
-$(include=[lib://Elvare:DataFiles/0302. Reg. Buyers.qvs]);
-
-//Reg. Buyers
-$(include=[lib://Elvare:DataFiles/0303. Reg. Stock.qvs]);
-
-//Cash Bridge
-$(include=[lib://Elvare:DataFiles/0398. Cash Bridge.qvs]);
-
-//Cash Calendar
-$(include=[lib://Elvare:DataFiles/0399. Cash Calendar.qvs]);
+//Calendar
+$(include=[lib://Elvare:DataFiles/Inventory 0401. Calendar.qvs]);
