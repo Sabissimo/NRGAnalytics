@@ -196,3 +196,12 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСправочники_НРГ.qvd]
 (qvd);
 
+MapПланВидовХарактеристикДополнительныеРеквизитыИСведения:
+Mapping LOAD
+	[Ссылка] AS [Ссылка],
+	[Наименование] AS [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПланВидовХарактеристикДополнительныеРеквизитыИСведения.qvd]
+(qvd);
+
