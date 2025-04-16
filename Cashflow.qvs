@@ -17,7 +17,7 @@ $(include=[lib://Elvare:DataFiles/Cashflow 0202. Reg. Buyers.qvs]);
 $(include=[lib://Elvare:DataFiles/Cashflow 0203. Reg. Stock.qvs]);
 
 //Cash Bridge
-$(include=[lib://Elvare:DataFiles/Cashflow 0301. Cash Bridge.qvs]);
+$(include=[lib://Elvare:DataFiles/Cashflow 0301. Bridge.qvs]);
 
 //Cash Calendar
-$(include=[lib://Elvare:DataFiles/Cashflow 0401. Cash Calendar.qvs]);
+$(include=[lib://Elvare:DataFiles/Cashflow 0401. Calendar.qvs]);
