@@ -168,3 +168,31 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеВидыОперацийПеремещениеЗапасов.qvd]
 (qvd);
+
+MapСправочникВидыНоменклатур:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыНоменклатур.qvd]
+(qvd);
+
+MapСправочникТипыНоменклатуры:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникТипыНоменклатуры.qvd]
+(qvd);
+
+MapСправочникСправочники_НРГ:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСправочники_НРГ.qvd]
+(qvd);
+

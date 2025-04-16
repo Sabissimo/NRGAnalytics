@@ -1,0 +1,15 @@
+BridgeTableOrgDateNonDistinct:
+Load distinct
+    [DebitorsDate] as [Date (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი)] & '|' & DebitorsDate & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი)] as [ორგანიზაცია_პერიოდი_ნაშთია],
+    [DebitorsDate] & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან,დაგრ. რეგისტრი)] as [DateForConnect]
+Resident РегистрНакопленияРасчетыСПокупателями;
+
+BridgeTableOrgDate:
+Load distinct
+    *,
+    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია (ფილტრი)]
+Resident BridgeTableOrgDateNonDistinct;
+
+Drop Table BridgeTableOrgDateNonDistinct;
