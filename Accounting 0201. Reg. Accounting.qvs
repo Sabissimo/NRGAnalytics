@@ -7,7 +7,7 @@ FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрБухгалте
 РегистрБухгалтерииУправленческийTemp:
 LOAD
 	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) AS AccountingDate,
-	AutoNumberHash128([ორგანიზაცია], [ანგარიში დტ], [Регистратор], [ვალუტა დტ]) as LNK_GROUP,
+	AutoNumberHash128([ორგანიზაცია], [ანგარიში დტ], [ვალუტა დტ]) as LNK_GROUP,
 	[ორგანიზაცია] & '|' & floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) as [ორგანიზაცია_პერიოდი],
     Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss') AS [პერიოდი (გატარებების ჟურნალი,ბუღ. რეგისტრი)],
 	0 AS [მოძრაობის ტიპი (გატარებების ჟურნალი,ბუღ. რეგისტრი)],
@@ -34,7 +34,7 @@ Resident РегистрБухгалтерииУправленческийPre;
 РегистрБухгалтерииУправленческийTemp:
 LOAD
 	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) AS AccountingDate,
-	AutoNumberHash128([ორგანიზაცია], [ანგარიში კტ], [Регистратор], [ვალუტა კტ]) as LNK_GROUP,
+	AutoNumberHash128([ორგანიზაცია], [ანგარიში კტ], [ვალუტა კტ]) as LNK_GROUP,
 	[ორგანიზაცია] & '|' & floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) as [ორგანიზაცია_პერიოდი],
     Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss') AS [პერიოდი (გატარებების ჟურნალი,ბუღ. რეგისტრი)],
 	1 AS [მოძრაობის ტიპი (გატარებების ჟურნალი,ბუღ. რეგისტრი)],
