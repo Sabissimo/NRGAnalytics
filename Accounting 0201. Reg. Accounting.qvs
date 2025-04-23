@@ -8,7 +8,7 @@ FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрБухгалте
 LOAD
 	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) AS AccountingDate,
 	AutoNumberHash128([ორგანიზაცია], [ანგარიში დტ], [ვალუტა დტ]) as AccountingPeekGroup,
-	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) & [Регистратор] & [НомерСтроки] & 0 as AccountingPeekSort,
+	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) & '|' & [Регистратор] & '|' & [НомерСтроки] & '|' & 0 as AccountingPeekSort,
 	[ორგანიზაცია] & '|' & floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) as [ორგანიზაცია_პერიოდი],
     Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss') AS [პერიოდი (გატარებების ჟურნალი,ბუღ. რეგისტრი)],
 	[НомерСтроки] AS [სტრიქონის ნომერი (გატარებების ჟურნალი,ბუღ. რეგისტრი)],
@@ -37,7 +37,7 @@ Resident РегистрБухгалтерииУправленческийPre;
 LOAD
 	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) AS AccountingDate,
 	AutoNumberHash128([ორგანიზაცია], [ანგარიში კტ], [ვალუტა კტ]) as AccountingPeekGroup,
-	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) & [Регистратор] & [НомерСтроки] & 1 as AccountingPeekSort,
+	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) & '|' & [Регистратор] & '|' & [НомерСтроки] & '|' & 1 as AccountingPeekSort,
 	[ორგანიზაცია] & '|' & floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) as [ორგანიზაცია_პერიოდი],
     Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss') AS [პერიოდი (გატარებების ჟურნალი,ბუღ. რეგისტრი)],
 	[НомерСтроки] AS [სტრიქონის ნომერი (გატარებების ჟურნალი,ბუღ. რეგისტრი)],
