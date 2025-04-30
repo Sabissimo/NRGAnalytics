@@ -1,0 +1,234 @@
+MapСправочникПользователи:
+Mapping LOAD
+    [Ссылка],
+    [სრული სახელი];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникПользователи.qvd]
+(qvd);
+
+MapПеречислениеВидыДоговоров:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеВидыДоговоров.qvd]
+(qvd);
+
+MapПеречислениеДаНет:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеДаНет.qvd]
+(qvd);
+
+MapСправочникВидыЦен:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыЦен.qvd]
+(qvd);
+
+MapСправочникТипыПроводника:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникТипыПроводника.qvd]
+(qvd);
+
+MapСправочникГруппыКабелей:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникГруппыКабелей.qvd]
+(qvd);
+
+MapСправочникВидыНоменклатур:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыНоменклатур.qvd]
+(qvd);
+
+MapСправочникСправочники_НРГ:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСправочники_НРГ.qvd]
+(qvd);
+
+MapПеречислениеТипыНоменклатуры:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыНоменклатуры.qvd]
+(qvd);
+
+MapСправочникКлассыПроводника:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКлассыПроводника.qvd]
+(qvd);
+
+MapСправочникМатериалыМембраны:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникМатериалыМембраны.qvd]
+(qvd);
+
+MapСправочникЦветы:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникЦветы.qvd]
+(qvd);
+
+MapСправочникНоменклатурнаяМаркировка:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникНоменклатурнаяМаркировка.qvd]
+(qvd);
+
+MapСправочникТипыУпаковки:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникТипыУпаковки.qvd]
+(qvd);
+
+MapСправочникЭтапыПроизводства:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникЭтапыПроизводства.qvd]
+(qvd);
+
+MapСправочникТипыНоменклатуры:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникТипыНоменклатуры.qvd]
+(qvd);
+
+MapСправочникКатегорииНоменклатуры:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
+(qvd);
+
+MapСправочникОрганизации:
+Mapping LOAD
+    [Ссылка],
+    [(არ გამოიყენება)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникОрганизации.qvd]
+(qvd);
+
+MapСправочникТипыСкладов:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникТипыСкладов.qvd]
+(qvd);
+
+MapПеречислениеТипыСтруктурныхЕдиниц:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыСтруктурныхЕдиниц.qvd]
+(qvd);
+
+MapСправочникСотрудники:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСотрудники.qvd]
+(qvd);
+
+MapСправочникЗначенияСвойствОбъектов:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникЗначенияСвойствОбъектов.qvd]
+(qvd);
+
+MapСправочникКлассификаторЕдиницИзмерения:
+Mapping LOAD
+    [მინიშნება],
+    [მოკლე დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКлассификаторЕдиницИзмерения.qvd]
+(qvd);
+
+MapСправочникЕдиницыИзмерения:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникЕдиницыИзмерения.qvd]
+(qvd);
+
+MapПеречислениеСпособыПополненияЗапасов:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеСпособыПополненияЗапасов.qvd]
+(qvd);
+
+MapСправочникСпецификации:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСпецификации.qvd]
+(qvd);
+
