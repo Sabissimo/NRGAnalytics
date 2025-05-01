@@ -22,6 +22,9 @@ $(include=[lib://Elvare:DataFiles/Sales 0104. Cat. Contractors.qvs]);
 //Cat. Warehouses
 $(include=[lib://Elvare:DataFiles/Sales 0105. Cat. Warehouses.qvs]);
 
+//Budget
+$(include=[lib://Elvare:DataFiles/Sales 0200. Budget.qvs]);
+
 //Reg. Sales
 $(include=[lib://Elvare:DataFiles/Sales 0201. Reg. Sales.qvs]);
 
