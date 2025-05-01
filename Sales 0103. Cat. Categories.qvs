@@ -42,7 +42,7 @@ SELECT
 	[Product Category (G)]
 FROM GetWorksheetV2
 WITH PROPERTIES (
-worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_0', //ProductCategory Sheet
+worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_0', //Qlik Matching, ProductCategory Sheet
 gidOverride='',
 generatedNumberedColumns='false',
 skipRows=''

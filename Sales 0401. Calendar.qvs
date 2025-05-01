@@ -3,6 +3,11 @@ Load distinct
 	[Date (BridgeTableOrgDate)] as %lnk_SalesDate
 Resident BridgeTableOrgDate;
 
+AllDatesSales:
+Load distinct
+	[Date (Budget)] as %lnk_SalesDate
+Resident Бюджет;
+
 StartAndEndDates:
 Load
 	MIN([%lnk_SalesDate]) as MinDate,
@@ -12,7 +17,7 @@ Resident AllDatesSales;
 Drop Table AllDatesSales;
 
 LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
-LET vMaxDate = NUM(Now());//If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
+LET vMaxDate = If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
 
 
 drop tables StartAndEndDates;

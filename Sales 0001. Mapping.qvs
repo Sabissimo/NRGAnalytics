@@ -1,3 +1,5 @@
+LIB CONNECT TO 'Elvare:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
+
 MapСправочникПользователи:
 Mapping LOAD
     [Ссылка],
@@ -187,15 +189,6 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСотрудники.qvd]
 (qvd);
 
-MapСправочникЗначенияСвойствОбъектов:
-Mapping LOAD
-    [Ссылка],
-    [Наименование];
-LOAD
-    *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникЗначенияСвойствОбъектов.qvd]
-(qvd);
-
 MapСправочникКлассификаторЕдиницИзмерения:
 Mapping LOAD
     [მინიშნება],
@@ -230,5 +223,14 @@ Mapping LOAD
 LOAD
     *
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСпецификации.qvd]
+(qvd);
+
+MapСправочникКатегорииКонрагентов:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКатегорииКонрагентов.qvd]
 (qvd);
 

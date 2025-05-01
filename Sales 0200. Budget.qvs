@@ -1,0 +1,17 @@
+Бюджет:
+LOAD 
+	FLOOR([FY 2024]) as [Date (Budget)], 
+	FLOOR([FY 2024]) & '|' & 0 as [DateForConnect], 
+	Total as [ბიუჯეტი (სულ)];
+
+SELECT 
+	[FY 2024],
+	Total
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1E5bKRgK3mNUgcRnZCkZWTz5rjoP7PN4Wh9pO3ed1I3w:_0',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+

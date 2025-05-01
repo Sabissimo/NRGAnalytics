@@ -1,9 +1,9 @@
 BridgeTableOrgDateNonDistinct:
 Load distinct
     [SalesDate] as [Date (BridgeTableOrgDate)],
-	[%lnk_ორგანიზაცია (გაყიდვები,დაგრ. რეგისტრი)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
-	[%lnk_ორგანიზაცია (გაყიდვები,დაგრ. რეგისტრი)] & '|' & SalesDate as [ორგანიზაცია_პერიოდი],
-    [SalesDate] as [DateForConnect]
+	[%lnk_ორგანიზაცია (გაყიდვები)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (გაყიდვები)] & '|' & SalesDate as [ორგანიზაცია_პერიოდი],
+    [SalesDate] & '|' & 0 as [DateForConnect]
 Resident РегистрНакопленияПродажи;
 
 BridgeTableOrgDate:
