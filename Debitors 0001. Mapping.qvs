@@ -16,15 +16,6 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыРасчетов.qvd]
 (qvd);
 
-MapСправочникКонтрагенты:
-Mapping LOAD
-    [მინიშნება],
-    [(არ გამოიყენება)];
-LOAD
-    *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКонтрагенты.qvd]
-(qvd);
-
 MapСправочникВалюты:
 Mapping LOAD
     [Ссылка],
@@ -34,11 +25,57 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВалюты.qvd]
 (qvd);
 
-MapПланВидовХарактеристикДополнительныеРеквизитыИСведения:
+MapСправочникВидыЦен:
 Mapping LOAD
-	[Ссылка] AS [Ссылка],
-	[Наименование] AS [Наименование];
+    [მინიშნება],
+    [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПланВидовХарактеристикДополнительныеРеквизитыИСведения.qvd]
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыЦен.qvd]
 (qvd);
+
+MapСправочникПользователи:
+Mapping LOAD
+    [Ссылка],
+    [სრული სახელი];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникПользователи.qvd]
+(qvd);
+
+MapСправочникДоговорыКонтрагентов:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникДоговорыКонтрагентов.qvd]
+(qvd);
+
+MapСправочникЗначенияСвойствОбъектов:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникЗначенияСвойствОбъектов.qvd]
+(qvd);
+
+MapПеречислениеВидыКонтрагентов:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеВидыКонтрагентов.qvd]
+(qvd);
+
+MapСправочникСотрудники:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСотрудники.qvd]
+(qvd);
+
