@@ -4,6 +4,9 @@ $(include=[lib://Elvare:DataFiles/Debitors 0001. Mapping.qvs]);
 //Mapping Custom
 $(include=[lib://Elvare:DataFiles/Debitors 0002. Mapping Custom.qvs]);
 
+//Cat. Contractors
+$(include=[lib://Elvare:DataFiles/Debitors 0101. Cat. Contractors.qvs]);
+
 //Reg. Debitors
 $(include=[lib://Elvare:DataFiles/Debitors 0201. Reg. Debitors.qvs]);
 
