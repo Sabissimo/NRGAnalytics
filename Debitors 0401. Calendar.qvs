@@ -27,24 +27,24 @@ LOAD
 	 $(vMinDate) + recno() - 1 AS TempDate 
 AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 1);
 
-AsOfTemporaryCalendarTotal:
-LOAD DISTINCT
-    (TempDate) AS [As Of TempDate]
-RESIDENT TemporaryCalendar;
+// AsOfTemporaryCalendarTotal:
+// LOAD DISTINCT
+//     (TempDate) AS [As Of TempDate]
+// RESIDENT TemporaryCalendar;
 
-JOIN (AsOfTemporaryCalendarTotal)
-LOAD DISTINCT
-    TempDate
-RESIDENT TemporaryCalendar;
+// JOIN (AsOfTemporaryCalendarTotal)
+// LOAD DISTINCT
+//     TempDate
+// RESIDENT TemporaryCalendar;
 
-AsOfTemporaryCalendar:
-LOAD
-	[As Of TempDate] as [TempDate],
-    TempDate & '|' & 1 as [DateForConnect]
-RESIDENT AsOfTemporaryCalendarTotal
-WHERE (TempDate) <= [As Of TempDate];
+// AsOfTemporaryCalendar:
+// LOAD
+// 	[As Of TempDate] as [TempDate],
+//     TempDate & '|' & 1 as [DateForConnect]
+// RESIDENT AsOfTemporaryCalendarTotal
+// WHERE (TempDate) <= [As Of TempDate];
 
-DROP TABLE AsOfTemporaryCalendarTotal;
+// DROP TABLE AsOfTemporaryCalendarTotal;
 
 AsOfTemporaryCalendar:
 LOAD
@@ -81,8 +81,11 @@ Load
     Year	([TempDate]) *10 + Ceil(Month([TempDate])/3)  as [yq Debitors],
     'Q' & Ceil(Month([TempDate])/3) as [Quarter Debitors],
     dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month Debitors],
-    If([TempDate] < MonthStart(Today()) and [TempDate] >= MakeDate(2024,1,1), 1, 0) AS IncludeInForecastDebitors,
-    If([TempDate] >= MakeDate(2024,2,1), 1, 0) AS ActualDataForDebitors
+    If([TempDate] < MonthStart($(vNow)) and [TempDate] >= MakeDate(2024,1,1), 1, 0) AS IncludeInForecastDebitors,
+    If([TempDate] >= MakeDate(2024,2,1), 1, 0) AS ActualDataForDebitors,
+    if(floor(TempDate) = floor(QuarterEnd(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isQE,
+    if(floor(TempDate) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isME,
+    if(floor(TempDate) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYE
 Resident TemporaryCalendar;
 
 drop table TemporaryCalendar;
