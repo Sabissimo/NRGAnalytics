@@ -52,3 +52,10 @@ Resident
 	СправочникКонтрагентыИерархия;
 
 Drop Table СправочникКонтрагентыИерархия;
+
+ABCMeassureDimension:
+LOAD * INLINE [
+ABCMeassure
+დავალიანება
+გაყიდვა
+];
