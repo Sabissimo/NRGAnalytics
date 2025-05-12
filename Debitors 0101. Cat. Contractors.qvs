@@ -40,7 +40,7 @@ LOAD
     [ჯგუფი] AS [%lnk_ჯგუფი (კონტრაგენტები)] //Type: СправочникКонтрагенты
 Resident СправочникКонтрагентыPre
 Where
-	match (ApplyMap('MapБулево', [ეს არის ჯგუფი], Null()),'არა');
+	match (ApplyMap('MapБулево', [ეს არის ჯგუფი], Null()),'კი');
 
 Drop Table СправочникКонтрагентыPre;
 
