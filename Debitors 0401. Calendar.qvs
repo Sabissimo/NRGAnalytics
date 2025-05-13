@@ -12,7 +12,7 @@ Resident AllDatesDebitors;
 Drop Table AllDatesDebitors;
 
 LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
-LET vMaxDate = NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
+LET vMaxDate = NUM($(vNow));//NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
 
 
 drop tables StartAndEndDates;
