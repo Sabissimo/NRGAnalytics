@@ -86,7 +86,7 @@ Load
     if(floor(TempDate) = floor(QuarterEnd(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isQE,
     if(floor(TempDate) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isME,
     if(floor(TempDate) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYE,
-    if(YearStart([TempDate]) = YearStart($(vNow)),'მიმდინარე წელი','წინა წელი') as [Year CP Debitors]
+    if(YearStart([TempDate]) = YearStart($(vNow)),'მიმდინარე წელი',if(YearStart([TempDate]) = YearStart(YearStart($(vNow))-1),'წინა წელი', Null())) as [Year CP Debitors]
 Resident TemporaryCalendar;
 
 drop table TemporaryCalendar;
