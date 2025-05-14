@@ -79,3 +79,11 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСотрудники.qvd]
 (qvd);
 
+MapПеречислениеТипыЗадолженностей:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыЗадолженностей.qvd]
+(qvd);
