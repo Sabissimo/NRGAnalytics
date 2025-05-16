@@ -24,6 +24,21 @@ generatedNumberedColumns='false',
 skipRows=''
 );
 
+MapЛокация:
+Mapping LOAD 
+	[საწყობი] as [საწყობი], 
+	[ლოკაცია] as [ლოკაცია];
+
+SELECT [საწყობი],
+	[ლოკაცია]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_30763664',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
 MapСправочникНаправленияДеятельности:
 Mapping LOAD
     [მინიშნება],
