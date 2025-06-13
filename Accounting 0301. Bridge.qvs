@@ -6,10 +6,23 @@ Load distinct
     [AccountingDate] & '|' & [ნაშთია (გატარებების ჟურნალი,ბუღ. რეგისტრი)] as [DateForConnect]
 Resident РегистрБухгалтерииУправленческий;
 
+BridgeTableOrgDateNonDistinct:
+Load distinct
+    [SalesDate] as [Date (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (გაყიდვები,დაგრ. რეგისტრი)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (გაყიდვები,დაგრ. რეგისტრი)] & '|' & SalesDate & '|' & [ნაშთია (გაყიდვები,დაგრ. რეგისტრი)] as [ორგანიზაცია_პერიოდი_ნაშთია],
+    [SalesDate] & '|' & [ნაშთია (გაყიდვები,დაგრ. რეგისტრი)] as [DateForConnect]
+Resident РегистрНакопленияПродажи;
+
 BridgeTableOrgDate:
 Load distinct
     *,
-    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია (ფილტრი)]
+    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია (ფილტრი)],
+    if(
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='80C6382C4ABBB43711E7363EBFB98EBD' or //electric
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='85070A94EF044E4711EB87F29D540806' or //elvare
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='8653D4F5EF3EE94F11EED6FFAF64F778' //elcom
+    ,'კონსოლიდირებული EEE') AS [კონსოლიდირებული (ფილტრი)]
 Resident BridgeTableOrgDateNonDistinct;
 
 Drop Table BridgeTableOrgDateNonDistinct;

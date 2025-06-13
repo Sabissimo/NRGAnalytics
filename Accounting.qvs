@@ -10,6 +10,9 @@ $(include=[lib://Elvare:DataFiles/Accounting 0101. Cat. Accounting.qvs]);
 //Reg. Accounting
 $(include=[lib://Elvare:DataFiles/Accounting 0201. Reg. Accounting.qvs]);
 
+//Reg. Sales
+$(include=[lib://Elvare:DataFiles/Accounting 0202. Reg. Sales.qvs]);
+
 //Bridge
 $(include=[lib://Elvare:DataFiles/Accounting 0301. Bridge.qvs]);
 
