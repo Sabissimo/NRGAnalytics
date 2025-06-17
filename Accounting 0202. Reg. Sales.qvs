@@ -16,16 +16,19 @@ LOAD
 	[თანხა] - [მ.შ. დღგ] AS [გაყიდვები დღგ-ს გარეშე (გაყიდვები,დაგრ. რეგისტრი)],
 	[თვითღირებულება] AS [გაყიდვების თვითღირებულება (გაყიდვები,დაგრ. რეგისტრი)]
 Resident РегистрНакопленияПродажиPre
-where match([კონტრაგენტი],
-'850B0A94EF044E4711EB8AD4DB8982E5', // elvare
-//'8653D4F5EF3EE94F11EED6FEB00B669D', // elcom
-'80C6382C4ABBB43711E7363F08CCD67B' // electric
-) > 0
-and
-match([ორგანიზაცია],
-'85070A94EF044E4711EB87F29D540806', // elvare
-//'80C6382C4ABBB43711E7363EBFB98EBD', // electric
-'8653D4F5EF3EE94F11EED6FFAF64F778' // elcom
-) > 0;
+where 
+	match([კონტრაგენტი],
+    '850B0A94EF044E4711EB8AD4DB8982E5', // elvare
+    //'8653D4F5EF3EE94F11EED6FEB00B669D', // elcom
+    '80C6382C4ABBB43711E7363F08CCD67B' // electric
+    ) > 0
+    and
+    match([ორგანიზაცია],
+    '85070A94EF044E4711EB87F29D540806', // elvare
+    //'80C6382C4ABBB43711E7363EBFB98EBD', // electric
+    '8653D4F5EF3EE94F11EED6FFAF64F778' // elcom
+    ) > 0
+    and	
+	floor(AddYears([Период],-2000)) <= $(vNow);
 
 Drop Table РегистрНакопленияПродажиPre;

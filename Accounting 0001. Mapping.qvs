@@ -15,12 +15,3 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыСчетов.qvd]
 (qvd);
-
-MapСправочникВалюты:
-Mapping LOAD
-    [Ссылка],
-    [სიმბოლური კოდი];
-LOAD
-    *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВалюты.qvd]
-(qvd);
