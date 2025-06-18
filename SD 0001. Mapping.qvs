@@ -1,0 +1,17 @@
+MapСправочникОрганизации:
+Mapping LOAD
+    [Ссылка],
+    [(არ გამოიყენება)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникОрганизации.qvd]
+(qvd);
+
+MapСправочникКонтрагенты:
+Mapping LOAD
+    [მინიშნება],
+    [(არ გამოიყენება)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКонтрагенты.qvd]
+(qvd);

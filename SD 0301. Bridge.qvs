@@ -1,0 +1,15 @@
+BridgeTableOrgDateNonDistinct:
+Load distinct
+    [SDDate] as [Date (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (გაყიდვები)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (გაყიდვები)] & '|' & SDDate as [ორგანიზაცია_პერიოდი],
+    [SDDate] & '|' & 0 as [DateForConnect]
+Resident РегистрНакопленияПродажи;
+
+BridgeTableOrgDate:
+Load distinct
+    *,
+    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია (ფილტრი)]
+Resident BridgeTableOrgDateNonDistinct;
+
+Drop Table BridgeTableOrgDateNonDistinct;

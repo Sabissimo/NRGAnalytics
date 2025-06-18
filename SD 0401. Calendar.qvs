@@ -1,0 +1,91 @@
+AllDatesSD:
+Load distinct
+	[Date (BridgeTableOrgDate)] as %lnk_SDDate
+Resident BridgeTableOrgDate;
+
+AllDatesSD:
+Load distinct
+	[Date (Budget)] as %lnk_SDDate
+Resident Бюджет;
+
+StartAndEndDates:
+Load
+	MIN([%lnk_SDDate]) as MinDate,
+    MAX([%lnk_SDDate]) as MaxDate
+Resident AllDatesSD;
+
+Drop Table AllDatesSD;
+
+LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
+LET vMaxDate = If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
+
+
+drop tables StartAndEndDates;
+
+
+
+
+
+
+TemporaryCalendar: 
+LOAD 
+	 $(vMinDate) + recno() - 1 AS TempDate 
+AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 1);
+
+AsOfTemporaryCalendarTotal:
+LOAD DISTINCT
+    (TempDate) AS [As Of TempDate]
+RESIDENT TemporaryCalendar;
+
+JOIN (AsOfTemporaryCalendarTotal)
+LOAD DISTINCT
+    TempDate
+RESIDENT TemporaryCalendar;
+
+AsOfTemporaryCalendar:
+LOAD
+	[As Of TempDate] as [TempDate],
+    TempDate & '|' & 1 as [DateForConnect]
+RESIDENT AsOfTemporaryCalendarTotal
+WHERE (TempDate) <= [As Of TempDate];
+
+DROP TABLE AsOfTemporaryCalendarTotal;
+
+AsOfTemporaryCalendar:
+LOAD
+	TempDate as [TempDate],
+    TempDate & '|' & 0 as [DateForConnect]
+RESIDENT TemporaryCalendar;
+
+SDCalendar:
+Load	
+    [TempDate]  as [TempDate],
+    date([TempDate]) as [Date SD],
+    YEAR([TempDate])*100 + MONTH([TempDate]) as [ym SD],
+    //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
+    'W'&Week	([TempDate])  	as [Week SD],
+    Year	([TempDate])  	as [Year SD],
+    Month	([TempDate])		as [Month SD],
+    pick( match( num(month([TempDate])),1,2,3,4,5,6,7,8,9,10,11,12),
+        dual('იან',1),
+        dual('თებ',2),
+        dual( 'მარ',3),
+        dual('აპრ',4),
+        dual('მაი',5),
+        dual('ივნ',6),
+        dual('ივლ',7),
+        dual('აგვ',8),
+        dual('სექ',9),
+        dual('ოქტ',10),
+        dual('ნოე',11),
+        dual('დეკ',12)
+    ) as [თვე SD],
+    Day		([TempDate]) 		as [Day SD],
+    Weekday ([TempDate]) 		as [Weekday SD],
+    num(month([TempDate]))  as [MONTH_NUM SD],
+    Year	([TempDate]) *10 + Ceil(Month([TempDate])/3)  as [yq SD],
+    'Q' & Ceil(Month([TempDate])/3) as [Quarter SD],
+    dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month SD]
+Resident TemporaryCalendar;
+
+drop table TemporaryCalendar;
