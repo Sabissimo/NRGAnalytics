@@ -3,10 +3,10 @@ Load distinct
 	[Date (BridgeTableOrgDate)] as %lnk_SDDate
 Resident BridgeTableOrgDate;
 
-AllDatesSD:
-Load distinct
-	[Date (Budget)] as %lnk_SDDate
-Resident Бюджет;
+// AllDatesSD:
+// Load distinct
+// 	[Date (Budget)] as %lnk_SDDate
+// Resident Бюджет;
 
 StartAndEndDates:
 Load
