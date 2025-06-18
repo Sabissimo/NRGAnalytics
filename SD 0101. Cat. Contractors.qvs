@@ -16,5 +16,4 @@ LOAD
 LOAD
     *
 FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКонтрагенты.qvd]
-(qvd)
-where match(ApplyMap('MapБулево',[მყიდველი],'არა'),'კი');
+(qvd);
