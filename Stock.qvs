@@ -1,0 +1,23 @@
+//Mapping
+$(include=[lib://Elvare:DataFiles/Stock 0001. Mapping.qvs]);
+
+//Mapping Custom
+$(include=[lib://Elvare:DataFiles/Stock 0002. Mapping Custom.qvs]);
+
+//Cat. Items
+$(include=[lib://Elvare:DataFiles/Stock 0101. Cat. Items.qvs]);
+
+//Cat. Categories
+$(include=[lib://Elvare:DataFiles/Stock 0102. Cat. Categories.qvs]);
+
+//Reg. Stock
+$(include=[lib://Elvare:DataFiles/Stock 0201. Reg. Stock.qvs]);
+
+//Reg. Sales
+$(include=[lib://Elvare:DataFiles/Stock 0202. Reg. Sales.qvs]);
+
+//Bridge
+$(include=[lib://Elvare:DataFiles/Stock 0301. Bridge.qvs]);
+
+//Calendar
+$(include=[lib://Elvare:DataFiles/Stock 0401. Calendar.qvs]);

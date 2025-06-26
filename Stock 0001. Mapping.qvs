@@ -1,0 +1,116 @@
+MapСправочникОрганизации:
+Mapping LOAD
+    [Ссылка],
+    [(არ გამოიყენება)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникОрганизации.qvd]
+(qvd);
+
+MapСправочникКатегорииНоменклатуры:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
+(qvd);
+
+MapПеречислениеТипыСчетов:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыСчетов.qvd]
+(qvd);
+
+MapСправочникСтруктурныеЕдиницы:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
+(qvd);
+
+MapСправочникХарактеристикиНоменклатуры:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникХарактеристикиНоменклатуры.qvd]
+(qvd);
+
+MapСправочникПартииНоменклатуры:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникПартииНоменклатуры.qvd]
+(qvd);
+
+MapСправочникВидыНоменклатур:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыНоменклатур.qvd]
+(qvd);
+
+MapСправочникТипыНоменклатуры:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникТипыНоменклатуры.qvd]
+(qvd);
+
+MapСправочникСправочники_НРГ:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСправочники_НРГ.qvd]
+(qvd);
+
+MapСправочникГруппыКабелей:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникГруппыКабелей.qvd]
+(qvd);
+
+MapСправочникМатериалыМембраны:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникМатериалыМембраны.qvd]
+(qvd);
+
+MapСправочникКлассыПроводника:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКлассыПроводника.qvd]
+(qvd);
+
+MapСправочникКонтрагенты:
+Mapping LOAD
+    [მინიშნება],
+    [(არ გამოიყენება)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКонтрагенты.qvd]
+(qvd);
