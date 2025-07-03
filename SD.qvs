@@ -8,10 +8,10 @@ $(include=[lib://Holding:DataFiles/SD 0002. Mapping Custom.qvs]);
 $(include=[lib://Holding:DataFiles/SD 0101. Cat. Contractors.qvs]);
 
 //Cat. Items
-$(include=[lib://Holding:DataFiles/SD 0101. Cat. Items.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0102. Cat. Items.qvs]);
 
 //Cat. Categories
-$(include=[lib://Holding:DataFiles/SD 0101. Cat. Categories.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0103. Cat. Categories.qvs]);
 
 //Reg. Sales
 $(include=[lib://Holding:DataFiles/SD 0201. Reg. Sales.qvs]);
