@@ -1,35 +1,35 @@
 //AD-HOC
-$(include=[lib://Elvare:DataFiles/Sales 0000. AD-HOC.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0000. AD-HOC.qvs]);
 
 //Mapping
-$(include=[lib://Elvare:DataFiles/Sales 0001. Mapping.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0001. Mapping.qvs]);
 
 //Mapping Custom
-$(include=[lib://Elvare:DataFiles/Sales 0002. Mapping Custom.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0002. Mapping Custom.qvs]);
 
 //Cat. Items
-$(include=[lib://Elvare:DataFiles/Sales 0101. Cat. Items.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0101. Cat. Items.qvs]);
 
 //Cat. Specifications
-$(include=[lib://Elvare:DataFiles/Sales 0102. Cat. Specifications.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0102. Cat. Specifications.qvs]);
 
 //Cat. Categories
-$(include=[lib://Elvare:DataFiles/Sales 0103. Cat. Categories.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0103. Cat. Categories.qvs]);
 
 //Cat. Contractors
-$(include=[lib://Elvare:DataFiles/Sales 0104. Cat. Contractors.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0104. Cat. Contractors.qvs]);
 
 //Cat. Warehouses
-$(include=[lib://Elvare:DataFiles/Sales 0105. Cat. Warehouses.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0105. Cat. Warehouses.qvs]);
 
 //Budget
-$(include=[lib://Elvare:DataFiles/Sales 0200. Budget.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0200. Budget.qvs]);
 
 //Reg. Sales
-$(include=[lib://Elvare:DataFiles/Sales 0201. Reg. Sales.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0201. Reg. Sales.qvs]);
 
 //Bridge
-$(include=[lib://Elvare:DataFiles/Sales 0301. Bridge.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0301. Bridge.qvs]);
 
 //Calendar
-$(include=[lib://Elvare:DataFiles/Sales 0401. Calendar.qvs]);
+$(include=[lib://$(vSpace):DataFiles/Sales 0401. Calendar.qvs]);

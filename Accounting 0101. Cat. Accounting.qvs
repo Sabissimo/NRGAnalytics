@@ -64,7 +64,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 
-LIB CONNECT TO 'Elvare:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
+LIB CONNECT TO '$(vSpace):Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
 
 СтруктураICF:
 LOAD [ICF რიგითობა] as [ICF რიგითობა],

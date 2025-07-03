@@ -1,17 +1,17 @@
 //Mapping
-$(include=[lib://Elvare:DataFiles/SD 0001. Mapping.qvs]);
+$(include=[lib://$(vSpace):DataFiles/SD 0001. Mapping.qvs]);
 
 //Mapping Custom
-$(include=[lib://Elvare:DataFiles/SD 0002. Mapping Custom.qvs]);
+$(include=[lib://$(vSpace):DataFiles/SD 0002. Mapping Custom.qvs]);
 
 //Cat. Contractors
-$(include=[lib://Elvare:DataFiles/SD 0101. Cat. Contractors.qvs]);
+$(include=[lib://$(vSpace):DataFiles/SD 0101. Cat. Contractors.qvs]);
 
 //Reg. Sales
-$(include=[lib://Elvare:DataFiles/SD 0201. Reg. Sales.qvs]);
+$(include=[lib://$(vSpace):DataFiles/SD 0201. Reg. Sales.qvs]);
 
 //Bridge
-$(include=[lib://Elvare:DataFiles/SD 0301. Bridge.qvs]);
+$(include=[lib://$(vSpace):DataFiles/SD 0301. Bridge.qvs]);
 
 //Calendar
-$(include=[lib://Elvare:DataFiles/SD 0401. Calendar.qvs]);
+$(include=[lib://$(vSpace):DataFiles/SD 0401. Calendar.qvs]);
