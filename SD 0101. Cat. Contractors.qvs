@@ -1,5 +1,3 @@
-LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
-
 СправочникКонтрагенты:
 LOAD
 	[მინიშნება] AS [%lnk_კონტრაგენტი], //Type: СправочникВидыСчетовБаланса,
