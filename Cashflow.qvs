@@ -1,23 +1,23 @@
 //Mapping
-$(include=[lib://$(vSpace):DataFiles/Cashflow 0001. Mapping.qvs]);
+$(include=[lib://Holding:DataFiles/Cashflow 0001. Mapping.qvs]);
 
 //Mapping Custom
-$(include=[lib://$(vSpace):DataFiles/Cashflow 0002. Mapping Custom.qvs]);
+$(include=[lib://Holding:DataFiles/Cashflow 0002. Mapping Custom.qvs]);
 
 //Cat. Articles
-$(include=[lib://$(vSpace):DataFiles/Cashflow 0101. Cat. Articles.qvs]);
+$(include=[lib://Holding:DataFiles/Cashflow 0101. Cat. Articles.qvs]);
 
 //Reg. Cash
-$(include=[lib://$(vSpace):DataFiles/Cashflow 0201. Reg. Cash.qvs]);
+$(include=[lib://Holding:DataFiles/Cashflow 0201. Reg. Cash.qvs]);
 
 //Reg. Buyers
-$(include=[lib://$(vSpace):DataFiles/Cashflow 0202. Reg. Buyers.qvs]);
+$(include=[lib://Holding:DataFiles/Cashflow 0202. Reg. Buyers.qvs]);
 
 //Reg. Stock
-$(include=[lib://$(vSpace):DataFiles/Cashflow 0203. Reg. Stock.qvs]);
+$(include=[lib://Holding:DataFiles/Cashflow 0203. Reg. Stock.qvs]);
 
 //Bridge
-$(include=[lib://$(vSpace):DataFiles/Cashflow 0301. Bridge.qvs]);
+$(include=[lib://Holding:DataFiles/Cashflow 0301. Bridge.qvs]);
 
 //Calendar
-$(include=[lib://$(vSpace):DataFiles/Cashflow 0401. Calendar.qvs]);
+$(include=[lib://Holding:DataFiles/Cashflow 0401. Calendar.qvs]);

@@ -1,20 +1,20 @@
 //Mapping
-$(include=[lib://$(vSpace):DataFiles/SD 0001. Mapping.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0001. Mapping.qvs]);
 
 //Mapping Custom
-$(include=[lib://$(vSpace):DataFiles/SD 0002. Mapping Custom.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0002. Mapping Custom.qvs]);
 
 //Cat. Contractors
-$(include=[lib://$(vSpace):DataFiles/SD 0101. Cat. Contractors.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0101. Cat. Contractors.qvs]);
 
 //Reg. Sales
-$(include=[lib://$(vSpace):DataFiles/SD 0201. Reg. Sales.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0201. Reg. Sales.qvs]);
 
 //Reg. Debitors
-$(include=[lib://$(vSpace):DataFiles/SD 0202. Reg. Debitors.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0202. Reg. Debitors.qvs]);
 
 //Bridge
-$(include=[lib://$(vSpace):DataFiles/SD 0301. Bridge.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0301. Bridge.qvs]);
 
 //Calendar
-$(include=[lib://$(vSpace):DataFiles/SD 0401. Calendar.qvs]);
+$(include=[lib://Holding:DataFiles/SD 0401. Calendar.qvs]);
