@@ -44,3 +44,156 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыЗадолженностей.qvd]
 (qvd);
+
+
+
+
+
+
+
+
+
+
+MapСправочникКлассификаторЕдиницИзмерения:
+Mapping LOAD
+    [მინიშნება],
+    [მოკლე დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКлассификаторЕдиницИзмерения.qvd]
+(qvd);
+
+MapПеречислениеСпособыПополненияЗапасов:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеСпособыПополненияЗапасов.qvd]
+(qvd);
+
+MapСправочникТипыПроводника:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникТипыПроводника.qvd]
+(qvd);
+
+MapСправочникГруппыКабелей:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникГруппыКабелей.qvd]
+(qvd);
+
+MapСправочникВидыНоменклатур:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникВидыНоменклатур.qvd]
+(qvd);
+
+MapСправочникСправочники_НРГ:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСправочники_НРГ.qvd]
+(qvd);
+
+MapПеречислениеТипыНоменклатуры:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыНоменклатуры.qvd]
+(qvd);
+
+MapСправочникКлассыПроводника:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКлассыПроводника.qvd]
+(qvd);
+
+MapСправочникМатериалыМембраны:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникМатериалыМембраны.qvd]
+(qvd);
+
+MapСправочникЦветы:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникЦветы.qvd]
+(qvd);
+
+MapСправочникНоменклатурнаяМаркировка:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникНоменклатурнаяМаркировка.qvd]
+(qvd);
+
+MapСправочникТипыУпаковки:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникТипыУпаковки.qvd]
+(qvd);
+
+MapСправочникЭтапыПроизводства:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникЭтапыПроизводства.qvd]
+(qvd);
+
+MapСправочникТипыНоменклатуры:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникТипыНоменклатуры.qvd]
+(qvd);
+
+MapСправочникКатегорииНоменклатуры:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
+(qvd);
+
+MapПеречислениеДаНет:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеДаНет.qvd]
+(qvd);
