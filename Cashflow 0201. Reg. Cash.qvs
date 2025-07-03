@@ -1,7 +1,7 @@
 РегистрНакопленияДенежныеСредстваPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрНакопленияДенежныеСредства-*.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияДенежныеСредства-*.qvd]
 (qvd);
 
 РегистрНакопленияДенежныеСредства:
@@ -144,7 +144,7 @@ Drop Table РегистрНакопленияДенежныеСредстваPre
 РегистрНакопленияРасчетыПоКредитамИЗаймамPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрНакопленияРасчетыПоКредитамИЗаймам-*.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияРасчетыПоКредитамИЗаймам-*.qvd]
 (qvd);
 
 РегистрНакопленияРасчетыПоКредитамИЗаймамОстатки:
@@ -192,5 +192,5 @@ LOAD
 	ApplyMap('MapСправочникВалюты',[ანგარიშისწორების ვალუტა],Null()) AS [ანგარიშისწორების ვალუტა (საკრედიტო ხელშეკრულება (სესხი),დოკუმენტი)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ДокументДоговорКредитаИЗайма.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументДоговорКредитаИЗайма.qvd]
 (qvd);

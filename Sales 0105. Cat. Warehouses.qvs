@@ -15,5 +15,5 @@ LOAD
 	))) AS [პროექტი (საწყობი)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
 (qvd);

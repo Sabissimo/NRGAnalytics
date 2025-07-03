@@ -1,7 +1,7 @@
 РегистрНакопленияПродажиPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрНакопленияПродажи-*.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияПродажи-*.qvd]
 (qvd);
 
 MapПоследняяПродажаКонтрагента:

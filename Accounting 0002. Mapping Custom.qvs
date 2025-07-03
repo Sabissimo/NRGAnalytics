@@ -12,7 +12,7 @@ true, კი
 ПланСчетовУправленческийPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПланСчетовУправленческий.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПланСчетовУправленческий.qvd]
 (qvd);
 
 MapПланСчетовУправленческий:
@@ -82,5 +82,5 @@ Mapping LOAD
 	ApplyMap('MapБулево',[ფინანსური შედეგის გაანგარიშება],'არა') AS [ფინანსური შედეგის გაანგარიშება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ДокументЗакрытиеМесяца.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументЗакрытиеМесяца.qvd]
 (qvd);

@@ -15,13 +15,13 @@ Mapping LOAD
     [Наименование];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПланВидовХарактеристикДополнительныеРеквизитыИСведения.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПланВидовХарактеристикДополнительныеРеквизитыИСведения.qvd]
 (qvd);
 
 СправочникКонтрагентыДополнительныеРеквизитыPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКонтрагентыДополнительныеРеквизиты.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагентыДополнительныеРеквизиты.qvd]
 (qvd);
 
 MapСправочникКонтрагентыДополнительныеРеквизитыInternal: 

@@ -7,7 +7,7 @@ LOAD * Inline [
 РегистрНакопленияЗапасыPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрНакопленияЗапасы-*.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияЗапасы-*.qvd]
 (qvd);
 
 РегистрНакопленияЗапасы:
@@ -92,5 +92,5 @@ LOAD
 	ApplyMap('MapСправочникВидыНоменклатур',[ნომენკლატურის სახეობა],'') AS [ნომენკლატურის სახეობა (ნომენკლატურა,ცნობარი)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникНоменклатура.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникНоменклатура.qvd]
 (qvd);

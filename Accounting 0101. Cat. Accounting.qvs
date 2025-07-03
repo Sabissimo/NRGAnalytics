@@ -1,7 +1,7 @@
 ПланСчетовУправленческийPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПланСчетовУправленческий.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПланСчетовУправленческий.qvd]
 (qvd);
 
 ПланСчетовУправленческий:
@@ -40,7 +40,7 @@ LOAD
 	[რიგითობა] & '. ' & [Наименование] AS [საბალანსო ანგარიშის სახეობა (ბალანსის ანგარიშების სახეობები,ცნობარი)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыСчетовБаланса.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникВидыСчетовБаланса.qvd]
 (qvd);
 
 СправочникВидыСчетовPL:
@@ -60,7 +60,7 @@ LOAD
 	[რიგითობა] & '. ' & [Наименование] AS [PL სახეობა (ბალანსის ანგარიშების სახეობები,ცნობარი)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыСчетовPL.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникВидыСчетовPL.qvd]
 (qvd);
 
 

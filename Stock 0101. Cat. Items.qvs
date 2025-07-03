@@ -29,5 +29,5 @@ LOAD
 	[მეტრაჟის ზედა ზღვარი] AS [მეტრაჟის ზედა ზღვარი (ნომენკლატურა)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникНоменклатура.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникНоменклатура.qvd]
 (qvd);

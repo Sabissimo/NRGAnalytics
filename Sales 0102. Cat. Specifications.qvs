@@ -1,7 +1,7 @@
 СправочникСпецификацииTemp:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСпецификации.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСпецификации.qvd]
 (qvd);
 
 
@@ -35,7 +35,7 @@ drop table СправочникСпецификацииTemp;
 СправочникСпецификацииСоставTemp:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСпецификацииСостав.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСпецификацииСостав.qvd]
 (qvd);
 
 СправочникСпецификацииСостав:

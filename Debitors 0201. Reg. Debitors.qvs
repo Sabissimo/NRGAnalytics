@@ -3,7 +3,7 @@ Let vNow = Floor(now());
 РегистрНакопленияРасчетыСПокупателямиTemp:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрНакопленияРасчетыСПокупателями-*.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияРасчетыСПокупателями-*.qvd]
 (qvd);
 
 РегистрНакопленияРасчетыСПокупателямиPre:

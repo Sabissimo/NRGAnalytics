@@ -8,7 +8,7 @@ LOAD
 	[ეს არის ჯგუფი] AS [ეს არის ჯგუფი (გაყიდვები)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКонтрагенты.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
 (qvd);
 
 СправочникКонтрагентыИерархия:

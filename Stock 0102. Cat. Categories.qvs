@@ -1,7 +1,7 @@
 СправочникКатегорииНоменклатурыPre:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
 (qvd);
 
 СправочникКатегорииНоменклатуры:

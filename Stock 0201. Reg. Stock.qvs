@@ -9,7 +9,7 @@ LOAD * Inline [
 РегистрНакопленияЗапасыTemp:
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_РегистрНакопленияЗапасы-*.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияЗапасы-*.qvd]
 (qvd);
 
 РегистрНакопленияЗапасыPre:

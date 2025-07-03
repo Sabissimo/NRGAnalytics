@@ -4,7 +4,7 @@ Mapping LOAD
     [(არ გამოიყენება)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникОрганизации.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникОрганизации.qvd]
 (qvd);
 
 MapПеречислениеТипыСчетов:
@@ -13,5 +13,5 @@ Mapping LOAD
     Value;
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыСчетов.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыСчетов.qvd]
 (qvd);

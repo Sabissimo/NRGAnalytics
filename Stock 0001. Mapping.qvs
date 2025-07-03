@@ -4,7 +4,7 @@ Mapping LOAD
     [(არ გამოიყენება)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникОрганизации.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникОрганизации.qvd]
 (qvd);
 
 MapСправочникКатегорииНоменклатуры:
@@ -13,7 +13,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКатегорииНоменклатуры.qvd]
 (qvd);
 
 MapПеречислениеТипыСчетов:
@@ -22,7 +22,7 @@ Mapping LOAD
     Value;
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_ПеречислениеТипыСчетов.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыСчетов.qvd]
 (qvd);
 
 MapСправочникСтруктурныеЕдиницы:
@@ -31,7 +31,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
 (qvd);
 
 MapСправочникХарактеристикиНоменклатуры:
@@ -40,7 +40,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникХарактеристикиНоменклатуры.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникХарактеристикиНоменклатуры.qvd]
 (qvd);
 
 MapСправочникПартииНоменклатуры:
@@ -49,7 +49,7 @@ Mapping LOAD
     [დასახელება];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникПартииНоменклатуры.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникПартииНоменклатуры.qvd]
 (qvd);
 
 MapСправочникВидыНоменклатур:
@@ -58,7 +58,7 @@ Mapping LOAD
     [Наименование];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникВидыНоменклатур.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникВидыНоменклатур.qvd]
 (qvd);
 
 MapСправочникТипыНоменклатуры:
@@ -67,7 +67,7 @@ Mapping LOAD
     [Наименование];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникТипыНоменклатуры.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникТипыНоменклатуры.qvd]
 (qvd);
 
 MapСправочникСправочники_НРГ:
@@ -76,7 +76,7 @@ Mapping LOAD
     [Наименование];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникСправочники_НРГ.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСправочники_НРГ.qvd]
 (qvd);
 
 MapСправочникГруппыКабелей:
@@ -85,7 +85,7 @@ Mapping LOAD
     [Наименование];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникГруппыКабелей.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникГруппыКабелей.qvd]
 (qvd);
 
 MapСправочникМатериалыМембраны:
@@ -94,7 +94,7 @@ Mapping LOAD
     [Наименование];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникМатериалыМембраны.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникМатериалыМембраны.qvd]
 (qvd);
 
 MapСправочникКлассыПроводника:
@@ -103,7 +103,7 @@ Mapping LOAD
     [Наименование];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКлассыПроводника.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКлассыПроводника.qvd]
 (qvd);
 
 MapСправочникКонтрагенты:
@@ -112,5 +112,5 @@ Mapping LOAD
     [(არ გამოიყენება)];
 LOAD
     *
-FROM [lib://$(vSpace):DataFiles/Elvare_$(vPrefix)_СправочникКонтрагенты.qvd]
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
 (qvd);
