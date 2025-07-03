@@ -7,11 +7,40 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникОрганизации.qvd]
 (qvd);
 
-MapСправочникКонтрагенты:
+MapСправочникСотрудники:
 Mapping LOAD
     [მინიშნება],
-    [(არ გამოიყენება)];
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСотрудники.qvd]
+(qvd);
+
+СправочникКонтрагентыPre:
 LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
+(qvd);
+
+MapСправочникКонтрагенты:
+Mapping LOAD
+    [მინიშნება],
+    [(არ გამოიყენება)]
+Resident СправочникКонтрагентыPre;
+
+MapСправочникКонтрагентыОтветственныйМенеджер:
+Mapping LOAD
+    [მინიშნება],
+    [პასუხისმგებელი მენეჯერი]
+Resident СправочникКонтрагентыPre;
+
+Drop Table СправочникКонтрагентыPre;
+
+MapПеречислениеТипыЗадолженностей:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыЗадолженностей.qvd]
 (qvd);

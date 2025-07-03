@@ -1,15 +1,28 @@
 BridgeTableOrgDateNonDistinct:
 Load distinct
-    [SDDate] as [Date (BridgeTableOrgDate)],
+    [SalesDate] as [Date (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (გაყიდვები)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
-	[%lnk_ორგანიზაცია (გაყიდვები)] & '|' & SDDate as [ორგანიზაცია_პერიოდი],
-    [SDDate] & '|' & 0 as [DateForConnect]
+	[%lnk_კონტრაგენტი (გაყიდვები)] as [%lnk_კონტრაგენტი (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (გაყიდვები)] & '|' & [%lnk_კონტრაგენტი (გაყიდვები)] & '|' & SalesDate & '|' & [ნაშთია (გაყიდვები)] as [ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია],
+    [SalesDate] & '|' & [ნაშთია (გაყიდვები)] as [DateForConnect]
 Resident РегистрНакопленияПродажи;
+
+BridgeTableOrgDateNonDistinct:
+Load distinct
+    [DebitorsDate] as [Date (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_კონტრაგენტი (ანგარიშსწორებები მყიდველებთან)] as [%lnk_კონტრაგენტი (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან)] & '|' & [%lnk_კონტრაგენტი (ანგარიშსწორებები მყიდველებთან)] & '|' & DebitorsDate & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან)] as [ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია],
+    [DebitorsDate] & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან)] as [DateForConnect]
+Resident РегистрНакопленияРасчетыСПокупателями;
 
 BridgeTableOrgDate:
 Load distinct
     *,
-    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია (ფილტრი)]
+    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია],
+    ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыInternal',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],'არა') AS [Internal (კონტრაგენტები)],
+	ApplyMap('MapСправочникСотрудники',ApplyMap('MapСправочникКонтрагентыОтветственныйМенеджер',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()),Null()) AS [პასუხისმგებელი მენეჯერი (კონტრაგენტები)],
+	[%lnk_კონტრაგენტი (BridgeTableOrgDate)] AS [%lnk_კონტრაგენტი]
 Resident BridgeTableOrgDateNonDistinct;
 
 Drop Table BridgeTableOrgDateNonDistinct;

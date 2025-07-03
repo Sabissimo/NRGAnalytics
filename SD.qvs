@@ -10,6 +10,9 @@ $(include=[lib://$(vSpace):DataFiles/SD 0101. Cat. Contractors.qvs]);
 //Reg. Sales
 $(include=[lib://$(vSpace):DataFiles/SD 0201. Reg. Sales.qvs]);
 
+//Reg. Debitors
+$(include=[lib://$(vSpace):DataFiles/SD 0202. Reg. Debitors.qvs]);
+
 //Bridge
 $(include=[lib://$(vSpace):DataFiles/SD 0301. Bridge.qvs]);
 

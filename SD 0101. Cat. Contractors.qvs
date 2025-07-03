@@ -2,7 +2,7 @@ LIB CONNECT TO '$(vSpace):Google_Drive_&_Spreadsheets - george.sabanadze@doctra.
 
 СправочникКонтрагенты:
 LOAD
-	[მინიშნება] AS [%lnk_კონტრაგენტი (გაყიდვები)], //Type: СправочникВидыСчетовБаланса,
+	[მინიშნება] AS [%lnk_კონტრაგენტი], //Type: СправочникВидыСчетовБаланса,
 	[ჯგუფი] AS [%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)], //Type: СправочникВидыСчетовБаланса,
 	[(არ გამოიყენება)] AS [კონტრაგენტი (გაყიდვები)], //Type: СправочникВидыСчетовБаланса,
 	[ეს არის ჯგუფი] AS [ეს არის ჯგუფი (გაყიდვები)];
@@ -13,7 +13,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 
 СправочникКонтрагентыИерархия:
 Hierarchy(
-	[%lnk_კონტრაგენტი (გაყიდვები)], 
+	[%lnk_კონტრაგენტი], 
 	[%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)], 
 	[კონტრაგენტი (გაყიდვები)], 
 	[კონტრაგენტის ჯგუფი (გაყიდვები)], 
@@ -29,20 +29,20 @@ Resident СправочникКонтрагенты;
 СправочникКонтрагентыОбратнаяИерархия:
 HierarchyBelongsTo
 (
-    [%lnk_კონტრაგენტი (გაყიდვები)],
+    [%lnk_კონტრაგენტი],
     ANCESTOR_ID,
     [კონტრაგენტი (ბიუჯეტისთვის)],         // store ancestor id
     '%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)',
     'კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)'
 )
 LOAD
-    [%lnk_კონტრაგენტი (გაყიდვები)] as [%lnk_კონტრაგენტი (გაყიდვები)],
+    [%lnk_კონტრაგენტი] as [%lnk_კონტრაგენტი],
     [%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)] as ANCESTOR_ID,
     [კონტრაგენტი (გაყიდვები)] as [კონტრაგენტი (ბიუჯეტისთვის)]
 RESIDENT СправочникКонтрагенты;
 
 SalesAccess:
-LOAD 
+LOAD Distinct
 	Role as [Sales Access Role],
 	Upper(Email) as [Sales Access Email], 
 	Group as [Sales Access Group];
@@ -69,7 +69,7 @@ NOCONCATENATE
 LOAD DISTINCT
 	[Sales Access Role],
     [Sales Access Email],
-    [%lnk_კონტრაგენტი (გაყიდვები)]                    // descendant the user may see
+    [%lnk_კონტრაგენტი]                    // descendant the user may see
 RESIDENT СправочникКонтрагентыОбратнаяИерархия
 WHERE Len([Sales Access Email]) and [Sales Access Role] = 'USER'; 
 
@@ -82,7 +82,7 @@ WHERE [Sales Access Role] = 'ADMIN';
 
 Left Join(SalesAccessAdmin)
 Load 
-	[%lnk_კონტრაგენტი (გაყიდვები)]
+	[%lnk_კონტრაგენტი]
 Resident СправочникКонтрагенты;
 
 
@@ -91,14 +91,14 @@ SA:
 LOAD
     [Sales Access Role] AS ACCESS,
     [Sales Access Email] AS [USER.EMAIL],
-    [%lnk_კონტრაგენტი (გაყიდვები)]
+    [%lnk_კონტრაგენტი]
 RESIDENT UserDescendants;
 
 Concatenate(SA)
 LOAD
 	[Sales Access Role] AS ACCESS,
     [Sales Access Email] AS [USER.EMAIL],
-    [%lnk_კონტრაგენტი (გაყიდვები)]
+    [%lnk_კონტრაგენტი]
 RESIDENT SalesAccessAdmin;
 
 SECTION APPLICATION; 
@@ -120,14 +120,14 @@ drop table SalesAccessAdmin;
 СправочникКонтрагентыОбратнаяИерархия:
 HierarchyBelongsTo
 (
-    [%lnk_კონტრაგენტი (გაყიდვები)],
+    [%lnk_კონტრაგენტი],
     ANCESTOR_ID,
     [კონტრაგენტი (ბიუჯეტისთვის)],         // store ancestor id
     '%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)',
     'კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)'
 )
 LOAD
-    [%lnk_კონტრაგენტი (გაყიდვები)] as [%lnk_კონტრაგენტი (გაყიდვები)],
+    [%lnk_კონტრაგენტი] as [%lnk_კონტრაგენტი],
     [%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)] as ANCESTOR_ID,
     [კონტრაგენტი (გაყიდვები)] as [კონტრაგენტი (ბიუჯეტისთვის)]
 RESIDENT СправочникКонтрагенты
@@ -173,3 +173,27 @@ and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
 drop table PlanFromSheets;
 
 //exit script;
+
+
+СправочникДоговорыКонтрагентов:
+LOAD
+	[მინიშნება] AS [%lnk_ხელშეკრულება (ანგარიშსწორებები მყიდველებთან)], //Type: СправочникДоговорыКонтрагентов,
+	[მყიდველის გადახდის ვადა] AS [მყიდველის გადახდის ვადა (ხელშეკრულებები,ცნობარი)],
+	[ხელშეკრულების №] AS [ხელშეკრულების № (ხელშეკრულებები,ცნობარი)],
+	// [ხელშეკრულების ტიპი] AS [%lnk_ხელშეკრულების ტიპი (ხელშეკრულებები,ცნობარი)], //Type: ПеречислениеВидыДоговоров,
+	// ApplyMap('MapПеречислениеВидыДоговоров',[ხელშეკრულების ტიპი],Null()) AS [ხელშეკრულების ტიპი (ხელშეკრულებები,ცნობარი)],
+	[კოდი] AS [კოდი (ხელშეკრულებები,ცნობარი)],
+	ApplyMap('MapЛимитыКонтрагентов',[მინიშნება],Null()) AS [საკრედიტო ლიმიტი (ხელშეკრულებები,ცნობარი)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникДоговорыКонтрагентов.qvd]
+(qvd);
+
+СправочникДоговорыКонтрагентовПрисоединенныеФайлы:
+LOAD
+	[ფაილის მფლობელი] AS [%lnk_ხელშეკრულება (ანგარიშსწორებები მყიდველებთან)], //Type: СправочникДоговорыКонтрагентов,
+	[Наименование] AS [მიმაგრებული ფაილი (მიერთებული ფაილები (კონტრაგენტისშეთანხმებები),ცნობარი)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникДоговорыКонтрагентовПрисоединенныеФайлы.qvd]
+(qvd);
