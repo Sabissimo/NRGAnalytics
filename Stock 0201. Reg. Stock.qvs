@@ -120,7 +120,7 @@ Load
 Resident Интервалы;
 
 let vMinDate = peek('MinDate',0,'ДатыНачалаИОкончанияИнтервалов') ;
-let vMaxDate = peek('MaxDate',0,'ДатыНачалаИОкончанияИнтервалов') ;
+let vMaxDate = NUM($(vNow));//peek('MaxDate',0,'ДатыНачалаИОкончанияИнтервалов') ;
 
 drop table ДатыНачалаИОкончанияИнтервалов;
 

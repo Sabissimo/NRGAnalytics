@@ -28,3 +28,26 @@ where
 	floor(AddYears([Период],-2000)) <= $(vNow);
 
 Drop Table РегистрНакопленияПродажиPre;
+
+
+LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
+
+СезонностьPre:
+SELECT [თვე],
+	[სეზონურობა],
+	[ზრდა],
+	[კოეფიციენტი]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_500135826',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+Сезонность:
+LOAD [თვე] as [MONTH_NUM Stock], 
+	[სეზონურობა] as [სეზონურობის სეზონურობა]
+Resident СезонностьPre;
+
+Drop Table СезонностьPre;
