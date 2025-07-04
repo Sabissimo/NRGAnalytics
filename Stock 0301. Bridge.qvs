@@ -19,8 +19,8 @@ Resident РегистрНакопленияПродажи;
 BridgeTableOrgItemDate:
 Load distinct
     *,
-    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgItemDate)],Null()) AS [ორგანიზაცია (ფილტრი)],
-    ApplyMap('MapСправочникНоменклатура',[%lnk_ნომენკლატურა (BridgeTableOrgItemDate)],Null()) AS [ნომენკლატურა (ფილტრი)]
+    ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgItemDate)],Null()) AS [ორგანიზაცია],
+    ApplyMap('MapСправочникНоменклатура',[%lnk_ნომენკლატურა (BridgeTableOrgItemDate)],Null()) AS [ნომენკლატურა]
 Resident BridgeTableOrgItemDateNonDistinct;
 
 Drop Table BridgeTableOrgItemDateNonDistinct;

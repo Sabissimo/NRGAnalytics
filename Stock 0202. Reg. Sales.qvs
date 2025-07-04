@@ -29,13 +29,9 @@ where
 
 Drop Table РегистрНакопленияПродажиPre;
 
-
-LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
-
 СезонностьPre:
 SELECT [თვე],
 	[სეზონურობა],
-	[ზრდა],
 	[კოეფიციენტი]
 FROM GetWorksheetV2
 WITH PROPERTIES (
@@ -47,7 +43,14 @@ skipRows=''
 
 Сезонность:
 LOAD [თვე] as [MONTH_NUM Stock], 
-	[სეზონურობა] as [სეზონურობის სეზონურობა]
+	[სეზონურობა] as [სეზონურობა]
 Resident СезонностьPre;
+
+КоэффициентСезонности:
+LOAD 
+	[კოეფიციენტი] as [სეზონურობის კოეფიციენტი]
+Resident СезонностьPre
+WHERE
+	[თვე] = num(month($(vNow)+7));
 
 Drop Table СезонностьPre;

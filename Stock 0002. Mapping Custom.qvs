@@ -10,7 +10,7 @@ true, კი
 ]; 
 
 
-LIB CONNECT TO '$(vSpace):Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
+LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
 
 MapПланВидовХарактеристикДополнительныеРеквизитыИСведения:
 Mapping LOAD
