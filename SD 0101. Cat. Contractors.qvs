@@ -146,7 +146,7 @@ drop table СправочникКонтрагенты;
 
 PlanFromSheets:
 Crosstable(Date, Value, 1)
-Replace LOAD *;
+LOAD *;
 
 SELECT 
 	*
@@ -159,13 +159,13 @@ skipRows=''
 );
 
 ПланПродажПоГруппам:
-Replace Load
-	[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)2],
-    [Date] as [დაგეგმვის პერიოდი2],
-	[Value] as [თანხა (გეგმა)2]
+Load
+	[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    [Date] as [დაგეგმვის პერიოდი],
+	[Value] as [თანხა (გეგმა)]
 Resident PlanFromSheets
-// where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
-// and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
+and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
 ;
 
 drop table PlanFromSheets;
