@@ -144,7 +144,7 @@ drop table СправочникКонтрагенты;
 
 
 
-PlanFromSheets:
+Replace PlanFromSheets:
 Crosstable(Date, Value, 1)
 LOAD *;
 
