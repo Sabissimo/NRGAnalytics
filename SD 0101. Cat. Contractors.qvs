@@ -158,7 +158,7 @@ generatedNumberedColumns='false',
 skipRows=''
 );
 
-ПланПродажПоГруппам:
+Replace ПланПродажПоГруппам:
 Load
 	[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     [Date] as [დაგეგმვის პერიოდი],
