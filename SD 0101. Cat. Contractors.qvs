@@ -159,7 +159,9 @@ skipRows=''
 Load
 	[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     [Date] as [დაგეგმვის პერიოდი],
-	[Value] as [თანხა (გეგმა)]
+	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
+    	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
+    	1)*[Value] as [თანხა (გეგმა)]
 Resident PlanFromSheets
 where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
 and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
