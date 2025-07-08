@@ -141,9 +141,6 @@ drop table СправочникКонтрагенты;
 
 
 
-
-
-
 PlanFromSheets:
 Crosstable(Date, Value, 1)
 LOAD *;
