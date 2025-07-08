@@ -5,7 +5,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНак�
 (qvd);
 
 // MapПоследняяПродажаКонтрагента:
-// Mapping
+// Mapping Replace 
 // LOAD
 // 	[კონტრაგენტი],
 //     if(max(floor(AddYears([Период],-2000))) >= $(vNow)-14,'აქტიური',
