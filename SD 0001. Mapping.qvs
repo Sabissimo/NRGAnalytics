@@ -17,7 +17,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 СправочникКонтрагентыPre:
-LOAD
+Replace LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
 (qvd);
