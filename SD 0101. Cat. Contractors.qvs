@@ -144,9 +144,9 @@ drop table СправочникКонтрагенты;
 
 
 
-Replace PlanFromSheets:
+PlanFromSheets:
 Crosstable(Date, Value, 1)
-LOAD *;
+Replace LOAD *;
 
 SELECT 
 	*
@@ -158,8 +158,8 @@ generatedNumberedColumns='false',
 skipRows=''
 );
 
-Replace ПланПродажПоГруппам:
-Load
+ПланПродажПоГруппам:
+Replace Load
 	[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     [Date] as [დაგეგმვის პერიოდი],
 	[Value] as [თანხა (გეგმა)]
