@@ -115,7 +115,7 @@ drop table SalesAccessAdmin;
 
 
 
-СправочникКонтрагентыОбратнаяИерархия:
+СправочникКонтрагентыОбратнаяИерархияПред:
 HierarchyBelongsTo
 (
     [%lnk_კონტრაგენტი],
@@ -139,6 +139,30 @@ RESIDENT СправочникКонтрагенты
 
 drop table СправочникКонтрагенты;
 
+TemporaryCalendar: 
+LOAD Distinct
+	 MonthStart(YearStart($(vNow)) + recno() - 1) AS TempDate 
+AUTOGENERATE YearEnd($(vNow)) - YearStart($(vNow)) + 1 ;
+
+Inner Join (СправочникКонтрагентыОбратнаяИерархияПред)
+Load * 
+Resident TemporaryCalendar;
+
+Drop Table TemporaryCalendar;
+
+СправочникКонтрагентыОбратнаяИерархия:
+Load 
+	[კონტრაგენტი (ბიუჯეტისთვის)],
+    [%lnk_კონტრაგენტი],
+    [%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    Date([TempDate],'YYYY-MM-DD'),
+    [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)] & '|' & Date([TempDate],'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+    [%lnk_კონტრაგენტი] & '|' & Date([TempDate],'YYYY-MM-DD') as [%lnk_კონტრაგენტი_დაგეგმვის პერიოდი]
+Resident СправочникКонтрагентыОбратнаяИерархияПред;
+
+Drop Table СправочникКонтрагентыОбратнаяИерархияПред;
+
 
 
 PlanFromSheets:
@@ -157,8 +181,9 @@ skipRows=''
 
 ПланПродажПоГруппам:
 Load
-	[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
-    [Date] as [დაგეგმვის პერიოდი],
+	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    //[Date] as [დაგეგმვის პერიოდი],
+	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
 	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
     	1)*[Value] as [თანხა (გეგმა)]
