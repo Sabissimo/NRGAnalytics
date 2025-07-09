@@ -7,6 +7,15 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникОрганизации.qvd]
 (qvd);
 
+MapСправочникПользователи:
+Mapping LOAD
+    [Ссылка],
+    [სრული სახელი];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникПользователи.qvd]
+(qvd);
+
 MapСправочникСотрудники:
 Mapping LOAD
     [მინიშნება],
@@ -32,6 +41,12 @@ MapСправочникКонтрагентыОтветственныйМене�
 Mapping LOAD
     [მინიშნება],
     [პასუხისმგებელი მენეჯერი]
+Resident СправочникКонтрагентыPre;
+
+MapСправочникКонтрагентыОтветственныйПользователь:
+Mapping LOAD
+    [მინიშნება],
+    [პასუხისმგებელი მომხმარებელი]
 Resident СправочникКонтрагентыPre;
 
 Drop Table СправочникКонтрагентыPre;
