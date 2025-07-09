@@ -1,5 +1,5 @@
 MapСправочникОрганизации:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [(არ გამოიყენება)];
 LOAD
@@ -8,7 +8,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникПользователи:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [სრული სახელი];
 LOAD
@@ -17,7 +17,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникСотрудники:
-Mapping LOAD
+Mapping Replace LOAD
     [მინიშნება],
     [დასახელება];
 LOAD
@@ -25,34 +25,8 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСотрудники.qvd]
 (qvd);
 
-СправочникКонтрагентыPre:
-LOAD
-    *
-FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
-(qvd);
-
-MapСправочникКонтрагенты:
-Mapping LOAD
-    [მინიშნება],
-    [(არ გამოიყენება)]
-Resident СправочникКонтрагентыPre;
-
-MapСправочникКонтрагентыОтветственныйМенеджер:
-Mapping LOAD
-    [მინიშნება],
-    [პასუხისმგებელი მენეჯერი]
-Resident СправочникКонтрагентыPre;
-
-MapСправочникКонтрагентыОтветственныйПользователь:
-Mapping LOAD
-    [მინიშნება],
-    [პასუხისმგებელი მომხმარებელი]
-Resident СправочникКонтрагентыPre;
-
-Drop Table СправочникКонтрагентыPre;
-
 MapПеречислениеТипыЗадолженностей:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     Value;
 LOAD
@@ -70,7 +44,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Перечислен�
 
 
 MapСправочникКлассификаторЕдиницИзмерения:
-Mapping LOAD
+Mapping Replace LOAD
     [მინიშნება],
     [მოკლე დასახელება];
 LOAD
@@ -79,7 +53,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapПеречислениеСпособыПополненияЗапасов:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     Value;
 LOAD
@@ -88,7 +62,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Перечислен�
 (qvd);
 
 MapСправочникТипыПроводника:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -97,7 +71,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникГруппыКабелей:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -106,7 +80,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникВидыНоменклатур:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -115,7 +89,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникСправочники_НРГ:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -124,7 +98,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapПеречислениеТипыНоменклатуры:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     Value;
 LOAD
@@ -133,7 +107,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Перечислен�
 (qvd);
 
 MapСправочникКлассыПроводника:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -142,7 +116,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникМатериалыМембраны:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -151,7 +125,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникЦветы:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -160,7 +134,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникНоменклатурнаяМаркировка:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -169,7 +143,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникТипыУпаковки:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -178,7 +152,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникЭтапыПроизводства:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -187,7 +161,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникТипыНоменклатуры:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -196,7 +170,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapСправочникКатегорииНоменклатуры:
-Mapping LOAD
+Mapping Replace LOAD
     [მინიშნება],
     [დასახელება];
 LOAD
@@ -205,7 +179,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 MapПеречислениеДаНет:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     Value;
 LOAD

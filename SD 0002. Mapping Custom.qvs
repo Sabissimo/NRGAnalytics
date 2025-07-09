@@ -1,7 +1,7 @@
 LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
 
 MapБулево:
-Mapping 
+Mapping Replace 
 Load * Inline 
 [
 lnk, YesNo
@@ -11,8 +11,34 @@ false, არა
 true, კი
 ]; 
 
+СправочникКонтрагентыPre:
+Replace LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
+(qvd);
+
+MapСправочникКонтрагенты:
+Mapping Replace LOAD
+    [მინიშნება],
+    [(არ გამოიყენება)]
+Resident СправочникКонтрагентыPre;
+
+MapСправочникКонтрагентыОтветственныйМенеджер:
+Mapping Replace LOAD
+    [მინიშნება],
+    [პასუხისმგებელი მენეჯერი]
+Resident СправочникКонтрагентыPre;
+
+MapСправочникКонтрагентыОтветственныйПользователь:
+Mapping Replace LOAD
+    [მინიშნება],
+    [პასუხისმგებელი მომხმარებელი]
+Resident СправочникКонтрагентыPre;
+
+Drop Table СправочникКонтрагентыPre;
+
 MapПланВидовХарактеристикДополнительныеРеквизитыИСведения:
-Mapping LOAD
+Mapping Replace LOAD
     [Ссылка],
     [Наименование];
 LOAD
@@ -21,13 +47,13 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПланВидовХ�
 (qvd);
 
 СправочникКонтрагентыДополнительныеРеквизитыPre:
-LOAD
+Replace LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагентыДополнительныеРеквизиты.qvd]
 (qvd);
 
 MapСправочникКонтрагентыДополнительныеРеквизитыInternal: 
-Mapping LOAD
+Mapping Replace LOAD
 	[მინიშნება],
     ApplyMap('MapБулево',[მნიშვნელობა],'არა') as [მნიშვნელობა]
 Resident СправочникКонтрагентыДополнительныеРеквизитыPre
@@ -35,7 +61,7 @@ Where
 	ApplyMap('MapПланВидовХарактеристикДополнительныеРеквизитыИСведения',[თვისება],Null()) = 'Internal (2 ერთჯერადი)';
 
 MapСправочникКонтрагентыДополнительныеРеквизитыМенеджерПродаж: 
-Mapping LOAD
+Mapping Replace LOAD
 	[მინიშნება],
     ApplyMap('MapСправочникПользователи',[მნიშვნელობა],null()) as [მნიშვნელობა]
 Resident СправочникКонтрагентыДополнительныеРеквизитыPre
@@ -45,13 +71,13 @@ Where
 drop table СправочникКонтрагентыДополнительныеРеквизитыPre;
 
 СправочникДоговорыКонтрагентовPre:
-LOAD
+Replace LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникДоговорыКонтрагентов.qvd]
 (qvd);
 
 MapСрокОплатыПокупателя:
-Mapping LOAD
+Mapping Replace LOAD
     [მინიშნება],
     [მყიდველის გადახდის ვადა]
 Resident СправочникДоговорыКонтрагентовPre;
@@ -59,25 +85,25 @@ Resident СправочникДоговорыКонтрагентовPre;
 Drop Table СправочникДоговорыКонтрагентовPre;
 
 ДокументРасходнаяНакладнаяPre:
-LOAD
+Replace LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументРасходнаяНакладная-*.qvd]
 (qvd);
 
 MapДокументРасчетыСПокупателем:
-Mapping LOAD
+Mapping Replace LOAD
 	[მინიშნება] AS [%lnk_მინიშნება], //Type: ДокументРасходнаяНакладная,
 	Date(DayStart(AddYears([თარიღი],-2000)),'MM/DD/YYYY') AS [თარიღი]
 Resident ДокументРасходнаяНакладнаяPre;
 
 MapТипЗадолженностиДокумента:
-Mapping LOAD
+Mapping Replace LOAD
 	[მინიშნება] AS [%lnk_მინიშნება (გასავლის ზედდებული,დოკუმენტი)], //Type: ДокументРасходнаяНакладная,
 	ApplyMap('MapПеречислениеТипыЗадолженностей',[დავალიანების ტიპი],'არ არის შევსებული') AS [დავალიანების ტიპი (გასავლის ზედდებული,დოკუმენტი)]
 Resident ДокументРасходнаяНакладнаяPre;
 
 MapДокументРасходнаяНакладнаяСклад:
-Mapping LOAD
+Mapping Replace LOAD
 	[მინიშნება],
 	[საწყობი]
 Resident ДокументРасходнаяНакладнаяPre;
@@ -85,13 +111,13 @@ Resident ДокументРасходнаяНакладнаяPre;
 Drop Table ДокументРасходнаяНакладнаяPre;
 
 ДокументПередачаВАPre:
-LOAD
+Replace LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументПередачаВА-*.qvd]
 (qvd);
 
 MapДокументРасчетыСПокупателем:
-Mapping LOAD
+Mapping Replace LOAD
 	[მინიშნება] AS [%lnk_მინიშნება], //Type: ДокументПередачаВА,
 	Date(DayStart(AddYears([თარიღი],-2000)),'MM/DD/YYYY') AS [თარიღი]
 Resident ДокументПередачаВАPre;
@@ -99,13 +125,13 @@ Resident ДокументПередачаВАPre;
 Drop Table ДокументПередачаВАPre;
 
 РегистрСведенийЛимитыКонтрагентовСрезПоследнихPre:
-LOAD
+Replace LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийЛимитыКонтрагентовСрезПоследних-*.qvd]
 (qvd);
 
 MapЛимитыКонтрагентов:
-Mapping LOAD
+Mapping Replace LOAD
 	[ხელშეკრულება] AS [%lnk_ხელშეკრულება (საკრედიტო ლიმიტები,ინფ. რეგისტრი)], //Type: СправочникДоговорыКонтрагентов,
 	Sum([თანხა]) AS [თანხა (საკრედიტო ლიმიტები,ინფ. რეგისტრი)]	
 Resident РегистрСведенийЛимитыКонтрагентовСрезПоследнихPre
