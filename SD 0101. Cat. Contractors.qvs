@@ -9,7 +9,7 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
 (qvd);
 
-СправочникКонтрагентыИерархия:
+СправочникКонтрагентыИерархияPre:
 Hierarchy(
 	[%lnk_კონტრაგენტი], 
 	[%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)], 
@@ -24,7 +24,15 @@ Replace LOAD
     *
 Resident СправочникКонтрагенты;
 
-СправочникКонтрагентыОбратнаяИерархияPre:
+СправочникКонтрагентыИерархия:
+Replace Load 
+	*,
+	1 as [ტემპ2 (იერარქია კონტრაგენტები)]
+Resident СправочникКонтрагентыИерархияPre;
+
+Drop Table СправочникКонтрагентыИерархияPre;
+
+СправочникКонтрагентыОбратнаяИерархияPrePreJoinPre:
 HierarchyBelongsTo
 (
     [%lnk_კონტრაგენტი],
@@ -38,6 +46,14 @@ Replace LOAD
     [%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)] as ANCESTOR_ID,
     [კონტრაგენტი (გაყიდვები)] as [კონტრაგენტი (ბიუჯეტისთვის)]
 RESIDENT СправочникКонтрагенты;
+
+СправочникКонтрагентыОбратнаяИерархияPrePreJoin:
+Replace LOAD
+	*,
+	1 as [ტემპ3 (იერარქია კონტრაგენტები)]
+Resident СправочникКонтрагентыОбратнаяИерархияPrePreJoinPre;
+
+Drop Table СправочникКонтрагентыОбратнаяИерархияPrePreJoinPre;
 
 SalesAccess:
 Replace LOAD Distinct
@@ -55,12 +71,20 @@ generatedNumberedColumns='false',
 skipRows=''
 );
 
-INNER JOIN (СправочникКонтрагентыОбратнаяИерархияPre)          // add USER_EMAIL to the bridge
-Add LOAD
+INNER JOIN (СправочникКонтрагентыОбратнаяИерархияPrePreJoin)          // add USER_EMAIL to the bridge
+Replace LOAD
 	[Sales Access Role],
     [Sales Access Group]   AS [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     [Sales Access Email]
 RESIDENT SalesAccess;
+
+СправочникКонтрагентыОбратнаяИерархияPre:
+Replace Load 
+	*,
+    1 as [ტემპ1 (ბიუჯეტისთვის)]
+Resident СправочникКонтрагентыОбратнаяИерархияPrePreJoin;
+
+Drop Table СправочникКонтрагентыОбратнаяИерархияPrePreJoin;
 
 UserDescendants:
 NOCONCATENATE
@@ -71,17 +95,25 @@ Replace LOAD DISTINCT
 RESIDENT СправочникКонтрагентыОбратнаяИерархияPre
 WHERE Len([Sales Access Email]) and [Sales Access Role] = 'USER'; 
 
-SalesAccessAdmin:
+SalesAccessAdminPreJoin:
 Replace LOAD
 	[Sales Access Role],
     [Sales Access Email]
 RESIDENT SalesAccess
 WHERE [Sales Access Role] = 'ADMIN';
 
-Left Join(SalesAccessAdmin)
+Left Join(SalesAccessAdminPreJoin)
 Replace Load 
 	[%lnk_კონტრაგენტი]
 Resident СправочникКонтрагенты;
+
+SalesAccessAdmin:
+Replace Load 
+	*,
+    1 as [ტემპ1 (SalesAccess)]
+Resident SalesAccessAdminPreJoin;
+
+Drop Table SalesAccessAdminPreJoin;
 
 
 SECTION ACCESS;
@@ -115,7 +147,7 @@ drop table SalesAccessAdmin;
 
 
 
-СправочникКонтрагентыОбратнаяИерархияПред:
+СправочникКонтрагентыОбратнаяИерархияПредPreJoinPre:
 HierarchyBelongsTo
 (
     [%lnk_კონტრაგენტი],
@@ -133,6 +165,14 @@ RESIDENT СправочникКонтрагенты
 // 	match ([ეს არის ჯგუფი (გაყიდვები)],'00')
 ;
 
+СправочникКонтрагентыОбратнаяИерархияПредPreJoin:
+Replace LOAD
+	*,
+	1 as [ტემპ4 (იერარქია კონტრაგენტები)]
+Resident СправочникКонтрагентыОбратнаяИерархияПредPreJoinPre;
+
+Drop Table СправочникКонтрагентыОбратнаяИерархияПредPreJoinPre;
+
 
 
 
@@ -144,11 +184,19 @@ Replace LOAD Distinct
 	 MonthStart(YearStart($(vNow)) + recno() - 1) AS TempDate 
 AUTOGENERATE YearEnd($(vNow)) - YearStart($(vNow)) + 1 ;
 
-Inner Join (СправочникКонтрагентыОбратнаяИерархияПред)
-Add Load * 
+Inner Join (СправочникКонтрагентыОбратнаяИерархияПредPreJoin)
+Replace Load * 
 Resident TemporaryCalendar;
 
 Drop Table TemporaryCalendar;
+
+СправочникКонтрагентыОбратнаяИерархияПред:
+Replace Load 
+	*,
+	1 as [ტემპ1 (იერარქია კონტრაგენტები)]
+Resident СправочникКонтрагентыОбратнаяИерархияПредPreJoin;
+
+Drop Table СправочникКонтрагентыОбратнаяИерархияПредPreJoin;
 
 СправочникКонтрагентыОбратнаяИерархия:
 Replace Load 
