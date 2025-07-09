@@ -35,7 +35,7 @@ SELECT [თვე],
 	[კოეფიციენტი]
 FROM GetWorksheetV2
 WITH PROPERTIES (
-worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_500135826',
+worksheetKey='1-f15L80uaVKbMAD786Bp5NHDQlr7IqxFHhQoIBosNWA:_1475883086 ',
 gidOverride='',
 generatedNumberedColumns='false',
 skipRows=''
