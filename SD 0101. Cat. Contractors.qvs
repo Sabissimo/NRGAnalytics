@@ -1,5 +1,5 @@
 СправочникКонтрагенты:
-LOAD
+Replace LOAD
 	[მინიშნება] AS [%lnk_კონტრაგენტი], //Type: СправочникВидыСчетовБаланса,
 	[ჯგუფი] AS [%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)], //Type: СправочникВидыСчетовБаланса,
 	[(არ გამოიყენება)] AS [კონტრაგენტი (გაყიდვები)], //Type: СправочникВидыСчетовБаланса,
@@ -20,7 +20,7 @@ Hierarchy(
 	' > ', 
 	[კონტრაგენტის ჯგუფის დონე (გაყიდვები)]
 )
-LOAD
+Replace LOAD
     *
 Resident СправочникКонтрагенты;
 
@@ -33,14 +33,14 @@ HierarchyBelongsTo
     '%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)',
     'კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)'
 )
-LOAD
+Replace LOAD
     [%lnk_კონტრაგენტი] as [%lnk_კონტრაგენტი],
     [%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)] as ANCESTOR_ID,
     [კონტრაგენტი (გაყიდვები)] as [კონტრაგენტი (ბიუჯეტისთვის)]
 RESIDENT СправочникКонтрагенты;
 
 SalesAccess:
-LOAD Distinct
+Replace LOAD Distinct
 	Role as [Sales Access Role],
 	Upper(Email) as [Sales Access Email], 
 	Group as [Sales Access Group];
@@ -56,7 +56,7 @@ skipRows=''
 );
 
 INNER JOIN (СправочникКонтрагентыОбратнаяИерархия)          // add USER_EMAIL to the bridge
-LOAD
+Replace LOAD
 	[Sales Access Role],
     [Sales Access Group]   AS [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     [Sales Access Email]
@@ -64,7 +64,7 @@ RESIDENT SalesAccess;
 
 UserDescendants:
 NOCONCATENATE
-LOAD DISTINCT
+Replace LOAD DISTINCT
 	[Sales Access Role],
     [Sales Access Email],
     [%lnk_კონტრაგენტი]                    // descendant the user may see
@@ -72,28 +72,28 @@ RESIDENT СправочникКонтрагентыОбратнаяИерарх�
 WHERE Len([Sales Access Email]) and [Sales Access Role] = 'USER'; 
 
 SalesAccessAdmin:
-LOAD
+Replace LOAD
 	[Sales Access Role],
     [Sales Access Email]
 RESIDENT SalesAccess
 WHERE [Sales Access Role] = 'ADMIN';
 
 Left Join(SalesAccessAdmin)
-Load 
+Replace Load 
 	[%lnk_კონტრაგენტი]
 Resident СправочникКонтрагенты;
 
 
 SECTION ACCESS;
 SA:
-LOAD
+Replace LOAD
     [Sales Access Role] AS ACCESS,
     [Sales Access Email] AS [USER.EMAIL],
     [%lnk_კონტრაგენტი]
 RESIDENT UserDescendants;
 
 Concatenate(SA)
-LOAD
+Replace LOAD
 	[Sales Access Role] AS ACCESS,
     [Sales Access Email] AS [USER.EMAIL],
     [%lnk_კონტრაგენტი]
@@ -124,7 +124,7 @@ HierarchyBelongsTo
     '%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)',
     'კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)'
 )
-LOAD
+Replace LOAD
     [%lnk_კონტრაგენტი] as [%lnk_კონტრაგენტი],
     [%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)] as ANCESTOR_ID,
     [კონტრაგენტი (გაყიდვები)] as [კონტრაგენტი (ბიუჯეტისთვის)]
@@ -140,18 +140,18 @@ RESIDENT СправочникКонтрагенты
 drop table СправочникКонтрагенты;
 
 TemporaryCalendar: 
-LOAD Distinct
+Replace LOAD Distinct
 	 MonthStart(YearStart($(vNow)) + recno() - 1) AS TempDate 
 AUTOGENERATE YearEnd($(vNow)) - YearStart($(vNow)) + 1 ;
 
 Inner Join (СправочникКонтрагентыОбратнаяИерархияПред)
-Load * 
+Replace Load * 
 Resident TemporaryCalendar;
 
 Drop Table TemporaryCalendar;
 
 СправочникКонтрагентыОбратнаяИерархия:
-Load 
+Replace Load 
 	[კონტრაგენტი (ბიუჯეტისთვის)],
     [%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
@@ -165,7 +165,7 @@ Drop Table СправочникКонтрагентыОбратнаяИерар�
 
 
 СправочникДоговорыКонтрагентов:
-LOAD
+Replace LOAD
 	[მინიშნება] AS [%lnk_ხელშეკრულება (ანგარიშსწორებები მყიდველებთან)], //Type: СправочникДоговорыКонтрагентов,
 	[მყიდველის გადახდის ვადა] AS [მყიდველის გადახდის ვადა (ხელშეკრულებები,ცნობარი)],
 	[ხელშეკრულების №] AS [ხელშეკრულების № (ხელშეკრულებები,ცნობარი)],
@@ -179,7 +179,7 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 СправочникДоговорыКонтрагентовПрисоединенныеФайлы:
-LOAD
+Replace LOAD
 	[ფაილის მფლობელი] AS [%lnk_ხელშეკრულება (ანგარიშსწორებები მყიდველებთან)], //Type: СправочникДоговорыКонтрагентов,
 	[Наименование] AS [მიმაგრებული ფაილი (მიერთებული ფაილები (კონტრაგენტისშეთანხმებები),ცნობარი)];
 LOAD
