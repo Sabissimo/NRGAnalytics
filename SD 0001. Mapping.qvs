@@ -212,12 +212,3 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеДаНет.qvd]
 (qvd);
-
-MapДокументРасходнаяНакладнаяСклад:
-Mapping LOAD
-	[მინიშნება],
-	[საწყობი];
-LOAD
-    *
-FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументРасходнаяНакладная-*.qvd]
-(qvd);
