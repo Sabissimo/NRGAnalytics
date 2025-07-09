@@ -56,7 +56,7 @@ skipRows=''
 );
 
 INNER JOIN (СправочникКонтрагентыОбратнаяИерархияPre)          // add USER_EMAIL to the bridge
-Replace LOAD
+Add LOAD
 	[Sales Access Role],
     [Sales Access Group]   AS [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     [Sales Access Email]
@@ -145,7 +145,7 @@ Replace LOAD Distinct
 AUTOGENERATE YearEnd($(vNow)) - YearStart($(vNow)) + 1 ;
 
 Inner Join (СправочникКонтрагентыОбратнаяИерархияПред)
-Replace Load * 
+Add Load * 
 Resident TemporaryCalendar;
 
 Drop Table TemporaryCalendar;

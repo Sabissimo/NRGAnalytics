@@ -38,7 +38,7 @@ Replace LOAD DISTINCT
 RESIDENT TemporaryCalendar;
 
 JOIN (AsOfTemporaryCalendarTotal)
-Replace LOAD DISTINCT
+Add LOAD DISTINCT
     TempDate
 RESIDENT TemporaryCalendar;
 

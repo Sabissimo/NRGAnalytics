@@ -105,7 +105,7 @@ AutoGenerate ($(vMaxDate) - $(vMinDate)+1);
 
 
 Inner Join IntervalMatch ([ინტერვალის დღე])
-Replace Load Distinct 
+Add Load Distinct 
   [ინტერვალის დაწყების თარიღი],
   [ინტერვალის დასრულების თარიღი]
 Resident Интервалы;
