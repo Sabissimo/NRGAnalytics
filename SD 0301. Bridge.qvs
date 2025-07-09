@@ -1,5 +1,5 @@
 BridgeTableOrgDateNonDistinct:
-Load distinct
+Replace Load distinct
     [SalesDate] as [Date (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (გაყიდვები)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
 	[%lnk_კონტრაგენტი (გაყიდვები)] as [%lnk_კონტრაგენტი (BridgeTableOrgDate)],
@@ -8,7 +8,7 @@ Load distinct
 Resident РегистрНакопленияПродажи;
 
 BridgeTableOrgDateNonDistinct:
-Load distinct
+Replace Load distinct
     [DebitorsDate] as [Date (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
 	[%lnk_კონტრაგენტი (ანგარიშსწორებები მყიდველებთან)] as [%lnk_კონტრაგენტი (BridgeTableOrgDate)],
@@ -17,7 +17,7 @@ Load distinct
 Resident РегистрНакопленияРасчетыСПокупателями;
 
 BridgeTableOrgDate:
-Load distinct
+Replace Load distinct
     *,
     ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია],
     ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыInternal',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],'არა') AS [Internal (კონტრაგენტები)],

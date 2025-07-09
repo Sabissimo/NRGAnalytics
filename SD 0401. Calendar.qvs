@@ -1,5 +1,5 @@
 AllDatesSD:
-Load distinct
+Replace Load distinct
 	[Date (BridgeTableOrgDate)] as %lnk_SDDate
 Resident BridgeTableOrgDate;
 
@@ -9,7 +9,7 @@ Resident BridgeTableOrgDate;
 // Resident Бюджет;
 
 StartAndEndDates:
-Load
+Replace Load
 	MIN([%lnk_SDDate]) as MinDate,
     MAX([%lnk_SDDate]) as MaxDate
 Resident AllDatesSD;
@@ -28,22 +28,22 @@ drop tables StartAndEndDates;
 
 
 TemporaryCalendar: 
-LOAD 
+Replace LOAD 
 	 $(vMinDate) + recno() - 1 AS TempDate 
 AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 1);
 
 AsOfTemporaryCalendarTotal:
-LOAD DISTINCT
+Replace LOAD DISTINCT
     (TempDate) AS [As Of TempDate]
 RESIDENT TemporaryCalendar;
 
 JOIN (AsOfTemporaryCalendarTotal)
-LOAD DISTINCT
+Replace LOAD DISTINCT
     TempDate
 RESIDENT TemporaryCalendar;
 
 AsOfTemporaryCalendar:
-LOAD
+Replace LOAD
 	[As Of TempDate] as [TempDate],
     TempDate & '|' & 1 as [DateForConnect]
 RESIDENT AsOfTemporaryCalendarTotal
@@ -52,13 +52,13 @@ WHERE (TempDate) <= [As Of TempDate];
 DROP TABLE AsOfTemporaryCalendarTotal;
 
 AsOfTemporaryCalendar:
-LOAD
+Replace LOAD
 	TempDate as [TempDate],
     TempDate & '|' & 0 as [DateForConnect]
 RESIDENT TemporaryCalendar;
 
 SDCalendar:
-Load	
+Replace Load	
     [TempDate]  as [TempDate],
     date([TempDate]) as [Date SD],
     YEAR([TempDate])*100 + MONTH([TempDate]) as [ym SD],

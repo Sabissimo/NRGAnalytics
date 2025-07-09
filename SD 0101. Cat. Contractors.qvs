@@ -24,7 +24,7 @@ Replace LOAD
     *
 Resident СправочникКонтрагенты;
 
-СправочникКонтрагентыОбратнаяИерархия:
+СправочникКонтрагентыОбратнаяИерархияPre:
 HierarchyBelongsTo
 (
     [%lnk_კონტრაგენტი],
@@ -55,7 +55,7 @@ generatedNumberedColumns='false',
 skipRows=''
 );
 
-INNER JOIN (СправочникКонтрагентыОбратнаяИерархия)          // add USER_EMAIL to the bridge
+INNER JOIN (СправочникКонтрагентыОбратнаяИерархияPre)          // add USER_EMAIL to the bridge
 Replace LOAD
 	[Sales Access Role],
     [Sales Access Group]   AS [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
@@ -68,7 +68,7 @@ Replace LOAD DISTINCT
 	[Sales Access Role],
     [Sales Access Email],
     [%lnk_კონტრაგენტი]                    // descendant the user may see
-RESIDENT СправочникКонтрагентыОбратнаяИерархия
+RESIDENT СправочникКонтрагентыОбратнаяИерархияPre
 WHERE Len([Sales Access Email]) and [Sales Access Role] = 'USER'; 
 
 SalesAccessAdmin:
@@ -102,9 +102,9 @@ RESIDENT SalesAccessAdmin;
 SECTION APPLICATION; 
 
 
-//drop table СправочникКонтрагентыОбратнаяИерархия;
+//drop table СправочникКонтрагентыОбратнаяИерархияPre;
 
-drop table СправочникКонтрагентыОбратнаяИерархия;
+drop table СправочникКонтрагентыОбратнаяИерархияPre;
 
 drop table SalesAccess;
 
