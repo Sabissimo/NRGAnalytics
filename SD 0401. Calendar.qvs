@@ -52,7 +52,7 @@ WHERE (TempDate) <= [As Of TempDate];
 DROP TABLE AsOfTemporaryCalendarTotal;
 
 AsOfTemporaryCalendar:
-Replace LOAD
+add LOAD
 	TempDate as [TempDate],
     TempDate & '|' & 0 as [DateForConnect]
 RESIDENT TemporaryCalendar;

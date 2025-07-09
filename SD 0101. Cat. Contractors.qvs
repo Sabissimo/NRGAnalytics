@@ -93,7 +93,7 @@ Replace LOAD
 RESIDENT UserDescendants;
 
 Concatenate(SA)
-Replace LOAD
+add LOAD
 	[Sales Access Role] AS ACCESS,
     [Sales Access Email] AS [USER.EMAIL],
     [%lnk_კონტრაგენტი]

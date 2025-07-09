@@ -8,7 +8,7 @@ Replace Load distinct
 Resident РегистрНакопленияПродажи;
 
 BridgeTableOrgDateNonDistinct:
-Replace Load distinct
+add Load distinct
     [DebitorsDate] as [Date (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
 	[%lnk_კონტრაგენტი (ანგარიშსწორებები მყიდველებთან)] as [%lnk_კონტრაგენტი (BridgeTableOrgDate)],
