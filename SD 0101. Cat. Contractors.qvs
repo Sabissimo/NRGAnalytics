@@ -49,7 +49,7 @@ SELECT Role,
 	Group
 FROM GetWorksheetV2
 WITH PROPERTIES (
-worksheetKey='1-f15L80uaVKbMAD786Bp5NHDQlr7IqxFHhQoIBosNWA:_0 ',
+worksheetKey='1-f15L80uaVKbMAD786Bp5NHDQlr7IqxFHhQoIBosNWA:_0',
 gidOverride='',
 generatedNumberedColumns='false',
 skipRows=''
