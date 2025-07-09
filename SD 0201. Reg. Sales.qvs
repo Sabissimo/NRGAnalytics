@@ -1,6 +1,12 @@
 РегистрНакопленияПродажиPre:
 Replace LOAD
     *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияПродажи-Empty.qvd]
+(qvd);
+
+РегистрНакопленияПродажиPre:
+Add LOAD
+    *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияПродажи-*.qvd]
 (qvd);
 

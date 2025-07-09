@@ -87,6 +87,12 @@ Drop Table СправочникДоговорыКонтрагентовPre;
 ДокументРасходнаяНакладнаяPre:
 Replace LOAD
     *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументРасходнаяНакладная-Empty.qvd]
+(qvd);
+
+ДокументРасходнаяНакладнаяPre:
+Add LOAD
+    *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументРасходнаяНакладная-*.qvd]
 (qvd);
 
@@ -113,6 +119,12 @@ Drop Table ДокументРасходнаяНакладнаяPre;
 ДокументПередачаВАPre:
 Replace LOAD
     *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументПередачаВА-Empty.qvd]
+(qvd);
+
+ДокументПередачаВАPre:
+Add LOAD
+    *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументПередачаВА-*.qvd]
 (qvd);
 
@@ -126,6 +138,12 @@ Drop Table ДокументПередачаВАPre;
 
 РегистрСведенийЛимитыКонтрагентовСрезПоследнихPre:
 Replace LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийЛимитыКонтрагентовСрезПоследних-Empty.qvd]
+(qvd);
+
+РегистрСведенийЛимитыКонтрагентовСрезПоследнихPre:
+Add LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийЛимитыКонтрагентовСрезПоследних-*.qvd]
 (qvd);

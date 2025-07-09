@@ -1,6 +1,12 @@
 РегистрНакопленияРасчетыСПокупателямиTemp:
 Replace LOAD
     *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияРасчетыСПокупателями-Empty.qvd]
+(qvd);
+
+РегистрНакопленияРасчетыСПокупателямиTemp:
+Add LOAD
+    *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрНакопленияРасчетыСПокупателями-*.qvd]
 (qvd);
 
