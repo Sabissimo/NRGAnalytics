@@ -73,9 +73,9 @@ skipRows=''
 
 ПланПродажПоГруппам:
 Load
-	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     //[Date] as [დაგეგმვის პერიოდი],
-	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	[სეგმენტი] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
 	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
     	1)*[Value] as [გაყიდვები (გეგმა)]
@@ -104,9 +104,9 @@ skipRows=''
 
 ПланПрибылиПоГруппам:
 Load
-	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     //[Date] as [დაგეგმვის პერიოდი],
-	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	[სეგმენტი] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
 	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
     	1)*[Value] as [ამონაგები (გეგმა)]
@@ -135,9 +135,9 @@ skipRows=''
 
 ПланDSOДебиторовПоГруппам:
 Load
-	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     //[Date] as [დაგეგმვის პერიოდი],
-	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	[სეგმენტი] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
 	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
     	1)*[Value] as [დებიტორი DSO (გეგმა)]
@@ -166,9 +166,9 @@ drop table DebitorsDSOPlanFromSheets;
 
 // ПланDSOЗапасовПоГруппам:
 // Load
-// 	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+// 	//[კატეგორია] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
 //     //[Date] as [დაგეგმვის პერიოდი],
-// 	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+// 	[კატეგორია] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
 // 	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
 //     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
 //     	1)*[Value] as [მარაგები DSO (გეგმა)]
@@ -197,9 +197,9 @@ skipRows=''
 
 ПланКлиентыПоГруппам:
 Load
-	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     //[Date] as [დაგეგმვის პერიოდი],
-	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	[სეგმენტი] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
 	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
     	1)*[Value] as [კლიენტები (გეგმა)]
