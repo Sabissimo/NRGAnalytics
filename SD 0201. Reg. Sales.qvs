@@ -54,3 +54,158 @@ where
     ) > 0;
 
 Drop Table РегистрНакопленияПродажиPre;
+
+
+
+SalesPlanFromSheets:
+Crosstable(Date, Value, 1)
+LOAD *;
+
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_0',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+ПланПродажПоГруппам:
+Load
+	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    //[Date] as [დაგეგმვის პერიოდი],
+	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
+    	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
+    	1)*[Value] as [გაყიდვები (გეგმა)]
+Resident SalesPlanFromSheets
+where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
+and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+;
+
+drop table SalesPlanFromSheets;
+
+
+
+ProfitPlanFromSheets:
+Crosstable(Date, Value, 1)
+LOAD *;
+
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_1988986721',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+ПланПрибылиПоГруппам:
+Load
+	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    //[Date] as [დაგეგმვის პერიოდი],
+	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
+    	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
+    	1)*[Value] as [ამონაგები (გეგმა)]
+Resident ProfitPlanFromSheets
+where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
+and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+;
+
+drop table ProfitPlanFromSheets;
+
+
+
+DebitorsDSOPlanFromSheets:
+Crosstable(Date, Value, 1)
+LOAD *;
+
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_805094071',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+ПланDSOДебиторовПоГруппам:
+Load
+	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    //[Date] as [დაგეგმვის პერიოდი],
+	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
+    	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
+    	1)*[Value] as [დებიტორი DSO (გეგმა)]
+Resident DebitorsDSOPlanFromSheets
+where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
+and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+;
+
+drop table DebitorsDSOPlanFromSheets;
+
+
+
+// StockDSOPlanFromSheets:
+// Crosstable(Date, Value, 1)
+// LOAD *;
+
+// SELECT 
+// 	*
+// FROM GetWorksheetV2
+// WITH PROPERTIES (
+// worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_1105554067',
+// gidOverride='',
+// generatedNumberedColumns='false',
+// skipRows=''
+// );
+
+// ПланDSOЗапасовПоГруппам:
+// Load
+// 	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+//     //[Date] as [დაგეგმვის პერიოდი],
+// 	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+// 	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
+//     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
+//     	1)*[Value] as [მარაგები DSO (გეგმა)]
+// Resident StockDSOPlanFromSheets
+// where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
+// and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+// ;
+
+// drop table StockDSOPlanFromSheets;
+
+
+
+ClientsPlanFromSheets:
+Crosstable(Date, Value, 1)
+LOAD *;
+
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_458971746',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+ПланКлиентыПоГруппам:
+Load
+	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    //[Date] as [დაგეგმვის პერიოდი],
+	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
+    	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
+    	1)*[Value] as [კლიენტები (გეგმა)]
+Resident ClientsPlanFromSheets
+where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
+and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+;
+
+drop table ClientsPlanFromSheets;

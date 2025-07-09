@@ -161,37 +161,6 @@ Resident СправочникКонтрагентыОбратнаяИерарх�
 
 Drop Table СправочникКонтрагентыОбратнаяИерархияПред;
 
-
-
-PlanFromSheets:
-Crosstable(Date, Value, 1)
-LOAD *;
-
-SELECT 
-	*
-FROM GetWorksheetV2
-WITH PROPERTIES (
-worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_2073598474',
-gidOverride='',
-generatedNumberedColumns='false',
-skipRows=''
-);
-
-ПланПродажПоГруппам:
-Load
-	//[Group] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
-    //[Date] as [დაგეგმვის პერიოდი],
-	[Group] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
-	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
-    	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
-    	1)*[Value] as [თანხა (გეგმა)]
-Resident PlanFromSheets
-where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
-and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
-;
-
-drop table PlanFromSheets;
-
 //exit script;
 
 
