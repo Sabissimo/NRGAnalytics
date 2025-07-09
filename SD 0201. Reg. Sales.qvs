@@ -67,7 +67,7 @@ Drop Table РегистрНакопленияПродажиPre;
 
 SalesPlanFromSheets:
 Crosstable(Date, Value, 1)
-LOAD *;
+Replace LOAD *;
 
 SELECT 
 	*
@@ -80,7 +80,7 @@ skipRows=''
 );
 
 ПланПродажПоГруппам:
-Load
+Replace Load
 	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     //[Date] as [დაგეგმვის პერიოდი],
 	[სეგმენტი] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
@@ -129,7 +129,7 @@ drop table ProfitPlanFromSheets;
 
 DebitorsDSOPlanFromSheets:
 Crosstable(Date, Value, 1)
-LOAD *;
+Replace LOAD *;
 
 SELECT 
 	*
@@ -142,7 +142,7 @@ skipRows=''
 );
 
 ПланDSOДебиторовПоГруппам:
-Load
+Replace Load
 	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     //[Date] as [დაგეგმვის პერიოდი],
 	[სეგმენტი] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
@@ -160,7 +160,7 @@ drop table DebitorsDSOPlanFromSheets;
 
 // StockDSOPlanFromSheets:
 // Crosstable(Date, Value, 1)
-// LOAD *;
+// Replace LOAD *;
 
 // SELECT 
 // 	*
@@ -173,7 +173,7 @@ drop table DebitorsDSOPlanFromSheets;
 // );
 
 // ПланDSOЗапасовПоГруппам:
-// Load
+// Replace Load
 // 	//[კატეგორია] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
 //     //[Date] as [დაგეგმვის პერიოდი],
 // 	[კატეგორია] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
@@ -191,7 +191,7 @@ drop table DebitorsDSOPlanFromSheets;
 
 ClientsPlanFromSheets:
 Crosstable(Date, Value, 1)
-LOAD *;
+Replace LOAD *;
 
 SELECT 
 	*
@@ -204,7 +204,7 @@ skipRows=''
 );
 
 ПланКлиентыПоГруппам:
-Load
+Replace Load
 	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
     //[Date] as [დაგეგმვის პერიოდი],
 	[სეგმენტი] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
