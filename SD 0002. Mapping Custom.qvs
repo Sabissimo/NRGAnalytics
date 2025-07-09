@@ -159,7 +159,7 @@ Drop Table РегистрСведенийЛимитыКонтрагентовС�
 
 
 MapНужныеНаправленияДеятельности:
-MAPPING LOAD 
+MAPPING Replace LOAD 
 	[Product Direction] as [Product Direction], 
 	1 as [Value];
 SELECT 
@@ -173,7 +173,7 @@ skipRows=''
 );
 
 MapЛокация:
-Mapping LOAD 
+Mapping Replace LOAD 
 	[საწყობი] as [საწყობი], 
 	[ლოკაცია] as [ლოკაცია];
 
@@ -188,7 +188,7 @@ skipRows=''
 );
 
 MapСправочникНаправленияДеятельности:
-Mapping LOAD
+Mapping Replace LOAD
     [მინიშნება],
     if(APPLYMAP('MapНужныеНаправленияДеятельности', [დასახელება])=1,[დასახელება],'სხვა');
 LOAD
@@ -197,19 +197,19 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 (qvd);
 
 СправочникСтруктурныеЕдиницыTemp:
-LOAD
+Replace LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
 (qvd);
 
 MapСправочникСтруктурныеЕдиницы:
-Mapping LOAD
+Mapping Replace LOAD
     [მინიშნება],
     [დასახელება]
 Resident СправочникСтруктурныеЕдиницыTemp;
 
 MapСправочникСтруктурныеЕдиницыКод:
-Mapping LOAD
+Mapping Replace LOAD
     [მინიშნება],
     [კოდი]
 Resident СправочникСтруктурныеЕдиницыTemp;
