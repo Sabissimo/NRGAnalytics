@@ -86,8 +86,7 @@ Replace Load
     [სეგმენტი],
     [Value]
 Resident SalesPlanFromSheets
-where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
-and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+where floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
 ;
 
 drop table SalesPlanFromSheets;
