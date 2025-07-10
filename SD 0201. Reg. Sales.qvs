@@ -79,18 +79,43 @@ generatedNumberedColumns='false',
 skipRows=''
 );
 
-ПланПродажПоГруппам:
+ПланПродажПоГруппамPreJoin:
 Replace Load
 	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
-    //[Date] as [დაგეგმვის პერიოდი],
-	[სეგმენტი] & '|' & Date(Date#([Date],'YYYY-MM-DD'),'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
-	if(num(month(Date#([Date],'YYYY-MM-DD'))) = num(month($(vNow))),
-    	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
-    	1)*[Value] as [გაყიდვები (გეგმა)]
+    Date#([Date],'YYYY-MM-DD') as [დაგეგმვის პერიოდი],
+    [სეგმენტი],
+    [Value]
 Resident SalesPlanFromSheets
 where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
 and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
 ;
+
+drop table SalesPlanFromSheets;
+
+
+
+ДниИнтерваловПлана:
+Replace Load
+	MonthStart(YearStart($(vNow)) + RowNo() - 1) as [დაგეგმვის პერიოდი],
+	YearStart($(vNow)) + RowNo() - 1 as [გეგმის ინტერვალის დღე],
+    (Floor(MonthEnd(YearStart($(vNow)) + RowNo() - 1)) - Floor(MonthStart(YearStart($(vNow)) + RowNo() - 1)) + 1) as [დღეების რაოდენობა თვეში]
+AutoGenerate (YearEnd($(vNow))  - YearStart($(vNow)) +1);
+
+Left Join(ПланПродажПоГруппамPreJoin)
+Replace Load
+  *
+Resident ДниИнтерваловПлана;
+
+Drop Table ДниИнтерваловПлана;
+
+ПланПродажПоГруппам:
+Replace Load
+	[სეგმენტი] & '|' & Date([გეგმის ინტერვალის დღე],'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	[Value]/[დღეების რაოდენობა თვეში] as [გაყიდვები (გეგმა)]
+Resident ПланПродажПоГруппамPreJoin
+where Date([გეგმის ინტერვალის დღე],'YYYY-MM-DD') <= $(vNow);
+
+Drop Table ПланПродажПоГруппамPreJoin;
 
 drop table SalesPlanFromSheets;
 
