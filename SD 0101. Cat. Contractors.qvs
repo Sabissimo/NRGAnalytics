@@ -181,7 +181,7 @@ drop table СправочникКонтрагенты;
 
 TemporaryCalendar: 
 Replace LOAD Distinct
-	 MonthStart(YearStart($(vNow)) + recno() - 1) AS TempDate 
+	 (YearStart($(vNow)) + recno() - 1) AS TempDate 
 AUTOGENERATE YearEnd($(vNow)) - YearStart($(vNow)) + 1 ;
 
 Inner Join (СправочникКонтрагентыОбратнаяИерархияПредPreJoin)
