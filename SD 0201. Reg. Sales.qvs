@@ -140,8 +140,7 @@ Replace Load
     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
     	1)*[Value] as [ამონაგები (გეგმა)]
 Resident ProfitPlanFromSheets
-where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
-and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+where floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
 ;
 
 drop table ProfitPlanFromSheets;
@@ -171,8 +170,7 @@ Replace Load
     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
     	1)*[Value] as [დებიტორი DSO (გეგმა)]
 Resident DebitorsDSOPlanFromSheets
-where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
-and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+where floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
 ;
 
 drop table DebitorsDSOPlanFromSheets;
@@ -233,8 +231,7 @@ Replace Load
     	(Floor($(vNow)) - Floor(MonthStart($(vNow))) + 1)/(Floor(MonthEnd($(vNow))) - Floor(MonthStart($(vNow))) + 1),
     	1)*[Value] as [კლიენტები (გეგმა)]
 Resident ClientsPlanFromSheets
-where floor(Date#([Date], 'YYYY-MM-DD')) <= $(vNow)
-and floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+where floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
 ;
 
 drop table ClientsPlanFromSheets;
