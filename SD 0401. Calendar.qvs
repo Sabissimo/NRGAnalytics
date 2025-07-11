@@ -1,7 +1,7 @@
 AllDatesSD:
 Replace Load distinct
-	[Date (BridgeTableOrgDate)] as %lnk_SDDate
-Resident BridgeTableOrgDate;
+	[Date (BridgeTableContrDate)] as %lnk_SDDate
+Resident BridgeTableContrDate;
 
 // AllDatesSD:
 // Load distinct

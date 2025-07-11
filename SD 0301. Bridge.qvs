@@ -1,31 +1,55 @@
 BridgeTableOrgDateNonDistinct:
 Replace Load distinct
     [SalesDate] as [Date (BridgeTableOrgDate)],
+	[ნაშთია (გაყიდვები)] as [ნაშთია (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (გაყიდვები)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
 	[%lnk_კონტრაგენტი (გაყიდვები)] as [%lnk_კონტრაგენტი (BridgeTableOrgDate)],
-	[%lnk_ორგანიზაცია (გაყიდვები)] & '|' & [%lnk_კონტრაგენტი (გაყიდვები)] & '|' & SalesDate & '|' & [ნაშთია (გაყიდვები)] as [ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია],
-    [SalesDate] & '|' & [ნაშთია (გაყიდვები)] as [DateForConnect]
+	[%lnk_ორგანიზაცია (გაყიდვები)] & '|' & [%lnk_კონტრაგენტი (გაყიდვები)] & '|' & SalesDate & '|' & [ნაშთია (გაყიდვები)] as [ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]
 Resident РегистрНакопленияПродажи;
 
 BridgeTableOrgDateNonDistinct:
 add Load distinct
     [DebitorsDate] as [Date (BridgeTableOrgDate)],
+	[ნაშთია (ანგარიშსწორებები მყიდველებთან)] as [ნაშთია (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
 	[%lnk_კონტრაგენტი (ანგარიშსწორებები მყიდველებთან)] as [%lnk_კონტრაგენტი (BridgeTableOrgDate)],
-	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან)] & '|' & [%lnk_კონტრაგენტი (ანგარიშსწორებები მყიდველებთან)] & '|' & DebitorsDate & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან)] as [ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია],
-    [DebitorsDate] & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან)] as [DateForConnect]
+	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან)] & '|' & [%lnk_კონტრაგენტი (ანგარიშსწორებები მყიდველებთან)] & '|' & DebitorsDate & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან)] as [ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]
 Resident РегистрНакопленияРасчетыСПокупателями;
 
 BridgeTableOrgDate:
 Replace Load distinct
     *,
     ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია],
-    ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыInternal',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],'არა') AS [Internal (კონტრაგენტები)],
-	ApplyMap('MapСправочникСотрудники',ApplyMap('MapСправочникКонтрагентыОтветственныйМенеджер',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()),Null()) AS [პასუხისმგებელი მენეჯერი (კონტრაგენტები)],
-	ApplyMap('MapСправочникПользователи',ApplyMap('MapСправочникКонтрагентыОтветственныйПользователь',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()),Null()) AS [გაყიდ. მენეჯერი (კონტრაგენტები)],
-	ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыМенеджерПродаж',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()) AS [მომს. მენეჯერი (კონტრაგენტები)],
-	[%lnk_კონტრაგენტი (BridgeTableOrgDate)] AS [%lnk_კონტრაგენტი],
-	[%lnk_კონტრაგენტი (BridgeTableOrgDate)] & '|' & Date([Date (BridgeTableOrgDate)],'YYYY-MM-DD') as [%lnk_კონტრაგენტი_დაგეგმვის პერიოდი]
+    [%lnk_კონტრაგენტი (BridgeTableOrgDate)] & '|' & [Date (BridgeTableOrgDate)] & '|' & [ნაშთია (BridgeTableOrgDate)] as [კონტრაგენტი_პერიოდი_ნაშთია]
 Resident BridgeTableOrgDateNonDistinct;
 
 Drop Table BridgeTableOrgDateNonDistinct;
+
+BridgeTableContrDateNonDistinct:
+Replace Load distinct
+    [კონტრაგენტი_პერიოდი_ნაშთია],
+    [%lnk_კონტრაგენტი (BridgeTableOrgDate)] as [%lnk_კონტრაგენტი (BridgeTableContrDate)],
+    [Date (BridgeTableOrgDate)] as [Date (BridgeTableContrDate)],
+    [Date (BridgeTableOrgDate)] & '|' & [ნაშთია (BridgeTableOrgDate)] as [DateForConnect]
+Resident BridgeTableOrgDate;
+
+BridgeTableContrDateNonDistinct:
+Add Load distinct
+    [%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)] & '|' & 0 as [კონტრაგენტი_პერიოდი_ნაშთია],
+    [%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)] as [%lnk_კონტრაგენტი (BridgeTableContrDate)],
+    [პერიოდი (ბიუჯეტისთვის] as [Date (BridgeTableContrDate)],
+    [პერიოდი (ბიუჯეტისთვის] & '|' & 0 as [DateForConnect]
+Resident СправочникКонтрагентыОбратнаяИерархия;
+
+BridgeTableContrDate:
+Load Distinct
+	*,
+    ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыInternal',[%lnk_კონტრაგენტი (BridgeTableContrDate)],'არა') AS [Internal (კონტრაგენტები)],
+	ApplyMap('MapСправочникСотрудники',ApplyMap('MapСправочникКонтрагентыОтветственныйМенеджер',[%lnk_კონტრაგენტი (BridgeTableContrDate)],Null()),Null()) AS [პასუხისმგებელი მენეჯერი (კონტრაგენტები)],
+	ApplyMap('MapСправочникПользователи',ApplyMap('MapСправочникКонтрагентыОтветственныйПользователь',[%lnk_კონტრაგენტი (BridgeTableContrDate)],Null()),Null()) AS [გაყიდ. მენეჯერი (კონტრაგენტები)],
+	ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыМенеджерПродаж',[%lnk_კონტრაგენტი (BridgeTableContrDate)],Null()) AS [მომს. მენეჯერი (კონტრაგენტები)],
+	[%lnk_კონტრაგენტი (BridgeTableContrDate)] AS [%lnk_კონტრაგენტი],
+	[%lnk_კონტრაგენტი (BridgeTableContrDate)] & '|' & Date([Date (BridgeTableContrDate)],'YYYY-MM-DD') as [%lnk_კონტრაგენტი_დაგეგმვის პერიოდი]
+Resident BridgeTableContrDateNonDistinct;
+
+Drop Table BridgeTableContrDateNonDistinct;
