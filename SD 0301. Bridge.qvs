@@ -37,8 +37,8 @@ BridgeTableContrDateNonDistinct:
 Add Load distinct
     [%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)] & '|' & 0 as [კონტრაგენტი_პერიოდი_ნაშთია],
     [%lnk_კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)] as [%lnk_კონტრაგენტი (BridgeTableContrDate)],
-    [პერიოდი (ბიუჯეტისთვის] as [Date (BridgeTableContrDate)],
-    [პერიოდი (ბიუჯეტისთვის] & '|' & 0 as [DateForConnect]
+    [პერიოდი (ბიუჯეტისთვის)] as [Date (BridgeTableContrDate)],
+    [პერიოდი (ბიუჯეტისთვის)] & '|' & 0 as [DateForConnect]
 Resident СправочникКонтрагентыОбратнаяИерархия;
 
 BridgeTableContrDate:
