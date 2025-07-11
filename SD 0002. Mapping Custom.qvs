@@ -23,6 +23,12 @@ Mapping Replace LOAD
     [(არ გამოიყენება)]
 Resident СправочникКонтрагентыPre;
 
+MapСправочникКонтрагентыГруппа:
+Mapping Replace LOAD
+    [მინიშნება],
+    [ჯგუფი]
+Resident СправочникКонтрагентыPre;
+
 MapСправочникКонтрагентыОтветственныйМенеджер:
 Mapping Replace LOAD
     [მინიშნება],
