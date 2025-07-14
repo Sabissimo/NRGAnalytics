@@ -3,10 +3,10 @@ Replace Load distinct
 	[Date (BridgeTableContrDate)] as %lnk_SDDate
 Resident BridgeTableContrDate;
 
-// AllDatesSD:
-// Load distinct
-// 	[Date (Budget)] as %lnk_SDDate
-// Resident Бюджет;
+AllDatesSD:
+Load distinct
+	[Date (BridgeTableItemDate)] as %lnk_SDDate
+Resident BridgeTableItemDate;
 
 StartAndEndDates:
 Replace Load

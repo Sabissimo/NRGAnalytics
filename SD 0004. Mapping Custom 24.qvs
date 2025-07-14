@@ -1,0 +1,23 @@
+if(not IsPartialReload()) then
+
+MapПланСчетовУправленческийPre:
+Replace LOAD
+    *
+FROM [lib://$(vSpace24):DataFiles/$(vSpacePrefix24)_$(vPrefix24)_ПланСчетовУправленческий.qvd]
+(qvd);
+
+MapПланСчетовУправленческий:
+Mapping Replace LOAD
+    [მინიშნება],
+    [დასახელება]
+Resident MapПланСчетовУправленческийPre;
+
+MapПланСчетовУправленческийТипСчета:
+Mapping Replace LOAD
+    [მინიშნება],
+    ApplyMap('MapПеречислениеТипыСчетов',[ანგარიშის ტიპი],Null()) AS [ანგარიშის ტიპი]
+Resident MapПланСчетовУправленческийPre;
+
+Drop Table MapПланСчетовУправленческийPre;
+
+End If

@@ -1,0 +1,27 @@
+if(not IsPartialReload()) then
+
+BridgeTableItemDateNonDistinct:
+Load distinct
+    [StockDate] as [Date (BridgeTableItemDate)],
+	[%lnk_ნომენკლატურა (მარაგები)] as [%lnk_ნომენკლატურა (BridgeTableItemDate)],
+	[%lnk_ნომენკლატურა (მარაგები)] & '|' & StockDate & '|' & [ნაშთია (მარაგები)] as [ნომენკლატურა_პერიოდი_ნაშთია],
+    [StockDate] & '|' & [ნაშთია (მარაგები)] as [DateForConnect]
+Resident РегистрНакопленияЗапасы;
+
+BridgeTableItemDateNonDistinct:
+Load distinct
+    [StockSalesDate] as [Date (BridgeTableItemDate)],
+	[%lnk_ნომენკლატურა (გაყიდვები, მარაგები)] as [%lnk_ნომენკლატურა (BridgeTableItemDate)],
+	[%lnk_ნომენკლატურა (გაყიდვები, მარაგები)] & '|' & StockSalesDate & '|' & [ნაშთია (გაყიდვები, მარაგები)] as [ნომენკლატურა_პერიოდი_ნაშთია],
+    [StockSalesDate] & '|' & [ნაშთია (გაყიდვები, მარაგები)] as [DateForConnect]
+Resident РегистрНакопленияПродажиДляЗапасов;
+
+BridgeTableItemDate:
+Load distinct
+    *,
+    ApplyMap('MapСправочникНоменклатура',[%lnk_ნომენკლატურა (BridgeTableItemDate)],Null()) AS [ნომენკლატურა (მარაგები)]
+Resident BridgeTableItemDateNonDistinct;
+
+Drop Table BridgeTableItemDateNonDistinct;
+
+End If

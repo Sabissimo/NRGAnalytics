@@ -1,0 +1,39 @@
+if(not IsPartialReload()) then
+
+MapПеречислениеТипыСчетов:
+Mapping Replace LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace24):DataFiles/$(vSpacePrefix24)_$(vPrefix24)_ПеречислениеТипыСчетов.qvd]
+(qvd);
+
+MapСправочникНоменклатура:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace24):DataFiles/$(vSpacePrefix24)_$(vPrefix24)_СправочникНоменклатура.qvd]
+(qvd);
+
+MapСправочникХарактеристикиНоменклатуры:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace24):DataFiles/$(vSpacePrefix24)_$(vPrefix24)_СправочникХарактеристикиНоменклатуры.qvd]
+(qvd);
+
+MapСправочникПартииНоменклатуры:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace24):DataFiles/$(vSpacePrefix24)_$(vPrefix24)_СправочникПартииНоменклатуры.qvd]
+(qvd);
+
+End If

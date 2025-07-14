@@ -4,6 +4,12 @@ $(include=[lib://Holding:DataFiles/SD 0001. Mapping.qvs]);
 //Mapping Custom
 $(include=[lib://Holding:DataFiles/SD 0002. Mapping Custom.qvs]);
 
+//Mapping 24
+$(include=[lib://Holding:DataFiles/SD 0003. Mapping 24.qvs]);
+
+//Mapping Custom 24
+$(include=[lib://Holding:DataFiles/SD 0004. Mapping Custom 24.qvs]);
+
 //Cat. Contractors
 $(include=[lib://Holding:DataFiles/SD 0101. Cat. Contractors.qvs]);
 
@@ -13,14 +19,29 @@ $(include=[lib://Holding:DataFiles/SD 0102. Cat. Items.qvs]);
 //Cat. Categories
 $(include=[lib://Holding:DataFiles/SD 0103. Cat. Categories.qvs]);
 
+//Cat. Items 24
+$(include=[lib://Holding:DataFiles/SD 0104. Cat. Items 24.qvs]);
+
+//Cat. Categories 24
+$(include=[lib://Holding:DataFiles/SD 0105. Cat. Categories 24.qvs]);
+
 //Reg. Sales
 $(include=[lib://Holding:DataFiles/SD 0201. Reg. Sales.qvs]);
 
 //Reg. Debitors
 $(include=[lib://Holding:DataFiles/SD 0202. Reg. Debitors.qvs]);
 
+//Reg. Stock 24
+$(include=[lib://Holding:DataFiles/SD 0203. Reg. Stock 24.qvs]);
+
+//Reg. Sales 24
+$(include=[lib://Holding:DataFiles/SD 0204. Reg. Sales 24.qvs]);
+
 //Bridge
 $(include=[lib://Holding:DataFiles/SD 0301. Bridge.qvs]);
+
+//Bridge 24
+$(include=[lib://Holding:DataFiles/SD 0302. Bridge 24.qvs]);
 
 //Calendar
 $(include=[lib://Holding:DataFiles/SD 0401. Calendar.qvs]);
