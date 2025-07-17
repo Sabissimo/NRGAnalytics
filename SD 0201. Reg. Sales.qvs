@@ -65,6 +65,23 @@ Drop Table РегистрНакопленияПродажиPre;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 SalesPlanFromSheets:
 Crosstable(Date, Value, 1)
 Replace LOAD *;
@@ -97,7 +114,7 @@ drop table SalesPlanFromSheets;
 Replace Load
 	MonthStart(YearStart($(vNow)) + RowNo() - 1) as [დაგეგმვის პერიოდი],
 	YearStart($(vNow)) + RowNo() - 1 as [გეგმის ინტერვალის დღე],
-    (Floor(MonthEnd(YearStart($(vNow)) + RowNo() - 1)) - Floor(MonthStart(YearStart($(vNow)) + RowNo() - 1)) + 1) as [დღეების რაოდენობა თვეში]
+    (Floor(MonthEnd(YearStart($(vNow)) + RowNo() - 1)) - Floor(MonthStart(YearStart($(vNow)) + RowNo() - 1)) + 1) - ApplyMap('MapВыходныеПоМесяцам', MonthStart(YearStart($(vNow)) + RowNo() - 1), 0) as [დღეების რაოდენობა თვეში]
 AutoGenerate (YearEnd($(vNow))  - YearStart($(vNow)) +1);
 
 Left Join(ПланПродажПоГруппамPreJoin)
@@ -110,10 +127,24 @@ Drop Table ДниИнтерваловПлана;
 ПланПродажПоГруппам:
 Replace Load
 	[სეგმენტი] & '|' & Date([გეგმის ინტერვალის დღე],'YYYY-MM-DD') as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
-	[Value]/[დღეების რაოდენობა თვეში] as [გაყიდვები (გეგმა)]
+	([Value]/[დღეების რაოდენობა თვეში]) * ApplyMap('MapВыходныеПоДням', [გეგმის ინტერვალის დღე], 1) as [გაყიდვები (გეგმა)]
 Resident ПланПродажПоГруппамPreJoin;
 
 Drop Table ПланПродажПоГруппамPreJoin;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

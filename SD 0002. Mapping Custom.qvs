@@ -239,3 +239,41 @@ Mapping Replace LOAD
 Resident СправочникСтруктурныеЕдиницыTemp;
 
 Drop Table СправочникСтруктурныеЕдиницыTemp;
+
+
+
+
+
+
+
+
+
+MapКоэффициентыДнейPre:
+Replace LOAD 
+	[თარიღი],
+	[კოეფიციენტი];
+
+SELECT [თარიღი],
+	[კოეფიციენტი]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1-f15L80uaVKbMAD786Bp5NHDQlr7IqxFHhQoIBosNWA:_165959605',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+MapВыходныеПоМесяцам:
+Mapping Replace Load 
+	MonthStart(Date#([თარიღი],'YYYY-MM-DD')) as [თარიღი],
+	sum(1-[კოეფიციენტი]) as Value
+Resident MapКоэффициентыДнейPre
+group by MonthStart(Date#([თარიღი],'YYYY-MM-DD'));
+
+MapВыходныеПоДням:
+Mapping Replace Load 
+	Date#([თარიღი],'YYYY-MM-DD') as [თარიღი],
+	[კოეფიციენტი] as Value
+Resident MapКоэффициентыДнейPre;
+
+Drop Table MapКоэффициентыДнейPre;
