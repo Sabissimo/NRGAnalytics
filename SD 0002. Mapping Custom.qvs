@@ -135,6 +135,12 @@ Mapping Replace LOAD
 	[საწყობი]
 Resident ДокументРасходнаяНакладнаяPre;
 
+MapДокументРасходнаяНакладнаяАвтор:
+Mapping Replace LOAD
+	[მინიშნება],
+	ApplyMap('MapСправочникПользователи',[ავტორი],Null())
+Resident ДокументРасходнаяНакладнаяPre;
+
 MapДокументРасходнаяНакладнаяУчастникКэшбека:
 Mapping Replace LOAD
 	[მინიშნება],
