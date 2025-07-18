@@ -41,6 +41,12 @@ Mapping Replace LOAD
     [პასუხისმგებელი მომხმარებელი]
 Resident СправочникКонтрагентыPre;
 
+MapСправочникКонтрагентыКонтрагентРодитель:
+Mapping Replace LOAD
+    [მინიშნება],
+    [კონტრაგენტი მშობელი]
+Resident СправочникКонтрагентыPre;
+
 Drop Table СправочникКонтрагентыPre;
 
 MapПланВидовХарактеристикДополнительныеРеквизитыИСведения:
@@ -89,6 +95,57 @@ Mapping Replace LOAD
 Resident СправочникДоговорыКонтрагентовPre;
 
 Drop Table СправочникДоговорыКонтрагентовPre;
+
+
+
+
+MapДокументПредварительныйЗаказПокупателяPre:
+Replace LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументПредварительныйЗаказПокупателя-Empty.qvd]
+(qvd);
+
+MapДокументПредварительныйЗаказПокупателяPre:
+Add LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументПредварительныйЗаказПокупателя-*.qvd]
+(qvd);
+
+MapДокументПредварительныйЗаказПокупателяУчастникКэшбека:
+Mapping Replace LOAD
+	[მინიშნება],
+	[ქეშბექის მონაწილე]
+Resident MapДокументПредварительныйЗаказПокупателяPre;
+
+Drop Table MapДокументПредварительныйЗаказПокупателяPre;
+
+
+
+
+MapДокументЗаказПокупателяPre:
+Replace LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументЗаказПокупателя-Empty.qvd]
+(qvd);
+
+MapДокументЗаказПокупателяPre:
+Add LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументЗаказПокупателя-*.qvd]
+(qvd);
+
+MapДокументЗаказПокупателяУчастникКэшбека:
+Mapping Replace LOAD
+	[მინიშნება],
+	ApplyMap('MapДокументПредварительныйЗаказПокупателяУчастникКэшбека', [Потенциальный заказ покупателя], Null()) as [ქეშბექის მონაწილე]
+Resident MapДокументЗаказПокупателяPre
+where 
+    not isnull(ApplyMap('MapДокументПредварительныйЗаказПокупателяУчастникКэшбека', [Потенциальный заказ покупателя], Null()));
+
+Drop Table MapДокументЗаказПокупателяPre;
+
+
+
 
 ДокументРасходнаяНакладнаяPre:
 Replace LOAD
