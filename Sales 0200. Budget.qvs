@@ -35,7 +35,7 @@ Load
     floor(monthend(Date#([Date],'YYYY-MM-DD'))) & '|' & 0 as [DateForConnect],
     Sum([Value]) as [ბიუჯეტი (სულ)]
 Resident SalesPlanFromSheets
-where floor(monthend(Date#([Date],'YYYY-MM-DD'))) >= YearStart($(vNow))
+//where floor(monthend(Date#([Date],'YYYY-MM-DD'))) >= YearStart($(vNow))
 group by 
 	floor(monthend(Date#([Date],'YYYY-MM-DD')))
 ;
