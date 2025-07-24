@@ -1,17 +1,43 @@
-Бюджет:
-LOAD 
-	FLOOR([FY 2024]) as [Date (Budget)], 
-	FLOOR([FY 2024]) & '|' & 0 as [DateForConnect], 
-	Total as [ბიუჯეტი (სულ)];
+// Бюджет:
+// LOAD 
+// 	FLOOR([FY 2024]) as [Date (Budget)], 
+// 	FLOOR([FY 2024]) & '|' & 0 as [DateForConnect], 
+// 	Total as [ბიუჯეტი (სულ)];
 
+// SELECT 
+// 	[FY 2024],
+// 	Total
+// FROM GetWorksheetV2
+// WITH PROPERTIES (
+// worksheetKey='1E5bKRgK3mNUgcRnZCkZWTz5rjoP7PN4Wh9pO3ed1I3w:_0',
+// gidOverride='',
+// generatedNumberedColumns='false',
+// skipRows=''
+// );
+
+SalesPlanFromSheets:
+Crosstable(Date, Value, 1)
+LOAD *;
 SELECT 
-	[FY 2024],
-	Total
+	*
 FROM GetWorksheetV2
 WITH PROPERTIES (
-worksheetKey='1E5bKRgK3mNUgcRnZCkZWTz5rjoP7PN4Wh9pO3ed1I3w:_0',
+worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_0',
 gidOverride='',
 generatedNumberedColumns='false',
 skipRows=''
 );
 
+Бюджет:
+Load
+	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    floor(monthend(Date#([Date],'YYYY-MM-DD'))) as [Date (Budget)],
+    floor(monthend(Date#([Date],'YYYY-MM-DD'))) & '|' & 0 as [DateForConnect],
+    Sum([Value]) as [ბიუჯეტი (სულ)]
+Resident SalesPlanFromSheets
+where floor(monthend(Date#([Date],'YYYY-MM-DD'))) >= YearStart($(vNow))
+group by 
+	floor(monthend(Date#([Date],'YYYY-MM-DD')))
+;
+
+drop table SalesPlanFromSheets;
