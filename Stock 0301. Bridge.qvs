@@ -24,3 +24,12 @@ Load distinct
 Resident BridgeTableOrgItemDateNonDistinct;
 
 Drop Table BridgeTableOrgItemDateNonDistinct;
+
+
+WarehouseFilter:
+LOAD DISTINCT [საწყობი (გაყიდვები)] as [საწყობი (დეფიციტების ფილტრი)]
+RESIDENT РегистрНакопленияПродажи;
+
+CONCATENATE (WarehouseFilter)
+LOAD DISTINCT [სტრუქტურული ერთეული (მარაგები)] as [საწყობი (დეფიციტების ფილტრი)]
+RESIDENT РегистрНакопленияЗапасы;

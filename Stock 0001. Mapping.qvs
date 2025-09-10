@@ -1,3 +1,6 @@
+LET vMinDateTemp = NUM(YearStart(YearStart($(vNow))-1));
+LET vMaxDateTemp = NUM($(vNow));
+
 MapСправочникОрганизации:
 Mapping LOAD
     [Ссылка],
