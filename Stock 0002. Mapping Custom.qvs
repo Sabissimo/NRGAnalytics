@@ -75,5 +75,19 @@ Mapping LOAD
     [მეტრაჟის ზედა ზღვარი]
 Resident MapСправочникНоменклатураPre;
 
-Drop Table MapСправочникНоменклатураPre;
+Drop Table MapСправочникНоменклатураPre;    
+
+ДокументРасходнаяНакладнаяPre:
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ДокументРасходнаяНакладная-*.qvd]
+(qvd);
+
+MapДокументРасходнаяНакладнаяСклад:
+Mapping LOAD
+	[მინიშნება],
+	[საწყობი]
+Resident ДокументРасходнаяНакладнаяPre;
+
+Drop Table ДокументРасходнаяНакладнаяPre;
 
