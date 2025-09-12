@@ -26,10 +26,41 @@ Resident BridgeTableOrgItemDateNonDistinct;
 Drop Table BridgeTableOrgItemDateNonDistinct;
 
 
-WarehouseFilter:
-LOAD DISTINCT [საწყობი (გაყიდვები)] as [საწყობი (დეფიციტების ფილტრი)]
-RESIDENT РегистрНакопленияПродажи;
 
-CONCATENATE (WarehouseFilter)
-LOAD DISTINCT [სტრუქტურული ერთეული (მარაგები)] as [საწყობი (დეფიციტების ფილტრი)]
-RESIDENT РегистрНакопленияЗапасы;
+РегистрСведенийМинимальныеТочкиЗаказовСрезПоследнихPre:
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийМинимальныеТочкиЗаказовСрезПоследних-*.qvd]
+(qvd);
+
+WarehouseFilter:
+LOAD DISTINCT ApplyMap('MapСправочникСтруктурныеЕдиницы',[საწყობი++], Null()) as [საწყობი (დეფიციტების ფილტრი)]
+Resident РегистрСведенийМинимальныеТочкиЗаказовСрезПоследнихPre
+where 
+true() and
+[აქტიური] = '01';
+
+Drop Table РегистрСведенийМинимальныеТочкиЗаказовСрезПоследнихPre;
+
+РегистрСведенийУровниПополненияЗапасовСрезПоследнихPre:
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийУровниПополненияЗапасовСрезПоследних-*.qvd]
+(qvd);
+
+WarehouseFilter:
+LOAD DISTINCT ApplyMap('MapСправочникСтруктурныеЕдиницы',[საწყობი], Null()) as [საწყობი (დეფიციტების ფილტრი)]
+Resident РегистрСведенийУровниПополненияЗапасовСрезПоследнихPre
+where 
+false() and
+[აქტიური] = '01';
+
+Drop Table РегистрСведенийУровниПополненияЗапасовСрезПоследнихPre;
+
+// WarehouseFilter:
+// LOAD DISTINCT [საწყობი (გაყიდვები)] as [საწყობი (დეფიციტების ფილტრი)]
+// RESIDENT РегистрНакопленияПродажи;
+
+// WarehouseFilter:
+// LOAD DISTINCT [სტრუქტურული ერთეული (მარაგები)] as [საწყობი (დეფიციტების ფილტრი)]
+// RESIDENT РегистрНакопленияЗапасы;
