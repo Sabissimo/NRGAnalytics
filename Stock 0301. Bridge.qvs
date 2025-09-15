@@ -3,7 +3,8 @@ Load distinct
     [StockDate] as [Date (BridgeTableOrgItemDate)],
 	[%lnk_ორგანიზაცია (მარაგები)] as [%lnk_ორგანიზაცია (BridgeTableOrgItemDate)],
 	[%lnk_ნომენკლატურა (მარაგები)] as [%lnk_ნომენკლატურა (BridgeTableOrgItemDate)],
-	[%lnk_ორგანიზაცია (მარაგები)] & '|' & [%lnk_ნომენკლატურა (მარაგები)] & '|' & StockDate & '|' & [ნაშთია (მარაგები)] as [ორგანიზაცია_ნომენკლატურა_პერიოდი_ნაშთია],
+    [%lnk_სტრუქტურული ერთეული (მარაგები)] as [%lnk_საწყობი (BridgeTableOrgItemDate)],
+	[%lnk_ორგანიზაცია (მარაგები)] & '|' & [%lnk_სტრუქტურული ერთეული (მარაგები)] & '|' & [%lnk_ნომენკლატურა (მარაგები)] & '|' & StockDate & '|' & [ნაშთია (მარაგები)] as [ორგანიზაცია_საწყობი_ნომენკლატურა_პერიოდი_ნაშთია],
     [StockDate] & '|' & [ნაშთია (მარაგები)] as [DateForConnect]
 Resident РегистрНакопленияЗапасы;
 
@@ -12,7 +13,8 @@ Load distinct
     [SalesDate] as [Date (BridgeTableOrgItemDate)],
 	[%lnk_ორგანიზაცია (გაყიდვები)] as [%lnk_ორგანიზაცია (BridgeTableOrgItemDate)],
 	[%lnk_ნომენკლატურა (გაყიდვები)] as [%lnk_ნომენკლატურა (BridgeTableOrgItemDate)],
-	[%lnk_ორგანიზაცია (გაყიდვები)] & '|' & [%lnk_ნომენკლატურა (გაყიდვები)] & '|' & SalesDate & '|' & [ნაშთია (გაყიდვები)] as [ორგანიზაცია_ნომენკლატურა_პერიოდი_ნაშთია],
+    [%lnk_საწყობი (გაყიდვები)] as [%lnk_საწყობი (BridgeTableOrgItemDate)],
+	[%lnk_ორგანიზაცია (გაყიდვები)] & '|' & [%lnk_საწყობი (გაყიდვები)] & '|' & [%lnk_ნომენკლატურა (გაყიდვები)] & '|' & SalesDate & '|' & [ნაშთია (გაყიდვები)] as [ორგანიზაცია_საწყობი_ნომენკლატურა_პერიოდი_ნაშთია],
     [SalesDate] & '|' & [ნაშთია (გაყიდვები)] as [DateForConnect]
 Resident РегистрНакопленияПродажи;
 
@@ -20,6 +22,7 @@ BridgeTableOrgItemDate:
 Load distinct
     *,
     ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgItemDate)],Null()) AS [ორგანიზაცია],
+    ApplyMap('MapСправочникСтруктурныеЕдиницы',[%lnk_საწყობი (BridgeTableOrgItemDate)],Null()) AS [საწყობი],
     ApplyMap('MapСправочникНоменклатура',[%lnk_ნომენკლატურა (BridgeTableOrgItemDate)],Null()) AS [ნომენკლატურა]
 Resident BridgeTableOrgItemDateNonDistinct;
 
