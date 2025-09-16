@@ -24,6 +24,7 @@ Load distinct
     ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgItemDate)],Null()) AS [ორგანიზაცია],
     ApplyMap('MapСправочникСтруктурныеЕдиницы',[%lnk_საწყობი (BridgeTableOrgItemDate)],Null()) AS [საწყობი],
     ApplyMap('MapСправочникНоменклатура',[%lnk_ნომენკლატურა (BridgeTableOrgItemDate)],Null()) AS [ნომენკლატურა]
+    [%lnk_საწყობი (BridgeTableOrgItemDate)] & '|' & [%lnk_ნომენკლატურა (BridgeTableOrgItemDate)] AS [საწყობი_ნომენკლატურა]
 Resident BridgeTableOrgItemDateNonDistinct;
 
 Drop Table BridgeTableOrgItemDateNonDistinct;
@@ -37,7 +38,9 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСве�
 (qvd);
 
 WarehouseFilter:
-LOAD DISTINCT ApplyMap('MapСправочникСтруктурныеЕдиницы',[საწყობი++], Null()) as [საწყობი (დეფიციტების ფილტრი)]
+LOAD DISTINCT 
+    [საწყობი++] & '|' & [ნომენკლატურა] AS [საწყობი_ნომენკლატურა]
+    ApplyMap('MapСправочникСтруктурныеЕдиницы',[საწყობი++], Null()) as [საწყობი (დეფიციტების ფილტრი)]
 Resident РегистрСведенийМинимальныеТочкиЗаказовСрезПоследнихPre
 where 
 false() and
@@ -52,7 +55,9 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСве�
 (qvd);
 
 WarehouseFilter:
-LOAD DISTINCT ApplyMap('MapСправочникСтруктурныеЕдиницы',[საწყობი], Null()) as [საწყობი (დეფიციტების ფილტრი)]
+LOAD DISTINCT 
+    [საწყობი] & '|' & [ნომენკლატურა] AS [საწყობი_ნომენკლატურა]
+    ApplyMap('MapСправочникСтруктурныеЕдиницы',[საწყობი], Null()) as [საწყობი (დეფიციტების ფილტრი)]
 Resident РегистрСведенийУровниПополненияЗапасовСрезПоследнихPre
 where 
 true() and
