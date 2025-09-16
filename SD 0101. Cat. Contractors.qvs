@@ -253,13 +253,13 @@ FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_Справочник�
 MapЛимитАктивностиКонтрагента:
 Mapping Replace LOAD
     [(არ გამოიყენება)],
-    14
+    [აქტიურობის დღეების ლიმიტი]
 Resident СправочникКонтрагентыPre;
 
 MapЛимитПассивностиКонтрагента:
 Mapping Replace LOAD
     [(არ გამოიყენება)],
-    30
+    [პასიურობის დღეების ლიმიტი]
 Resident СправочникКонтрагентыPre;
 
 Drop Table СправочникКонтрагентыPre;
