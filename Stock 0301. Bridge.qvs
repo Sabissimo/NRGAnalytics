@@ -23,7 +23,7 @@ Load distinct
     *,
     ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgItemDate)],Null()) AS [ორგანიზაცია],
     ApplyMap('MapСправочникСтруктурныеЕдиницы',[%lnk_საწყობი (BridgeTableOrgItemDate)],Null()) AS [საწყობი],
-    ApplyMap('MapСправочникНоменклатура',[%lnk_ნომენკლატურა (BridgeTableOrgItemDate)],Null()) AS [ნომენკლატურა]
+    ApplyMap('MapСправочникНоменклатура',[%lnk_ნომენკლატურა (BridgeTableOrgItemDate)],Null()) AS [ნომენკლატურა],
     [%lnk_საწყობი (BridgeTableOrgItemDate)] & '|' & [%lnk_ნომენკლატურა (BridgeTableOrgItemDate)] AS [საწყობი_ნომენკლატურა]
 Resident BridgeTableOrgItemDateNonDistinct;
 
