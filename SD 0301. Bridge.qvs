@@ -21,7 +21,7 @@ Replace Load distinct
     *,
     ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია],
     ApplyMap('MapСправочникКонтрагенты',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()) AS [კონტრაგენტი],,
-    ApplyMap('MapВтораяГруппаГруппыКонтрагента', [%lnk_კონტრაგენტი (BridgeTableOrgDate)], Null()) AS [კონტრაგენტის ჯგუფი 2]
+    ApplyMap('MapВтораяГруппаГруппыКонтрагента', [%lnk_კონტრაგენტი (BridgeTableOrgDate)], Null()) AS [კონტრაგენტის ჯგუფი 2],
     ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыInternal',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],'არა') AS [Internal (კონტრაგენტები)],
 	ApplyMap('MapСправочникСотрудники',ApplyMap('MapСправочникКонтрагентыОтветственныйМенеджер',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()),Null()) AS [პასუხისმგებელი მენეჯერი (კონტრაგენტები)],
 	ApplyMap('MapСправочникПользователи',ApplyMap('MapСправочникКонтрагентыОтветственныйПользователь',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()),Null()) AS [გაყიდ. მენეჯერი (კონტრაგენტები)],
