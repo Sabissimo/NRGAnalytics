@@ -51,7 +51,8 @@ BridgeTableContrDate:
 Replace Load Distinct
 	*,
 	[%lnk_კონტრაგენტის ჯგუფი (BridgeTableContrDate)] AS [%lnk_კონტრაგენტის ჯგუფი],
-	[%lnk_კონტრაგენტის ჯგუფი (BridgeTableContrDate)] & '|' & Date([Date (BridgeTableContrDate)],'YYYY-MM-DD') as [%lnk_კონტრაგენტის ჯგუფი_დაგეგმვის პერიოდი]
+	[%lnk_კონტრაგენტის ჯგუფი (BridgeTableContrDate)] & '|' & Date([Date (BridgeTableContrDate)],'YYYY-MM-DD') as [%lnk_კონტრაგენტის ჯგუფი_დაგეგმვის პერიოდი],
+    ApplyMap('MapВтораяГруппаГруппыКонтрагента', [%lnk_კონტრაგენტის ჯგუფი (BridgeTableContrDate)], Null()) AS [კონტრაგენტის ჯგუფი 2]
 Resident BridgeTableContrDateNonDistinct;
 
 Drop Table BridgeTableContrDateNonDistinct;

@@ -237,3 +237,23 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникДоговорыКонтрагентовПрисоединенныеФайлы.qvd]
 (qvd);
+
+MapВтораяГруппаГруппыКонтрагента:
+Mapping Replace LOAD
+	[%lnk_კონტრაგენტის ჯგუფი (გაყიდვები)],
+	[კონტრაგენტი (გაყიდვები)2]	
+Resident СправочникКонтрагентыИерархия;
+
+// СправочникКонтрагентыPre:
+// Replace LOAD
+//     *
+// FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
+// (qvd);
+
+// MapВтораяГруппаКонтрагента:
+// Mapping Replace LOAD
+//     [მინიშნება],
+//     ApplyMap('MapВтораяГруппаГруппыКонтрагента',[ჯგუფი],null())
+// Resident СправочникКонтрагентыPre;
+
+// Drop Table СправочникКонтрагентыPre;
