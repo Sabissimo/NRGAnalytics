@@ -16,6 +16,9 @@ $(include=[lib://Holding:DataFiles/Stock 0201. Reg. Stock.qvs]);
 //Reg. Sales
 $(include=[lib://Holding:DataFiles/Stock 0202. Reg. Sales.qvs]);
 
+//Reg. Topup
+$(include=[lib://Holding:DataFiles/Stock 0203. Reg. Topup.qvs]);
+
 //Bridge
 $(include=[lib://Holding:DataFiles/Stock 0301. Bridge.qvs]);
 

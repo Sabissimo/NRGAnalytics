@@ -117,3 +117,12 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
 (qvd);
+
+MapСправочникГруппыСкладовОстатковДляУровнейПополненияЗапасов:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникГруппыСкладовОстатковДляУровнейПополненияЗапасов.qvd]
+(qvd);
