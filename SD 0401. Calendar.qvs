@@ -91,7 +91,6 @@ Replace Load
     if(floor(monthend($(vMaxDate))) = floor(monthend(TempDate)),
         if(floor(TempDate) = $(vMaxDate),1,0),
         if(floor(TempDate) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0)) as isMEReal,
-    if(floor(TempDate) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isME,
     if(floor(TempDate) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYE
 Resident TemporaryCalendar;
 
