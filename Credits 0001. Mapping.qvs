@@ -1,0 +1,35 @@
+MapСправочникВалюты:
+Mapping LOAD
+    [Ссылка],
+    [სიმბოლური კოდი];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникВалюты.qvd]
+(qvd);
+
+MapПеречислениеДаНет:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеДаНет.qvd]
+(qvd);
+
+MapСправочникОрганизации:
+Mapping LOAD
+    [Ссылка],
+    [(არ გამოიყენება)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникОрганизации.qvd]
+(qvd);
+
+MapСправочникКонтрагенты:
+Mapping LOAD
+    [მინიშნება],
+    [(არ გამოიყენება)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
+(qvd);

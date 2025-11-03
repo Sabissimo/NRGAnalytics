@@ -1,0 +1,14 @@
+//Mapping
+$(include=[lib://Holding:DataFiles/Credits 0001. Mapping.qvs]);
+
+//Mapping Custom
+$(include=[lib://Holding:DataFiles/Credits 0002. Mapping Custom.qvs]);
+
+//Reg. Current Credits
+$(include=[lib://Holding:DataFiles/Credits 0201. Reg. Current Credits.qvs]);
+
+//Reg. Credits
+$(include=[lib://Holding:DataFiles/Credits 0202. Reg. Credits.qvs]);
+
+//Calendar
+$(include=[lib://Holding:DataFiles/Credits 0401. Calendar.qvs]);

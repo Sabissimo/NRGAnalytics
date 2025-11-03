@@ -1,0 +1,117 @@
+AllDatesCredit:
+Load distinct
+	[CreditDate] as %lnk_CreditDate
+//     if([ფაქტიური მონაცემები (სესხები)] = 'დიახ', [CreditDate], null()) as %lnk_CreditDate_fact,
+//     if([ფაქტიური მონაცემები (სესხები)] = 'არა', [CreditDate], null()) as %lnk_CreditDate_plan
+Resident РегистрСведенийТаблицаИсторииКредитов;
+
+StartAndEndDates:
+Load
+	MIN([%lnk_CreditDate]) as MinDate,
+//     MIN([%lnk_CreditDate_fact]) as MinDateFact,
+//     MIN([%lnk_CreditDate_plan]) as MinDatePlan,
+    MAX([%lnk_CreditDate]) as MaxDate
+//     MAX([%lnk_CreditDate_fact]) as MaxDateFact,
+//     MAX([%lnk_CreditDate_plan]) as MaxDatePlan
+Resident AllDatesCredit;
+
+Drop Table AllDatesCredit;
+
+LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
+LET vMaxDate = NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
+// LET vMinDateFact = NUM(PEEK('MinDateFact',0,'StartAndEndDates'));
+// LET vMaxDateFact = NUM(PEEK('MaxDateFact', 0, 'StartAndEndDates'));
+// LET vMinDatePlan = NUM(PEEK('MinDatePlan',0,'StartAndEndDates'));
+// LET vMaxDatePlan = NUM(PEEK('MaxDatePlan', 0, 'StartAndEndDates'));
+//LET vMaxDate = NUM($(vNow));//NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
+
+
+drop tables StartAndEndDates;
+
+
+
+
+
+
+TemporaryCalendar: 
+LOAD distinct
+	 MonthStart($(vMinDate) + recno() - 1) AS TempDate 
+AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 2);
+
+// AsOfTemporaryCalendarTotal:
+// LOAD DISTINCT
+//     (TempDate) AS [As Of TempDate]
+// RESIDENT TemporaryCalendar;
+
+// JOIN (AsOfTemporaryCalendarTotal)
+// LOAD DISTINCT
+//     TempDate
+// RESIDENT TemporaryCalendar;
+
+// AsOfTemporaryCalendar:
+// LOAD
+// 	[As Of TempDate] as [TempDate],
+//     TempDate & '|' & 1 as [DateForConnect]
+// RESIDENT AsOfTemporaryCalendarTotal
+// WHERE (TempDate) <= [As Of TempDate];
+
+// DROP TABLE AsOfTemporaryCalendarTotal;
+
+// AsOfTemporaryCalendar:
+// LOAD
+// 	TempDate as [TempDate],
+//     TempDate & '|' & 0 as [DateForConnect]
+// RESIDENT TemporaryCalendar;
+
+CreditCalendar:
+Load	
+    [TempDate]  as [CreditDate],
+    date([TempDate]) as [Date Credit],
+    YEAR([TempDate])*100 + MONTH([TempDate]) as [ym Credit],
+    //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
+    'W'&Week	([TempDate])  	as [Week Credit],
+    Year	([TempDate])  	as [Year Credit],
+    Month	([TempDate])		as [Month Credit],
+    pick( match( num(month([TempDate])),1,2,3,4,5,6,7,8,9,10,11,12),
+        dual('იან',1),
+        dual('თებ',2),
+        dual( 'მარ',3),
+        dual('აპრ',4),
+        dual('მაი',5),
+        dual('ივნ',6),
+        dual('ივლ',7),
+        dual('აგვ',8),
+        dual('სექ',9),
+        dual('ოქტ',10),
+        dual('ნოე',11),
+        dual('დეკ',12)
+    ) as [თვე Credit],
+    Day		([TempDate]) 		as [Day Credit],
+    Weekday ([TempDate]) 		as [Weekday Credit],
+    num(month([TempDate]))  as [MONTH_NUM Credit],
+    Year	([TempDate]) *10 + Ceil(Month([TempDate])/3)  as [yq Credit],
+    'Q' & Ceil(Month([TempDate])/3) as [Quarter Credit],
+    dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month Credit]
+//     if(floor(TempDate) = floor(QuarterStart(TempDate)) or floor(TempDate) = $(vMinDate),1,0) as isQS,
+//     if(floor(TempDate) = floor(monthStart(TempDate)) or floor(TempDate) = $(vMinDate),1,0) as isMS,
+//     if(floor(TempDate) = floor(yearStart(TempDate)) or floor(TempDate) = $(vMinDate),1,0) as isYS,
+//     if(floor(TempDate) = floor(monthstart(QuarterEnd(TempDate))) or floor(TempDate) = $(vMaxDate),1,0) as isQE,
+//     if(floor(TempDate) = floor(monthstart(monthEnd(TempDate))) or floor(TempDate) = $(vMaxDate),1,0) as isME,
+//     if(floor(TempDate) = floor(monthstart(yearEnd(TempDate))) or floor(TempDate) = $(vMaxDate),1,0) as isYE
+//     ,
+//     if(floor(TempDate) = floor(QuarterStart(TempDate)) or floor(TempDate) = $(vMinDatePlan),1,0) as isQSPlan,
+//     if(floor(TempDate) = floor(monthStart(TempDate)) or floor(TempDate) = $(vMinDatePlan),1,0) as isMSPlan,
+//     if(floor(TempDate) = floor(yearStart(TempDate)) or floor(TempDate) = $(vMinDatePlan),1,0) as isYSPlan,
+//     if(floor(TempDate) = floor(monthstart(QuarterEnd(TempDate))) or floor(TempDate) = $(vMaxDatePlan),1,0) as isQEPlan,
+//     if(floor(TempDate) = floor(monthstart(monthEnd(TempDate))) or floor(TempDate) = $(vMaxDatePlan),1,0) as isMEPlan,
+//     if(floor(TempDate) = floor(monthstart(yearEnd(TempDate))) or floor(TempDate) = $(vMaxDatePlan),1,0) as isYEPlan
+//     ,
+//     if(floor(TempDate) = floor(QuarterStart(TempDate)) or floor(TempDate) = $(vMinDateFact),1,0) as isQSFact,
+//     if(floor(TempDate) = floor(monthStart(TempDate)) or floor(TempDate) = $(vMinDateFact),1,0) as isMSFact,
+//     if(floor(TempDate) = floor(yearStart(TempDate)) or floor(TempDate) = $(vMinDateFact),1,0) as isYSFact,
+//     if(floor(TempDate) = floor(monthstart(QuarterEnd(TempDate))) or floor(TempDate) = $(vMaxDateFact),1,0) as isQEFact,
+//     if(floor(TempDate) = floor(monthstart(monthEnd(TempDate))) or floor(TempDate) = $(vMaxDateFact),1,0) as isMEFact,
+//     if(floor(TempDate) = floor(monthstart(yearEnd(TempDate))) or floor(TempDate) = $(vMaxDateFact),1,0) as isYEFact
+Resident TemporaryCalendar;
+
+drop table TemporaryCalendar;
