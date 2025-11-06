@@ -37,6 +37,9 @@ $(include=[lib://Holding:DataFiles/SD 0203. Reg. Stock 24.qvs]);
 //Reg. Sales 24
 $(include=[lib://Holding:DataFiles/SD 0204. Reg. Sales 24.qvs]);
 
+//Reg. Royalty
+$(include=[lib://Holding:DataFiles/SD 0205. Reg. Royalty.qvs]);
+
 //Bridge
 $(include=[lib://Holding:DataFiles/SD 0301. Bridge.qvs]);
 

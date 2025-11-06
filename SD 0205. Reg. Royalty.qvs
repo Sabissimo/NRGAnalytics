@@ -1,0 +1,63 @@
+РегистрСведенийДанныеДляРасчетаРоялтиPre:
+Replace LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийДанныеДляРасчетаРоялти-Empty.qvd]
+(qvd);
+
+РегистрСведенийДанныеДляРасчетаРоялтиPre:
+Add LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийДанныеДляРасчетаРоялти-*.qvd]
+(qvd);
+
+РегистрСведенийДанныеДляРасчетаРоялти:
+Replace LOAD
+	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) AS RoyaltyDate,
+	floor(Date(AddYears([Период],-2000),'DD/MM/YYYY HH:mm:ss')) & '|' & 0 as [DateForConnect],
+    [თანხა] AS [თანხა (როიალტის გაანგარიშების მონაცემები)],
+	[ფაქტიური მონაცემები] AS [ფაქტიური მონაცემები (როიალტის გაანგარიშების მონაცემები)]
+Resident РегистрСведенийДанныеДляРасчетаРоялтиPre;
+
+Drop Table РегистрСведенийДанныеДляРасчетаРоялтиPre;
+
+RoyaltyPlanFromSheets:
+Crosstable(Date, Value, 1)
+LOAD *;
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_205388063',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+БюджетРоялти:
+Load
+	//[სეგმენტი] as [კონტრაგენტის ჯგუფი (ბიუჯეტისთვის)],
+    ApplyMap('MapРегистрСведенийДанныеДляРасчетаРоялти', floor(monthend(Date#([Date],'YYYY-MM-DD'))),'00') as [ფაქტიური მონაცემები (როიალტის გეგმა)],
+    floor(monthend(Date#([Date],'YYYY-MM-DD'))) as [RoyaltyBudgetDate],
+    floor(monthend(Date#([Date],'YYYY-MM-DD'))) & '|' & 0 as [DateForConnect],
+    Sum([Value]) as [ბიუჯეტი (როიალტის გეგმა)]
+Resident RoyaltyPlanFromSheets
+//where floor(monthend(Date#([Date],'YYYY-MM-DD'))) >= YearStart($(vNow))
+group by 
+	floor(monthend(Date#([Date],'YYYY-MM-DD')))
+;
+
+drop table RoyaltyPlanFromSheets;
+
+RoyaltyAccessTable:
+Replace LOAD Distinct
+	Upper(Email) as [Royalty Access Email], 
+	[Royalty Access] as [Royalty Access];
+SELECT Email,
+	[Royalty Access]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1-f15L80uaVKbMAD786Bp5NHDQlr7IqxFHhQoIBosNWA:_0',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);

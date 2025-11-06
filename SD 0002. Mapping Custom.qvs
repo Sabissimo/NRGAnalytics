@@ -307,3 +307,23 @@ Mapping Replace Load
 Resident MapКоэффициентыДнейPre;
 
 Drop Table MapКоэффициентыДнейPre;
+
+РегистрСведенийДанныеДляРасчетаРоялтиPre:
+Replace LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийДанныеДляРасчетаРоялти-Empty.qvd]
+(qvd);
+
+РегистрСведенийДанныеДляРасчетаРоялтиPre:
+Add LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_РегистрСведенийДанныеДляРасчетаРоялти-*.qvd]
+(qvd);
+
+MapРегистрСведенийДанныеДляРасчетаРоялти:
+Mapping Replace LOAD
+	floor(Date(monthend(AddYears([Период],-2000)),'DD/MM/YYYY HH:mm:ss')) AS RoyaltyDate,
+	[ფაქტიური მონაცემები] AS [ფაქტიური მონაცემები (როიალტის გაანგარიშების მონაცემები)]
+Resident РегистрСведенийДанныеДляРасчетаРоялтиPre;
+
+Drop Table РегистрСведенийДанныеДляРасчетаРоялтиPre;
