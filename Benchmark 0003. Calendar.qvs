@@ -1,0 +1,57 @@
+AllDatesBenchmark:
+Load distinct
+	[BenchmarkDate] as %lnk_BenchmarkDate
+Resident FinalData;
+
+
+StartAndEndDates:
+Load
+	MIN([%lnk_BenchmarkDate]) as MinDate,
+    MAX([%lnk_BenchmarkDate]) as MaxDate
+Resident AllDatesBenchmark;
+
+Drop Table AllDatesBenchmark;
+
+LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
+LET vMaxDate = NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
+
+drop tables StartAndEndDates;
+
+
+TemporaryCalendar: 
+LOAD distinct
+	 YearStart($(vMinDate) + recno() - 1) AS TempDate 
+AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 2);
+
+BenchmarkCalendar:
+Load	
+    [TempDate]  as [BenchmarkDate],
+    date([TempDate]) as [Date Benchmark],
+    YEAR([TempDate])*100 + MONTH([TempDate]) as [ym Benchmark],
+    //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
+    'W'&Week	([TempDate])  	as [Week Benchmark],
+    Year	([TempDate])  	as [Year Benchmark],
+    Month	([TempDate])		as [Month Benchmark],
+    pick( match( num(month([TempDate])),1,2,3,4,5,6,7,8,9,10,11,12),
+        dual('იან',1),
+        dual('თებ',2),
+        dual( 'მარ',3),
+        dual('აპრ',4),
+        dual('მაი',5),
+        dual('ივნ',6),
+        dual('ივლ',7),
+        dual('აგვ',8),
+        dual('სექ',9),
+        dual('ოქტ',10),
+        dual('ნოე',11),
+        dual('დეკ',12)
+    ) as [თვე Benchmark],
+    Day		([TempDate]) 		as [Day Benchmark],
+    Weekday ([TempDate]) 		as [Weekday Benchmark],
+    num(month([TempDate]))  as [MONTH_NUM Benchmark],
+    Year	([TempDate]) *10 + Ceil(Month([TempDate])/3)  as [yq Benchmark],
+    'Q' & Ceil(Month([TempDate])/3) as [Quarter Benchmark],
+    dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month Benchmark]
+Resident TemporaryCalendar;
+
+drop table TemporaryCalendar;

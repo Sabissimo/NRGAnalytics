@@ -1,0 +1,105 @@
+LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
+
+Let vHeaderCols = 3;
+
+CategoriesTable:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (CategoriesTable)],
+	Trim(Category) & Repeat(Chr(8203), RowNo()) as [კატეგორია],     
+	Lower(Trim(Category) & Repeat(Chr(8203), RowNo())) as [%lnk_კატეგორია],     
+	Lower(trim(Category)) as [კატეგორია Trim], 
+    [Value Background Color] as [Value Background Color], 
+	[Value Text Color] as [Value Text Color], 
+	[Background Color] as [Background Color], 
+	[Text Color] as [Text Color];
+
+SELECT Category,
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_1406774802',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+InvestmentTable:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (InvestmentTable)],
+	Trim([Investment Article]) & Repeat(Chr(8203), RowNo()) as [Investment Article], 
+	[Value Background Color] as [Value Background Color (InvestmentTable)], 
+	[Value Text Color] as [Value Text Color (InvestmentTable)], 
+	[Background Color] as [Background Color (InvestmentTable)], 
+	[Text Color] as [Text Color (InvestmentTable)], 
+	[Format] as [Format (InvestmentTable)];
+
+SELECT [Investment Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_229298205',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+EfficiencyTable:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (EfficiencyTable)],
+	Trim([Efficiency Article]) & Repeat(Chr(8203), RowNo()) as [Efficiency Article], 
+	[Value Background Color] as [Value Background Color (EfficiencyTable)], 
+	[Value Text Color] as [Value Text Color (EfficiencyTable)], 
+	[Background Color] as [Background Color (EfficiencyTable)], 
+	[Text Color] as [Text Color (EfficiencyTable)], 
+	[Format] as [Format (EfficiencyTable)];
+
+SELECT [Efficiency Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_2136666747',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+ProfitabilityTable:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (ProfitabilityTable)],
+	Trim([Profitability Article]) & Repeat(Chr(8203), RowNo()) as [Profitability Article], 
+	[Value Background Color] as [Value Background Color (ProfitabilityTable)], 
+	[Value Text Color] as [Value Text Color (ProfitabilityTable)], 
+	[Background Color] as [Background Color (ProfitabilityTable)], 
+	[Text Color] as [Text Color (ProfitabilityTable)], 
+	[Format] as [Format (ProfitabilityTable)];
+
+SELECT [Profitability Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_974623568',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+

@@ -1,0 +1,77 @@
+//NRG
+
+NRGRawTemp:
+SELECT *
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_0',
+gidOverride='',
+generatedNumberedColumns='true',
+skipRows='2'
+);
+
+NRGRaw:
+Load 
+	*,
+    'NRG Group' as ორგანიზაცია,
+    RowNo() as RowNo
+Resident NRGRawTemp;
+
+Drop Table NRGRawTemp;
+
+Let vStartYear = 2019;
+Let vEndYear = 2024;
+FOR vYear = $(vStartYear) TO $(vEndYear)
+    LET vColIdx = $(vYear) - $(vStartYear) + $(vHeaderCols);
+    LET vField  = 'Column' & $(vColIdx);
+    
+    FinalData:
+    LOAD
+        ორგანიზაცია as ორგანიზაცია,
+        Lower(Trim(Column2) & Repeat(Chr(8203), RowNo)) as [%lnk_კატეგორია],
+        Date(MakeDate($(vYear), 1, 1)) as BenchmarkDate,
+        [$(vField)] as Value
+    RESIDENT NRGRaw;
+NEXT vYear
+
+Drop Table NRGRaw;
+
+
+
+//Sak Cable
+
+SakKabRawTemp:
+SELECT *
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_2066827905',
+gidOverride='',
+generatedNumberedColumns='true',
+skipRows='2'
+);
+
+SakKabRaw:
+Load 
+	*,
+    'Sak Cable' as ორგანიზაცია,
+	RowNo() as RowNo
+Resident SakKabRawTemp;
+
+Drop Table SakKabRawTemp;
+
+Let vStartYear = 2019;
+Let vEndYear = 2024;
+FOR vYear = $(vStartYear) TO $(vEndYear)
+    LET vColIdx = $(vYear) - $(vStartYear) + $(vHeaderCols);
+    LET vField  = 'Column' & $(vColIdx);
+    
+    FinalData:
+    LOAD
+        ორგანიზაცია as ორგანიზაცია,
+        Lower(Trim(Column2) & Repeat(Chr(8203), RowNo)) as [%lnk_კატეგორია],
+        Date(MakeDate($(vYear), 1, 1)) as BenchmarkDate,
+        [$(vField)] as Value
+    RESIDENT SakKabRaw;
+NEXT vYear
+
+Drop Table SakKabRaw;
