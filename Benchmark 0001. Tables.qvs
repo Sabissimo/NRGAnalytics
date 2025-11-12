@@ -79,6 +79,32 @@ skipRows=''
 
 
 
+ValuationTable:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (ValuationTable)],
+	Trim([Valuation Article]) & Repeat(Chr(8203), RowNo()) as [Valuation Article], 
+	[Value Background Color] as [Value Background Color (ValuationTable)], 
+	[Value Text Color] as [Value Text Color (ValuationTable)], 
+	[Background Color] as [Background Color (ValuationTable)], 
+	[Text Color] as [Text Color (ValuationTable)], 
+	[Format] as [Format (ValuationTable)];
+
+SELECT [Valuation Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_79836161',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
 ProfitabilityTable:
 LOAD 
 	RowNo() as [სტრიქონის ნომერი (ProfitabilityTable)],
