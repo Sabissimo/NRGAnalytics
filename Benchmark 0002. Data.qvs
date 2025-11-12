@@ -75,3 +75,83 @@ FOR vYear = $(vStartYear) TO $(vEndYear)
 NEXT vYear
 
 Drop Table SakKabRaw;
+
+
+
+
+//Electron
+
+ElectronRawTemp:
+SELECT *
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_2119373766',
+gidOverride='',
+generatedNumberedColumns='true',
+skipRows='2'
+);
+
+ElectronRaw:
+Load 
+	*,
+    'Electron' as ორგანიზაცია,
+	RowNo() as RowNo
+Resident ElectronRawTemp;
+
+Drop Table ElectronRawTemp;
+
+Let vStartYear = 2019;
+Let vEndYear = 2024;
+FOR vYear = $(vStartYear) TO $(vEndYear)
+    LET vColIdx = $(vYear) - $(vStartYear) + $(vHeaderCols);
+    LET vField  = 'Column' & $(vColIdx);
+    
+    FinalData:
+    LOAD
+        ორგანიზაცია as ორგანიზაცია,
+        Lower(Trim(Column2) & Repeat(Chr(8203), RowNo)) as [%lnk_კატეგორია],
+        Date(MakeDate($(vYear), 1, 1)) as BenchmarkDate,
+        [$(vField)] as Value
+    RESIDENT ElectronRaw;
+NEXT vYear
+
+Drop Table ElectronRaw;
+
+
+//Insta
+
+InstaRawTemp:
+SELECT *
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_1674971410',
+gidOverride='',
+generatedNumberedColumns='true',
+skipRows='2'
+);
+
+InstaRaw:
+Load 
+	*,
+    'Insta' as ორგანიზაცია,
+	RowNo() as RowNo
+Resident InstaRawTemp;
+
+Drop Table InstaRawTemp;
+
+Let vStartYear = 2019;
+Let vEndYear = 2024;
+FOR vYear = $(vStartYear) TO $(vEndYear)
+    LET vColIdx = $(vYear) - $(vStartYear) + $(vHeaderCols);
+    LET vField  = 'Column' & $(vColIdx);
+    
+    FinalData:
+    LOAD
+        ორგანიზაცია as ორგანიზაცია,
+        Lower(Trim(Column2) & Repeat(Chr(8203), RowNo)) as [%lnk_კატეგორია],
+        Date(MakeDate($(vYear), 1, 1)) as BenchmarkDate,
+        [$(vField)] as Value
+    RESIDENT InstaRaw;
+NEXT vYear
+
+Drop Table InstaRaw;
