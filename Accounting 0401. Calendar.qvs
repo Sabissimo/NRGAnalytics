@@ -28,34 +28,35 @@ LOAD
 	 $(vMinDate) + recno() - 1 AS TempDate 
 AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 1);
 
-AsOfTemporaryCalendarTotal:
-LOAD DISTINCT
-    (TempDate) AS [As Of TempDate]
-RESIDENT TemporaryCalendar;
+// AsOfTemporaryCalendarTotal:
+// LOAD DISTINCT
+//     (TempDate) AS [As Of TempDate]
+// RESIDENT TemporaryCalendar;
 
-JOIN (AsOfTemporaryCalendarTotal)
-LOAD DISTINCT
-    TempDate
-RESIDENT TemporaryCalendar;
+// JOIN (AsOfTemporaryCalendarTotal)
+// LOAD DISTINCT
+//     TempDate
+// RESIDENT TemporaryCalendar;
 
-AsOfTemporaryCalendar:
-LOAD
-	[As Of TempDate] as [TempDate],
-    TempDate & '|' & 1 as [DateForConnect]
-RESIDENT AsOfTemporaryCalendarTotal
-WHERE (TempDate) <= [As Of TempDate];
+// AsOfTemporaryCalendar:
+// LOAD
+// 	[As Of TempDate] as [TempDate],
+//     TempDate & '|' & 1 as [DateForConnect]
+// RESIDENT AsOfTemporaryCalendarTotal
+// WHERE (TempDate) <= [As Of TempDate];
 
-DROP TABLE AsOfTemporaryCalendarTotal;
+// DROP TABLE AsOfTemporaryCalendarTotal;
 
-AsOfTemporaryCalendar:
-LOAD
-	TempDate as [TempDate],
-    TempDate & '|' & 0 as [DateForConnect]
-RESIDENT TemporaryCalendar;
+// AsOfTemporaryCalendar:
+// LOAD
+// 	TempDate as [TempDate],
+//     TempDate & '|' & 0 as [DateForConnect]
+// RESIDENT TemporaryCalendar;
 
 AccountingCalendar:
 Load	
     [TempDate]  as [TempDate],
+    TempDate & '|' & 0 as [DateForConnect],
     date([TempDate]) as [Date Accounting],
     YEAR([TempDate])*100 + MONTH([TempDate]) as [ym Accounting],
     //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
