@@ -7,11 +7,17 @@ $(include=[lib://Holding:DataFiles/Accounting 0002. Mapping Custom.qvs]);
 //Cat. Accounting
 $(include=[lib://Holding:DataFiles/Accounting 0101. Cat. Accounting.qvs]);
 
+//PL Matching
+$(include=[lib://Holding:DataFiles/Accounting 0102. PL Matching.qvs]);
+
 //Reg. Accounting
 $(include=[lib://Holding:DataFiles/Accounting 0201. Reg. Accounting.qvs]);
 
 //Reg. Sales
 $(include=[lib://Holding:DataFiles/Accounting 0202. Reg. Sales.qvs]);
+
+//Reg. Accounting Detailed
+$(include=[lib://Holding:DataFiles/Accounting 0203. Reg. Accounting Detailed.qvs]);
 
 //Bridge
 $(include=[lib://Holding:DataFiles/Accounting 0301. Bridge.qvs]);

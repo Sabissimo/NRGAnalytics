@@ -56,7 +56,7 @@ AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate)
 AccountingCalendar:
 Load	
     [TempDate]  as [TempDate],
-    TempDate & '|' & 0 as [DateForConnect],
+    [TempDate] & '|' & 0 as [DateForConnect],
     date([TempDate]) as [Date Accounting],
     YEAR([TempDate])*100 + MONTH([TempDate]) as [ym Accounting],
     //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
