@@ -163,3 +163,44 @@ FOR vYear = $(vStartYear) TO $(vEndYear)
 NEXT vYear
 
 Drop Table InstaRaw;
+
+
+//Minia
+
+Let vPriority = 5;
+MiniaRawTemp:
+SELECT *
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1kRiKMg9Ud-kfUI-PyZHgQwY5ahcIE99T16iN0oqXFQg:_20536337',
+gidOverride='',
+generatedNumberedColumns='true',
+skipRows='2'
+);
+
+MiniaRaw:
+Load 
+	*,
+    'Minia' as ორგანიზაცია,
+	RowNo() as RowNo
+Resident MiniaRawTemp;
+
+Drop Table MiniaRawTemp;
+
+Let vStartYear = 2019;
+Let vEndYear = 2024;
+FOR vYear = $(vStartYear) TO $(vEndYear)
+    LET vColIdx = $(vYear) - $(vStartYear) + $(vHeaderCols);
+    LET vField  = 'Column' & $(vColIdx);
+    
+    FinalData:
+    LOAD
+        $(vPriority) as [ორგანიზაციის პრიორიტეტი],
+        ორგანიზაცია as ორგანიზაცია,
+        Lower(Trim(Column2) & Repeat(Chr(8203), RowNo)) as [%lnk_კატეგორია],
+        Date(MakeDate($(vYear), 1, 1)) as BenchmarkDate,
+        [$(vField)] as Value
+    RESIDENT MiniaRaw;
+NEXT vYear
+
+Drop Table MiniaRaw;
