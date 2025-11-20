@@ -1,0 +1,91 @@
+AllDatesStatement:
+Load distinct
+	[Date (BridgeTableStatementOrgDate)] as %lnk_StatementDate
+Resident BridgeTableStatementOrgDate;
+
+StartAndEndDates:
+Load
+	MIN([%lnk_StatementDate]) as MinDate,
+    MAX([%lnk_StatementDate]) as MaxDate
+Resident AllDatesStatement;
+
+Drop Table AllDatesStatement;
+
+LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
+//LET vMaxDate = NUM(Now());//If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
+LET vMaxDate = NUM($(vNow));//NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
+
+
+drop tables StartAndEndDates;
+
+
+
+
+
+
+TemporaryCalendar: 
+LOAD 
+	 $(vMinDate) + recno() - 1 AS TempDateStatement 
+AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate) + 1);
+
+// AsOfTemporaryCalendarTotal:
+// LOAD DISTINCT
+//     (TempDateStatement) AS [As Of TempDateStatement]
+// RESIDENT TemporaryCalendar;
+
+// JOIN (AsOfTemporaryCalendarTotal)
+// LOAD DISTINCT
+//     TempDateStatement
+// RESIDENT TemporaryCalendar;
+
+// AsOfTemporaryCalendar:
+// LOAD
+// 	[As Of TempDateStatement] as [TempDateStatement],
+//     TempDateStatement & '|' & 1 as [DateForConnectStatement]
+// RESIDENT AsOfTemporaryCalendarTotal
+// WHERE (TempDateStatement) <= [As Of TempDateStatement];
+
+// DROP TABLE AsOfTemporaryCalendarTotal;
+
+// AsOfTemporaryCalendar:
+// LOAD
+// 	TempDateStatement as [TempDateStatement],
+//     TempDateStatement & '|' & 0 as [DateForConnectStatement]
+// RESIDENT TemporaryCalendar;
+
+StatementCalendar:
+Load	
+    [TempDateStatement]  as [TempDateStatement],
+    [TempDateStatement] & '|' & 0 as [DateForConnectStatement],
+    date([TempDateStatement]) as [Date Statement],
+    YEAR([TempDateStatement])*100 + MONTH([TempDateStatement]) as [ym Statement],
+    //Year	([TempDateStatement]) & floor (Month	([TempDateStatement])) as [YM],
+    'W'&Week	([TempDateStatement])  	as [Week Statement],
+    Year	([TempDateStatement])  	as [Year Statement],
+    Month	([TempDateStatement])		as [Month Statement],
+    pick( match( num(month([TempDateStatement])),1,2,3,4,5,6,7,8,9,10,11,12),
+        dual('იან',1),
+        dual('თებ',2),
+        dual( 'მარ',3),
+        dual('აპრ',4),
+        dual('მაი',5),
+        dual('ივნ',6),
+        dual('ივლ',7),
+        dual('აგვ',8),
+        dual('სექ',9),
+        dual('ოქტ',10),
+        dual('ნოე',11),
+        dual('დეკ',12)
+    ) as [თვე Statement],
+    Day		([TempDateStatement]) 		as [Day Statement],
+    Weekday ([TempDateStatement]) 		as [Weekday Statement],
+    num(month([TempDateStatement]))  as [MONTH_NUM Statement],
+    Year	([TempDateStatement]) *10 + Ceil(Month([TempDateStatement])/3)  as [yq Statement],
+    'Q' & Ceil(Month([TempDateStatement])/3) as [Quarter Statement],
+    dual( Month([TempDateStatement]) &'-'& right(Year([TempDateStatement]),2) , Year([TempDateStatement]) *100 + month([TempDateStatement]) )  as [Year/Month Statement],
+    if(floor(TempDateStatement) = floor(QuarterEnd(TempDateStatement)) or floor(TempDateStatement) = $(vMaxDate),1,0) as isQEStatement,
+    if(floor(TempDateStatement) = floor(monthend(TempDateStatement)) or floor(TempDateStatement) = $(vMaxDate),1,0) as isMEStatement,
+    if(floor(TempDateStatement) = floor(yearend(TempDateStatement)) or floor(TempDateStatement) = $(vMaxDate),1,0) as isYEStatement
+Resident TemporaryCalendar;
+
+drop table TemporaryCalendar;

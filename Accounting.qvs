@@ -22,5 +22,11 @@ $(include=[lib://Holding:DataFiles/Accounting 0203. Reg. Accounting Detailed.qvs
 //Bridge
 $(include=[lib://Holding:DataFiles/Accounting 0301. Bridge.qvs]);
 
+//Bridge Statement
+$(include=[lib://Holding:DataFiles/Accounting 0302. Bridge Statement.qvs]);
+
 //Calendar
 $(include=[lib://Holding:DataFiles/Accounting 0401. Calendar.qvs]);
+
+//Calendar Statement
+$(include=[lib://Holding:DataFiles/Accounting 0402. Calendar Statement.qvs]);
