@@ -16,6 +16,14 @@ Resident РегистрНакопленияПродажи;
 
 BridgeTableOrgDateNonDistinct:
 Load distinct
+    [AccountingStatementDate] as [Date (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (გატარებების ჟურნალი,Statement)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (გატარებების ჟურნალი,Statement)] & '|' & AccountingStatementDate & '|' & [ნაშთია (გატარებების ჟურნალი,Statement)] as [ორგანიზაცია_პერიოდი_ნაშთია],
+    [AccountingStatementDate] & '|' & [ნაშთია (გატარებების ჟურნალი,Statement)] as [DateForConnect]
+Resident РегистрБухгалтерииУправленческийStatement;
+
+BridgeTableOrgDateNonDistinct:
+Load distinct
     [AccountingDetailsDate] as [Date (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (ბუღალტრული გაშიფრვა,ინფ. რეგისტრი)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (ბუღალტრული გაშიფრვა,ინფ. რეგისტრი)] & '|' & AccountingDetailsDate & '|' & [ნაშთია (ბუღალტრული გაშიფრვა,ინფ. რეგისტრი)] as [ორგანიზაცია_პერიოდი_ნაშთია],
@@ -31,7 +39,23 @@ Load distinct
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='80C6382C4ABBB43711E7363EBFB98EBD' or //electric
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='85070A94EF044E4711EB87F29D540806' or //elvare
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='8653D4F5EF3EE94F11EED6FFAF64F778' //elcom
-    ,'კონსოლიდირებული EEE') AS [კონსოლიდირებული (ფილტრი)]
+    ,'კონსოლიდირებული EEE') AS [კონსოლიდირებული (ფილტრი)],
+    if(
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='A38A1866DAF5638911EA256E98A00C21' or //NRG
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='80C6382C4ABBB43711E7363EBFB98EBD' or //electric
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='85070A94EF044E4711EB87F29D540806' or //elvare
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='8653D4F5EF3EE94F11EED6FFAF64F778' //elcom    
+    ,if(
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='80C6382C4ABBB43711E7363EBFB98EBD' or //electric
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='85070A94EF044E4711EB87F29D540806' or //elvare
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='8653D4F5EF3EE94F11EED6FFAF64F778' //elcom
+    ,'Electromarket',ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()))) AS [კონსოლიდირებული ორგანიზაცია (Statement ფილტრი)],
+    if(
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='A38A1866DAF5638911EA256E98A00C21' or //NRG
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='80C6382C4ABBB43711E7363EBFB98EBD' or //electric
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='85070A94EF044E4711EB87F29D540806' or //elvare
+    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='8653D4F5EF3EE94F11EED6FFAF64F778' //elcom    
+    ,ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null())) AS [ორგანიზაცია (Statement ფილტრი)]
 Resident BridgeTableOrgDateNonDistinct;
 
 Drop Table BridgeTableOrgDateNonDistinct;
