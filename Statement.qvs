@@ -1,0 +1,23 @@
+//Mapping
+$(include=[lib://Holding:DataFiles/Statement 0001. Mapping.qvs]);
+
+//Mapping Custom
+$(include=[lib://Holding:DataFiles/Statement 0002. Mapping Custom.qvs]);
+
+//Cat. Accounting
+$(include=[lib://Holding:DataFiles/Statement 0101. Cat. Accounting.qvs]);
+
+//PL Matching
+$(include=[lib://Holding:DataFiles/Statement 0102. PL Matching.qvs]);
+
+//Reg. Accounting
+$(include=[lib://Holding:DataFiles/Statement 0201. Reg. Accounting.qvs]);
+
+//Reg. Accounting Detailed
+$(include=[lib://Holding:DataFiles/Statement 0202. Reg. Accounting Detailed.qvs]);
+
+//Bridge
+$(include=[lib://Holding:DataFiles/Statement 0301. Bridge.qvs]);
+
+//Calendar
+$(include=[lib://Holding:DataFiles/Statement 0401. Calendar.qvs]);
