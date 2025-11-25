@@ -2,8 +2,9 @@ BalanceTable:
 LOAD 
 	RowNo() as [სტრიქონის ნომერი (BalanceTable)],
 	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (BalanceTable)], 
-	Trim([Article] & '|4' & '|' & [Level]) as [Article (Trim)], 
-	[Level] as [Level (BalanceTable)],
+	Trim([Article] & '|4' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (BalanceTable) (Trim)], 
+    [Level] as [Level (BalanceTable)],
 	[Value Background Color] as [Value Background Color (BalanceTable)], 
 	[Value Text Color] as [Value Text Color (BalanceTable)], 
 	[Background Color] as [Background Color (BalanceTable)], 

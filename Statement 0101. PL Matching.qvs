@@ -4,7 +4,8 @@ PLTable:
 LOAD 
 	RowNo() as [სტრიქონის ნომერი (PLTable)],
 	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTable)], 
-	Trim([Article] & '|3' & '|' & [Level]) as [Article (Trim)], 
+	Trim([Article] & '|3' & '|' & [Level]) as [%lnk_Article], 
+    Trim([Article]) as [Article (PLTable) (Trim)], 
     [Level] as [Level (PLTable)],
 	[Value Background Color] as [Value Background Color (PLTable)], 
 	[Value Text Color] as [Value Text Color (PLTable)], 
@@ -36,8 +37,9 @@ PLTableConsolidated:
 LOAD 
 	RowNo() as [სტრიქონის ნომერი (PLTableConsolidated)],
 	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTableConsolidated)], 
-	Trim([Article] & '|4' & '|' & [Level]) as [Article (Trim)], 
-	[Level] as [Level (PLTableConsolidated)],
+	Trim([Article] & '|4' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (PLTableConsolidated) (Trim)], 
+    [Level] as [Level (PLTableConsolidated)],
 	[Value Background Color] as [Value Background Color (PLTableConsolidated)], 
 	[Value Text Color] as [Value Text Color (PLTableConsolidated)], 
 	[Background Color] as [Background Color (PLTableConsolidated)], 
@@ -68,8 +70,9 @@ PLTableHolding:
 LOAD 
 	RowNo() as [სტრიქონის ნომერი (PLTableHolding)],
 	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTableHolding)], 
-	Trim([Article] & '|5' & '|' & [Level]) as [Article (Trim)], 
-	[Level] as [Level (PLTableHolding)],
+	Trim([Article] & '|5' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (PLTableHolding) (Trim)], 
+    [Level] as [Level (PLTableHolding)],
 	[Value Background Color] as [Value Background Color (PLTableHolding)], 
 	[Value Text Color] as [Value Text Color (PLTableHolding)], 
 	[Background Color] as [Background Color (PLTableHolding)], 
