@@ -3,7 +3,7 @@ LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge
 PLTable:
 LOAD 
 	RowNo() as [სტრიქონის ნომერი (PLTable)],
-	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article], 
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTable)], 
 	Trim([Article] & '|3' & '|' & [Level]) as [Article (Trim)], 
     [Level] as [Level (PLTable)],
 	[Value Background Color] as [Value Background Color (PLTable)], 
