@@ -1,13 +1,5 @@
 BridgeTableOrgDateNonDistinct:
 Load distinct
-    [AccountingStatementDate] as [Date (BridgeTableOrgDate)],
-	[%lnk_ორგანიზაცია (გატარებების ჟურნალი,Statement)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
-	[%lnk_ორგანიზაცია (გატარებების ჟურნალი,Statement)] & '|' & AccountingStatementDate & '|' & [ნაშთია (გატარებების ჟურნალი,Statement)] as [ორგანიზაცია_პერიოდი_ნაშთია],
-    [AccountingStatementDate] & '|' & [ნაშთია (გატარებების ჟურნალი,Statement)] as [DateForConnect]
-Resident РегистрБухгалтерииУправленческийStatement;
-
-BridgeTableOrgDateNonDistinct:
-Load distinct
     [AccountingDetailsDate] as [Date (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (ბუღალტრული გაშიფრვა,ინფ. რეგისტრი)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (ბუღალტრული გაშიფრვა,ინფ. რეგისტრი)] & '|' & AccountingDetailsDate & '|' & [ნაშთია (ბუღალტრული გაშიფრვა,ინფ. რეგისტრი)] as [ორგანიზაცია_პერიოდი_ნაშთია],

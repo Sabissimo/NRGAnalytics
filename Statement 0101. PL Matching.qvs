@@ -1,0 +1,94 @@
+LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
+
+PLTable:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (PLTable)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article], 
+	Trim([Article] & '|3' & '|' & [Level]) as [Article (Trim)], 
+    [Level] as [Level (PLTable)],
+	[Value Background Color] as [Value Background Color (PLTable)], 
+	[Value Text Color] as [Value Text Color (PLTable)], 
+	[Background Color] as [Background Color (PLTable)], 
+	[Text Color] as [Text Color (PLTable)], 
+	[Format] as [Format (PLTable)], 
+	[Type] as [Type (PLTable)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format],
+    [Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_894800536',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+
+PLTableConsolidated:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (PLTableConsolidated)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTableConsolidated)], 
+	Trim([Article] & '|4' & '|' & [Level]) as [Article (Trim)], 
+	[Level] as [Level (PLTableConsolidated)],
+	[Value Background Color] as [Value Background Color (PLTableConsolidated)], 
+	[Value Text Color] as [Value Text Color (PLTableConsolidated)], 
+	[Background Color] as [Background Color (PLTableConsolidated)], 
+	[Text Color] as [Text Color (PLTableConsolidated)], 
+	[Format] as [Format (PLTableConsolidated)], 
+	[Type] as [Type (PLTableConsolidated)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format],
+    [Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_1183284214',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+
+PLTableHolding:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (PLTableHolding)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTableHolding)], 
+	Trim([Article] & '|5' & '|' & [Level]) as [Article (Trim)], 
+	[Level] as [Level (PLTableHolding)],
+	[Value Background Color] as [Value Background Color (PLTableHolding)], 
+	[Value Text Color] as [Value Text Color (PLTableHolding)], 
+	[Background Color] as [Background Color (PLTableHolding)], 
+	[Text Color] as [Text Color (PLTableHolding)], 
+	[Format] as [Format (PLTableHolding)], 
+	[Type] as [Type (PLTableHolding)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format],
+    [Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_1414796179',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
