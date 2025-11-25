@@ -1,4 +1,4 @@
-Let vNow = Floor(MonthStart(now()));
+Let vNow = Floor(MonthStart(MonthStart(now())-1));
 
 РегистрСведенийРасшифровкаБухгалтерииPreOrg:
 LOAD
