@@ -56,7 +56,7 @@ AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate),0,$(vMaxDate) - $(vMinDate)
 StatementCalendar:
 Load	
     [TempDate]  as [TempDate],
-    [TempDate] & '|' & 0 as [DateForConnect],
+    [TempDate] as [DateForConnect],
     date([TempDate]) as [Date Statement],
     YEAR([TempDate])*100 + MONTH([TempDate]) as [ym Statement],
     //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
