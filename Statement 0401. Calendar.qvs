@@ -83,6 +83,7 @@ Load
     Year	([TempDate]) *10 + Ceil(Month([TempDate])/3)  as [yq Accounting],
     'Q' & Ceil(Month([TempDate])/3) as [Quarter Accounting],
     dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month Accounting],
+    dual( Month([TempDate]) &'-'& 'Q' & Ceil(Month([TempDate])/3) , Year([TempDate]) *10 + Ceil(Month([TempDate])/3) )  as [Year/Quarter Accounting],
     if(floor(MonthEnd(TempDate)) = floor(QuarterEnd(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isQE,
     if(floor(MonthEnd(TempDate)) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isME,
     if(floor(MonthEnd(TempDate)) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYE
