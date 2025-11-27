@@ -27,5 +27,71 @@ gidOverride='',
 generatedNumberedColumns='false',
 skipRows=''
 );
+
+
+
+
+BalanceTableConsolidated:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (BalanceTableConsolidated)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (BalanceTableConsolidated)], 
+	Trim([Article] & '|4' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (BalanceTableConsolidated) (Trim)], 
+    [Level] as [Level (BalanceTableConsolidated)],
+	[Value Background Color] as [Value Background Color (BalanceTableConsolidated)], 
+	[Value Text Color] as [Value Text Color (BalanceTableConsolidated)], 
+	[Background Color] as [Background Color (BalanceTableConsolidated)], 
+	[Text Color] as [Text Color (BalanceTableConsolidated)], 
+	[Format] as [Format (BalanceTableConsolidated)], 
+	[Type] as [Type (BalanceTableConsolidated)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format],
+    [Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_361941950',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+
+BalanceTableHolding:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (BalanceTableHolding)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (BalanceTableHolding)], 
+	Trim([Article] & '|5' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (BalanceTableHolding) (Trim)], 
+    [Level] as [Level (BalanceTableHolding)],
+	[Value Background Color] as [Value Background Color (BalanceTableHolding)], 
+	[Value Text Color] as [Value Text Color (BalanceTableHolding)], 
+	[Background Color] as [Background Color (BalanceTableHolding)], 
+	[Text Color] as [Text Color (BalanceTableHolding)], 
+	[Format] as [Format (BalanceTableHolding)], 
+	[Type] as [Type (BalanceTableHolding)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format],
+    [Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_875400599',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
     
     
