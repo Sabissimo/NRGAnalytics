@@ -15,33 +15,8 @@ Load distinct
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='80C6382C4ABBB43711E7363EBFB98EBD' or //electric
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='85070A94EF044E4711EB87F29D540806' or //elvare
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='8653D4F5EF3EE94F11EED6FFAF64F778' //elcom
-    ,'Electromarket',ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null())) AS [კონსოლიდირებული ორგანიზაცია (ფილტრი)],
-    'Holding' as [Holding (ფილტრი)],
-    
-    
-    if(match([%lnk_ორგანიზაცია (BridgeTableOrgDate)],
-     '85070A94EF044E4711EB87F29D540806', // elvare
-     '80C6382C4ABBB43711E7363EBFB98EBD', // electric
-     'A38A1866DAF5638911EA256E98A00C21', // NRG
-     '8653D4F5EF3EE94F11EED6FFAF64F778' // elcom
-     ) > 0, ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()),Null()) AS [ორგანიზაცია PL (ფილტრი)],
-    
-    if(match([%lnk_ორგანიზაცია (BridgeTableOrgDate)],
-     '85070A94EF044E4711EB87F29D540806', // elvare
-     '80C6382C4ABBB43711E7363EBFB98EBD', // electric
-     'A38A1866DAF5638911EA256E98A00C21', // NRG
-     '8653D4F5EF3EE94F11EED6FFAF64F778' // elcom
-     ) > 0, if(
-    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='80C6382C4ABBB43711E7363EBFB98EBD' or //electric
-    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='85070A94EF044E4711EB87F29D540806' or //elvare
-    [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='8653D4F5EF3EE94F11EED6FFAF64F778' //elcom
-    ,'Electromarket',ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null())),Null()) AS [კონსოლიდირებული ორგანიზაცია PL (ფილტრი)],
-    if(match([%lnk_ორგანიზაცია (BridgeTableOrgDate)],
-     '85070A94EF044E4711EB87F29D540806', // elvare
-     '80C6382C4ABBB43711E7363EBFB98EBD', // electric
-     'A38A1866DAF5638911EA256E98A00C21', // NRG
-     '8653D4F5EF3EE94F11EED6FFAF64F778' // elcom
-     ) > 0, 'Holding', null()) as [Holding PL (ფილტრი)]
+    ,'Electromarket','NRG Holding Georgia') AS [კონსოლიდირებული ორგანიზაცია (ფილტრი)],
+    'Holding' as [Holding (ფილტრი)]
     
 Resident BridgeTableOrgDateNonDistinct;
 
