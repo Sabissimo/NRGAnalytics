@@ -1,0 +1,97 @@
+CashflowTable:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (CashflowTable)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (CashflowTable)], 
+	Trim([Article] & '|6' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (CashflowTable) (Trim)], 
+    [Level] as [Level (CashflowTable)],
+	[Value Background Color] as [Value Background Color (CashflowTable)], 
+	[Value Text Color] as [Value Text Color (CashflowTable)], 
+	[Background Color] as [Background Color (CashflowTable)], 
+	[Text Color] as [Text Color (CashflowTable)], 
+	[Format] as [Format (CashflowTable)], 
+	[Type] as [Type (CashflowTable)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format],
+    [Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_207823575',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+
+CashflowTableConsolidated:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (CashflowTableConsolidated)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (CashflowTableConsolidated)], 
+	Trim([Article] & '|7' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (CashflowTableConsolidated) (Trim)], 
+    [Level] as [Level (CashflowTableConsolidated)],
+	[Value Background Color] as [Value Background Color (CashflowTableConsolidated)], 
+	[Value Text Color] as [Value Text Color (CashflowTableConsolidated)], 
+	[Background Color] as [Background Color (CashflowTableConsolidated)], 
+	[Text Color] as [Text Color (CashflowTableConsolidated)], 
+	[Format] as [Format (CashflowTableConsolidated)], 
+	[Type] as [Type (CashflowTableConsolidated)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format],
+    [Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_829788277',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+
+CashflowTableHolding:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (CashflowTableHolding)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (CashflowTableHolding)], 
+	Trim([Article] & '|8' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (CashflowTableHolding) (Trim)], 
+    [Level] as [Level (CashflowTableHolding)],
+	[Value Background Color] as [Value Background Color (CashflowTableHolding)], 
+	[Value Text Color] as [Value Text Color (CashflowTableHolding)], 
+	[Background Color] as [Background Color (CashflowTableHolding)], 
+	[Text Color] as [Text Color (CashflowTableHolding)], 
+	[Format] as [Format (CashflowTableHolding)], 
+	[Type] as [Type (CashflowTableHolding)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[Value Text Color],
+	[Background Color],
+	[Text Color],
+    [Format],
+    [Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_926000525',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+    
+    

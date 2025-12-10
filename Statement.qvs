@@ -7,6 +7,9 @@ $(include=[lib://Holding:DataFiles/Statement 0101. PL Matching.qvs]);
 //Balance Matching
 $(include=[lib://Holding:DataFiles/Statement 0102. Balance Matching.qvs]);
 
+//Cashflow Matching
+$(include=[lib://Holding:DataFiles/Statement 0103. Cashflow Matching.qvs]);
+
 //Reg. Accounting Detailed
 $(include=[lib://Holding:DataFiles/Statement 0201. Reg. Accounting Detailed.qvs]);
 
