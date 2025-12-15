@@ -1,0 +1,95 @@
+PLTablePRC:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (PLTablePRC)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTablePRC)], 
+	Trim([Article] & 'PRC|3' & '|' & [Level]) as [%lnk_Article], 
+    Trim([Article]) as [Article (PLTablePRC) (Trim)], 
+    [Level] as [Level (PLTablePRC)],
+	[Value Background Color] as [Value Background Color (PLTablePRC)], 
+	[% Value Text Color] as [Value Text Color (PLTablePRC)], 
+	[Background Color] as [Background Color (PLTablePRC)], 
+	[Text Color] as [Text Color (PLTablePRC)], 
+	[% Format] as [Format (PLTablePRC)], 
+	[% Type] as [Type (PLTablePRC)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[% Value Text Color],
+	[Background Color],
+	[Text Color],
+    [% Format],
+    [% Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_894800536',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+
+PLTableConsolidatedPRC:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (PLTableConsolidatedPRC)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTableConsolidatedPRC)], 
+	Trim([Article] & 'PRC|4' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (PLTableConsolidatedPRC) (Trim)], 
+    [Level] as [Level (PLTableConsolidatedPRC)],
+	[Value Background Color] as [Value Background Color (PLTableConsolidatedPRC)], 
+	[% Value Text Color] as [Value Text Color (PLTableConsolidatedPRC)], 
+	[Background Color] as [Background Color (PLTableConsolidatedPRC)], 
+	[Text Color] as [Text Color (PLTableConsolidatedPRC)], 
+	[% Format] as [Format (PLTableConsolidatedPRC)], 
+	[% Type] as [Type (PLTableConsolidatedPRC)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[% Value Text Color],
+	[Background Color],
+	[Text Color],
+    [% Format],
+    [% Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_1183284214',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+
+
+PLTableHoldingPRC:
+LOAD 
+	RowNo() as [სტრიქონის ნომერი (PLTableHoldingPRC)],
+	Trim([Article]) & Repeat(Chr(8203), RowNo()) as [Article (PLTableHoldingPRC)], 
+	Trim([Article] & 'PRC|5' & '|' & [Level]) as [%lnk_Article], 
+	Trim([Article]) as [Article (PLTableHoldingPRC) (Trim)], 
+    [Level] as [Level (PLTableHoldingPRC)],
+	[Value Background Color] as [Value Background Color (PLTableHoldingPRC)], 
+	[% Value Text Color] as [Value Text Color (PLTableHoldingPRC)], 
+	[Background Color] as [Background Color (PLTableHoldingPRC)], 
+	[Text Color] as [Text Color (PLTableHoldingPRC)], 
+	[% Format] as [Format (PLTableHoldingPRC)], 
+	[% Type] as [Type (PLTableHoldingPRC)]
+;
+SELECT [Level],
+	[Article],
+	[Value Background Color],
+	[% Value Text Color],
+	[Background Color],
+	[Text Color],
+    [% Format],
+    [% Type]
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_1414796179',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
