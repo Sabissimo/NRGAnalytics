@@ -12,7 +12,8 @@ LOAD
 	[Background Color] as [Background Color (PLTable)], 
 	[Text Color] as [Text Color (PLTable)], 
 	[Format] as [Format (PLTable)], 
-	[Type] as [Type (PLTable)]
+	[Type] as [Type (PLTable)], 
+	[Internal] as [Internal (PLTable)]
 ;
 SELECT [Level],
 	[Article],
@@ -21,7 +22,8 @@ SELECT [Level],
 	[Background Color],
 	[Text Color],
     [Format],
-    [Type]
+    [Type], 
+	[Internal]
 FROM GetWorksheetV2
 WITH PROPERTIES (
 worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_894800536',
@@ -45,7 +47,8 @@ LOAD
 	[Background Color] as [Background Color (PLTableConsolidated)], 
 	[Text Color] as [Text Color (PLTableConsolidated)], 
 	[Format] as [Format (PLTableConsolidated)], 
-	[Type] as [Type (PLTableConsolidated)]
+	[Type] as [Type (PLTableConsolidated)], 
+	[Internal] as [Internal (PLTableConsolidated)]
 ;
 SELECT [Level],
 	[Article],
@@ -54,7 +57,8 @@ SELECT [Level],
 	[Background Color],
 	[Text Color],
     [Format],
-    [Type]
+    [Type], 
+	[Internal]
 FROM GetWorksheetV2
 WITH PROPERTIES (
 worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_1183284214',
@@ -78,7 +82,8 @@ LOAD
 	[Background Color] as [Background Color (PLTableHolding)], 
 	[Text Color] as [Text Color (PLTableHolding)], 
 	[Format] as [Format (PLTableHolding)], 
-	[Type] as [Type (PLTableHolding)]
+	[Type] as [Type (PLTableHolding)], 
+	[Internal] as [Internal (PLTableHolding)]
 ;
 SELECT [Level],
 	[Article],
@@ -87,7 +92,8 @@ SELECT [Level],
 	[Background Color],
 	[Text Color],
     [Format],
-    [Type]
+    [Type], 
+	[Internal]
 FROM GetWorksheetV2
 WITH PROPERTIES (
 worksheetKey='1spo9spqZZ9kbbQIxDiM5Lvaq8vxAkyQwelQ_mBw9yxY:_1414796179',
