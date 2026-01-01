@@ -102,20 +102,20 @@ SalesPlanFromSheets:
 Crosstable(Date, Value, 1)
 Replace LOAD *;
 
-SELECT 
-	*
-FROM GetWorksheetV2
-WITH PROPERTIES (
-worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_0',
-gidOverride='',
-generatedNumberedColumns='false',
-skipRows=''
-);
+// SELECT 
+// 	*
+// FROM GetWorksheetV2
+// WITH PROPERTIES (
+// worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_0',
+// gidOverride='',
+// generatedNumberedColumns='false',
+// skipRows=''
+// );
 
 
-SalesPlanFromSheets:
-Crosstable(Date, Value, 1)
-Add LOAD *;
+// SalesPlanFromSheets:
+// Crosstable(Date, Value, 1)
+// Add LOAD *;
 
 SELECT 
 	*
