@@ -1,3 +1,5 @@
+LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
+
 MapСправочникОрганизации:
 Mapping LOAD
     [Ссылка],
@@ -5,4 +7,13 @@ Mapping LOAD
 LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникОрганизации.qvd]
+(qvd);
+
+MapСправочникСтруктурныеЕдиницы:
+Mapping LOAD
+    [მინიშნება],
+    [დასახელება];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
 (qvd);

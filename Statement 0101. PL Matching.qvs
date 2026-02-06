@@ -1,5 +1,3 @@
-LIB CONNECT TO 'Holding:Google_Drive_&_Spreadsheets - george.sabanadze@doctra.ge';
-
 PLTable:
 LOAD 
 	RowNo() as [სტრიქონის ნომერი (PLTable)],
@@ -68,6 +66,18 @@ skipRows=''
 );
 
 
+MapPLTableConsolidatedArticle:
+Mapping Load 
+[Article (PLTableConsolidated) (Trim)],
+[%lnk_Article]
+Resident PLTableConsolidated;
+
+MapPLTableConsolidatedLevel:
+Mapping Load 
+[Article (PLTableConsolidated) (Trim)],
+[Level (PLTableConsolidated)]
+Resident PLTableConsolidated;
+
 
 
 PLTableHolding:
@@ -101,3 +111,17 @@ gidOverride='',
 generatedNumberedColumns='false',
 skipRows=''
 );
+
+
+MapPLTableHoldingArticle:
+Mapping Load 
+[Article (PLTableHolding) (Trim)],
+[%lnk_Article]
+Resident PLTableHolding;
+
+
+MapPLTableHoldingLevel:
+Mapping Load 
+[Article (PLTableHolding) (Trim)],
+[Level (PLTableHolding)]
+Resident PLTableHolding;

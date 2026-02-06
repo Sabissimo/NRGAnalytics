@@ -13,6 +13,9 @@ $(include=[lib://Holding:DataFiles/Statement 0103. Cashflow Matching.qvs]);
 //PL Matching PRC
 $(include=[lib://Holding:DataFiles/Statement 0104. PL Matching PRC.qvs]);
 
+//PL Budget
+$(include=[lib://Holding:DataFiles/Statement 0105. PL Budget.qvs]);
+
 //Reg. Accounting Detailed
 $(include=[lib://Holding:DataFiles/Statement 0201. Reg. Accounting Detailed.qvs]);
 

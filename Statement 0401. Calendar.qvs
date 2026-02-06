@@ -13,7 +13,8 @@ Drop Table AllDatesStatement;
 
 LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
 //LET vMaxDate = NUM(Now());//If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
-LET vMaxDate = NUM($(vNow));//NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
+//LET vMaxDate = NUM($(vNow));//NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
+LET vMaxDate = If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
 
 
 drop tables StartAndEndDates;

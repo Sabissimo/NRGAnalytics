@@ -2,7 +2,8 @@ BridgeTableOrgDateNonDistinct:
 Load distinct
     [StatementDate] as [Date (BridgeTableOrgDate)],
 	[%lnk_ორგანიზაცია (Statement)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
-	[%lnk_ორგანიზაცია (Statement)] & '|' & StatementDate as [ორგანიზაცია_პერიოდი],
+	[%lnk_განყოფილება (Statement)] as [%lnk_განყოფილება (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (Statement)] & '|' & [%lnk_განყოფილება (Statement)] & '|' & StatementDate as [ორგანიზაცია_განყოფილება_პერიოდი],
     [StatementDate] as [DateForConnect]
 Resident РегистрСведенийРасшифровкаБухгалтерии;
 
@@ -11,6 +12,8 @@ Load distinct
     *,
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)] AS [%lnk_ორგანიზაცია (ფილტრი)],
     ApplyMap('MapСправочникОрганизации',[%lnk_ორგანიზაცია (BridgeTableOrgDate)],Null()) AS [ორგანიზაცია (ფილტრი)],
+    [%lnk_განყოფილება (BridgeTableOrgDate)] AS [%lnk_განყოფილება (ფილტრი)],
+    ApplyMap('MapСправочникСтруктурныеЕдиницы',[%lnk_განყოფილება (BridgeTableOrgDate)],Null()) AS [განყოფილება (ფილტრი)],
     if(
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='80C6382C4ABBB43711E7363EBFB98EBD' or //electric
     [%lnk_ორგანიზაცია (BridgeTableOrgDate)]='85070A94EF044E4711EB87F29D540806' or //elvare
