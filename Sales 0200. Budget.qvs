@@ -15,19 +15,6 @@
 // skipRows=''
 // );
 
-SalesPlanFromSheets:
-Crosstable(Date, Value, 1)
-LOAD *;
-SELECT 
-	*
-FROM GetWorksheetV2
-WITH PROPERTIES (
-worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_0',
-gidOverride='',
-generatedNumberedColumns='false',
-skipRows=''
-);
-
 // SalesPlanFromSheets:
 // Crosstable(Date, Value, 1)
 // LOAD *;
@@ -35,11 +22,24 @@ skipRows=''
 // 	*
 // FROM GetWorksheetV2
 // WITH PROPERTIES (
-// worksheetKey='1VRebtvzdH-Ij2UpG2GdwX0lBCf708UCYBTg_1ojhCy0:_0',
+// worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_0',
 // gidOverride='',
 // generatedNumberedColumns='false',
 // skipRows=''
 // );
+
+SalesPlanFromSheets:
+Crosstable(Date, Value, 1)
+LOAD *;
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1VRebtvzdH-Ij2UpG2GdwX0lBCf708UCYBTg_1ojhCy0:_0',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
 
 Бюджет:
 Load
