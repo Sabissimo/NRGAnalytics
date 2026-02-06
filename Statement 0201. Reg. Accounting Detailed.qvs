@@ -46,19 +46,19 @@ or [კონსოლიდაციის დონე] = 6 or [კონს�
 
 Drop Table РегистрСведенийРасшифровкаБухгалтерииPre;
 
-// Concatenate(РегистрСведенийРасшифровкаБухгалтерии)
-// Budget2026:
-// Load
-// 	floor([პერიოდი (Budget)]) AS StatementDate,
-// 	[%lnk_ორგანიზაცია (Budget)] & '|' & '00000000000000000000000000000000' & '|' & floor([პერიოდი (Budget)]) as [ორგანიზაცია_განყოფილება_პერიოდი],
-//     [პერიოდი (Budget)] AS [პერიოდი (Statement)],
-//     [%lnk_ორგანიზაცია (Budget)] AS [%lnk_ორგანიზაცია (Statement)],
-// 	'00000000000000000000000000000000' AS [%lnk_განყოფილება (Statement)], //Type: СправочникСтруктурныеЕдиницы,
-// 	[%lnk_Article (Budget)] AS [%lnk_Article],
-//     [დონე (Budget)] as [დონე (Statement)],
-// 	If(Left([თანხა (Budget)],1)='(' and Right([თანხა (Budget)],1)=')',-Num#(Mid([თანხა (Budget)],2,Len([თანხა (Budget)])-2)),[თანხა (Budget)]) AS [ბიუჯეტის თანხა (Statement)],
-//     [კონსოლიდაციის დონე (Budget)] AS [კონსოლიდაციის დონე (Statement)]
-// Resident Budget2026Pre;
+Concatenate(РегистрСведенийРасшифровкаБухгалтерии)
+Budget2026:
+Load
+	floor([პერიოდი (Budget)]) AS StatementDate,
+	[%lnk_ორგანიზაცია (Budget)] & '|' & '00000000000000000000000000000000' & '|' & floor([პერიოდი (Budget)]) as [ორგანიზაცია_განყოფილება_პერიოდი],
+    [პერიოდი (Budget)] AS [პერიოდი (Statement)],
+    [%lnk_ორგანიზაცია (Budget)] AS [%lnk_ორგანიზაცია (Statement)],
+	'00000000000000000000000000000000' AS [%lnk_განყოფილება (Statement)], //Type: СправочникСтруктурныеЕдиницы,
+	[%lnk_Article (Budget)] AS [%lnk_Article],
+    [დონე (Budget)] as [დონე (Statement)],
+	If(Left([თანხა (Budget)],1)='(' and Right([თანხა (Budget)],1)=')',-Num#(Mid([თანხა (Budget)],2,Len([თანხა (Budget)])-2)),[თანხა (Budget)]) AS [ბიუჯეტის თანხა (Statement)],
+    [კონსოლიდაციის დონე (Budget)] AS [კონსოლიდაციის დონე (Statement)]
+Resident Budget2026Pre;
 
 Drop Table Budget2026Pre;
 
