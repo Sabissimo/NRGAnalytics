@@ -1,171 +1,171 @@
-[Budget2026ConsolidatedEMKT]:
-LOAD Column2 as [Article], 
-	Column4 as '2026-01-01', 
-	Column5 as '2026-02-01',
-	Column6 as '2026-03-01',
-	Column7 as '2026-04-01',
-	Column8 as '2026-05-01',
-	Column9 as '2026-06-01',
-	Column10 as '2026-07-01',
-	Column11 as '2026-08-01',
-	Column12 as '2026-09-01',
-	Column13 as '2026-10-01',
-	Column14 as '2026-11-01',
-	Column15 as '2026-12-01';
+// [Budget2026ConsolidatedEMKT]:
+// LOAD Column2 as [Article], 
+// 	Column4 as '2026-01-01', 
+// 	Column5 as '2026-02-01',
+// 	Column6 as '2026-03-01',
+// 	Column7 as '2026-04-01',
+// 	Column8 as '2026-05-01',
+// 	Column9 as '2026-06-01',
+// 	Column10 as '2026-07-01',
+// 	Column11 as '2026-08-01',
+// 	Column12 as '2026-09-01',
+// 	Column13 as '2026-10-01',
+// 	Column14 as '2026-11-01',
+// 	Column15 as '2026-12-01';
 
-SELECT Column2,
-	Column4,
-	Column5,
-	Column6,
-	Column7,
-	Column8,
-	Column9,
-	Column10,
-	Column11,
-	Column12,
-	Column13,
-	Column14,
-	Column15
-FROM GetWorksheetV2
-WITH PROPERTIES (
-worksheetKey='15RkGzk96yVi05x5_BRF8bzRmgJM2aeZxcEVqocq-mGs:_0',
-gidOverride='',
-generatedNumberedColumns='false',
-skipRows='10'
-);
+// SELECT Column2,
+// 	Column4,
+// 	Column5,
+// 	Column6,
+// 	Column7,
+// 	Column8,
+// 	Column9,
+// 	Column10,
+// 	Column11,
+// 	Column12,
+// 	Column13,
+// 	Column14,
+// 	Column15
+// FROM GetWorksheetV2
+// WITH PROPERTIES (
+// worksheetKey='15RkGzk96yVi05x5_BRF8bzRmgJM2aeZxcEVqocq-mGs:_0',
+// gidOverride='',
+// generatedNumberedColumns='false',
+// skipRows='10'
+// );
 
-Budget2026ConsolidatedEMKTPre:
-Crosstable(Date, Value, 1)
-LOAD 
-	*
-Resident Budget2026ConsolidatedEMKT;
+// Budget2026ConsolidatedEMKTPre:
+// Crosstable(Date, Value, 1)
+// LOAD 
+// 	*
+// Resident Budget2026ConsolidatedEMKT;
 
-drop table Budget2026ConsolidatedEMKT;
+// drop table Budget2026ConsolidatedEMKT;
 
-Budget2026Pre:
-Load
-	Date#([Date],'YYYY-MM-DD') AS [პერიოდი (Budget)],
-	'85070A94EF044E4711EB87F29D540806' as [%lnk_ორგანიზაცია (Budget)],
-	ApplyMap('MapPLTableConsolidatedArticle', Trim(Replace([Article], Chr(8203), '')), null()) AS [%lnk_Article (Budget)],
-    ApplyMap('MapPLTableConsolidatedLevel', Trim(Replace([Article], Chr(8203), '')), null()) AS [დონე (Budget)],
-    Value AS [თანხა (Budget)],
-    4 AS [კონსოლიდაციის დონე (Budget)]
-Resident Budget2026ConsolidatedEMKTPre;
+// Budget2026Pre:
+// Load
+// 	Date#([Date],'YYYY-MM-DD') AS [პერიოდი (Budget)],
+// 	'85070A94EF044E4711EB87F29D540806' as [%lnk_ორგანიზაცია (Budget)],
+// 	ApplyMap('MapPLTableConsolidatedArticle', Trim(Replace([Article], Chr(8203), '')), null()) AS [%lnk_Article (Budget)],
+//     ApplyMap('MapPLTableConsolidatedLevel', Trim(Replace([Article], Chr(8203), '')), null()) AS [დონე (Budget)],
+//     Value AS [თანხა (Budget)],
+//     4 AS [კონსოლიდაციის დონე (Budget)]
+// Resident Budget2026ConsolidatedEMKTPre;
 
-Drop Table Budget2026ConsolidatedEMKTPre;
+// Drop Table Budget2026ConsolidatedEMKTPre;
 	
-[Budget2026ConsolidatedNRG]:
-LOAD Column2 as [Article], 
-	Column17 as '2026-01-01', 
-	Column18 as '2026-02-01',
-	Column19 as '2026-03-01',
-	Column20 as '2026-04-01',
-	Column21 as '2026-05-01',
-	Column22 as '2026-06-01',
-	Column23 as '2026-07-01',
-	Column24 as '2026-08-01',
-	Column25 as '2026-09-01',
-	Column26 as '2026-10-01',
-	Column27 as '2026-11-01',
-	Column28 as '2026-12-01';
+// [Budget2026ConsolidatedNRG]:
+// LOAD Column2 as [Article], 
+// 	Column17 as '2026-01-01', 
+// 	Column18 as '2026-02-01',
+// 	Column19 as '2026-03-01',
+// 	Column20 as '2026-04-01',
+// 	Column21 as '2026-05-01',
+// 	Column22 as '2026-06-01',
+// 	Column23 as '2026-07-01',
+// 	Column24 as '2026-08-01',
+// 	Column25 as '2026-09-01',
+// 	Column26 as '2026-10-01',
+// 	Column27 as '2026-11-01',
+// 	Column28 as '2026-12-01';
 
-SELECT Column2,
-	Column17,
-	Column18,
-	Column19,
-	Column20,
-	Column21,
-	Column22,
-	Column23,
-	Column24,
-	Column25,
-	Column26,
-	Column27,
-	Column28
-FROM GetWorksheetV2
-WITH PROPERTIES (
-worksheetKey='15RkGzk96yVi05x5_BRF8bzRmgJM2aeZxcEVqocq-mGs:_0',
-gidOverride='',
-generatedNumberedColumns='false',
-skipRows='10'
-);
+// SELECT Column2,
+// 	Column17,
+// 	Column18,
+// 	Column19,
+// 	Column20,
+// 	Column21,
+// 	Column22,
+// 	Column23,
+// 	Column24,
+// 	Column25,
+// 	Column26,
+// 	Column27,
+// 	Column28
+// FROM GetWorksheetV2
+// WITH PROPERTIES (
+// worksheetKey='15RkGzk96yVi05x5_BRF8bzRmgJM2aeZxcEVqocq-mGs:_0',
+// gidOverride='',
+// generatedNumberedColumns='false',
+// skipRows='10'
+// );
 
-Budget2026ConsolidatedNRGPre:
-Crosstable(Date, Value, 1)
-LOAD 
-	*
-Resident Budget2026ConsolidatedNRG;
+// Budget2026ConsolidatedNRGPre:
+// Crosstable(Date, Value, 1)
+// LOAD 
+// 	*
+// Resident Budget2026ConsolidatedNRG;
 
-drop table Budget2026ConsolidatedNRG;
+// drop table Budget2026ConsolidatedNRG;
 
-Budget2026Pre:
-Load
-	Date#([Date],'YYYY-MM-DD') AS [პერიოდი (Budget)],
-	'A38A1866DAF5638911EA256E98A00C21' as [%lnk_ორგანიზაცია (Budget)],
-	ApplyMap('MapPLTableConsolidatedArticle', Trim(Replace([Article], Chr(8203), '')), null()) AS [%lnk_Article (Budget)],
-    ApplyMap('MapPLTableConsolidatedLevel', Trim(Replace([Article], Chr(8203), '')), null()) AS [დონე (Budget)],
-    Value AS [თანხა (Budget)],
-    4 AS [კონსოლიდაციის დონე (Budget)]
-Resident Budget2026ConsolidatedNRGPre;
+// Budget2026Pre:
+// Load
+// 	Date#([Date],'YYYY-MM-DD') AS [პერიოდი (Budget)],
+// 	'A38A1866DAF5638911EA256E98A00C21' as [%lnk_ორგანიზაცია (Budget)],
+// 	ApplyMap('MapPLTableConsolidatedArticle', Trim(Replace([Article], Chr(8203), '')), null()) AS [%lnk_Article (Budget)],
+//     ApplyMap('MapPLTableConsolidatedLevel', Trim(Replace([Article], Chr(8203), '')), null()) AS [დონე (Budget)],
+//     Value AS [თანხა (Budget)],
+//     4 AS [კონსოლიდაციის დონე (Budget)]
+// Resident Budget2026ConsolidatedNRGPre;
 
-Drop Table Budget2026ConsolidatedNRGPre;
+// Drop Table Budget2026ConsolidatedNRGPre;
 	
 
-[Budget2026ConsolidatedHolding]:
-LOAD Column2 as [Article], 
-	Column30 as '2026-01-01', 
-	Column31 as '2026-02-01',
-	Column32 as '2026-03-01',
-	Column33 as '2026-04-01',
-	Column34 as '2026-05-01',
-	Column35 as '2026-06-01',
-	Column36 as '2026-07-01',
-	Column37 as '2026-08-01',
-	Column38 as '2026-09-01',
-	Column39 as '2026-10-01',
-	Column40 as '2026-11-01',
-	Column41 as '2026-12-01';
+// [Budget2026ConsolidatedHolding]:
+// LOAD Column2 as [Article], 
+// 	Column30 as '2026-01-01', 
+// 	Column31 as '2026-02-01',
+// 	Column32 as '2026-03-01',
+// 	Column33 as '2026-04-01',
+// 	Column34 as '2026-05-01',
+// 	Column35 as '2026-06-01',
+// 	Column36 as '2026-07-01',
+// 	Column37 as '2026-08-01',
+// 	Column38 as '2026-09-01',
+// 	Column39 as '2026-10-01',
+// 	Column40 as '2026-11-01',
+// 	Column41 as '2026-12-01';
 
-SELECT Column2,
-	Column30,
-	Column31,
-	Column32,
-	Column33,
-	Column34,
-	Column35,
-	Column36,
-	Column37,
-	Column38,
-	Column39,
-	Column40,
-	Column41
-FROM GetWorksheetV2
-WITH PROPERTIES (
-worksheetKey='15RkGzk96yVi05x5_BRF8bzRmgJM2aeZxcEVqocq-mGs:_0',
-gidOverride='',
-generatedNumberedColumns='false',
-skipRows='10'
-);
+// SELECT Column2,
+// 	Column30,
+// 	Column31,
+// 	Column32,
+// 	Column33,
+// 	Column34,
+// 	Column35,
+// 	Column36,
+// 	Column37,
+// 	Column38,
+// 	Column39,
+// 	Column40,
+// 	Column41
+// FROM GetWorksheetV2
+// WITH PROPERTIES (
+// worksheetKey='15RkGzk96yVi05x5_BRF8bzRmgJM2aeZxcEVqocq-mGs:_0',
+// gidOverride='',
+// generatedNumberedColumns='false',
+// skipRows='10'
+// );
 
-Budget2026ConsolidatedHoldingPre:
-Crosstable(Date, Value, 1)
-LOAD 
-	*
-Resident Budget2026ConsolidatedHolding;
+// Budget2026ConsolidatedHoldingPre:
+// Crosstable(Date, Value, 1)
+// LOAD 
+// 	*
+// Resident Budget2026ConsolidatedHolding;
 
-drop table Budget2026ConsolidatedHolding;
+// drop table Budget2026ConsolidatedHolding;
 
-Budget2026Pre:
-Load
-	Date#([Date],'YYYY-MM-DD') AS [პერიოდი (Budget)],
-	'A38A1866DAF5638911EA256E98A00C21' as [%lnk_ორგანიზაცია (Budget)],
-	ApplyMap('MapPLTableHoldingArticle', Trim(Replace([Article], Chr(8203), '')), null()) AS [%lnk_Article (Budget)],
-    ApplyMap('MapPLTableHoldingLevel', Trim(Replace([Article], Chr(8203), '')), null()) AS [დონე (Budget)],
-    Value AS [თანხა (Budget)],
-    5 AS [კონსოლიდაციის დონე (Budget)]
-Resident Budget2026ConsolidatedHoldingPre;
+// Budget2026Pre:
+// Load
+// 	Date#([Date],'YYYY-MM-DD') AS [პერიოდი (Budget)],
+// 	'A38A1866DAF5638911EA256E98A00C21' as [%lnk_ორგანიზაცია (Budget)],
+// 	ApplyMap('MapPLTableHoldingArticle', Trim(Replace([Article], Chr(8203), '')), null()) AS [%lnk_Article (Budget)],
+//     ApplyMap('MapPLTableHoldingLevel', Trim(Replace([Article], Chr(8203), '')), null()) AS [დონე (Budget)],
+//     Value AS [თანხა (Budget)],
+//     5 AS [კონსოლიდაციის დონე (Budget)]
+// Resident Budget2026ConsolidatedHoldingPre;
 
-Drop Table Budget2026ConsolidatedHoldingPre;
+// Drop Table Budget2026ConsolidatedHoldingPre;
 	
 
 
