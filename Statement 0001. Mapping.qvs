@@ -17,3 +17,12 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСтруктурныеЕдиницы.qvd]
 (qvd);
+
+MapПеречислениеТипыСтруктурныхЕдиниц:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыСтруктурныхЕдиниц.qvd]
+(qvd);
