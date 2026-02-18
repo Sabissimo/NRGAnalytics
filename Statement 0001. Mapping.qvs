@@ -26,3 +26,13 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыСтруктурныхЕдиниц.qvd]
 (qvd);
+
+
+MapПеречислениеТипыСоответствия:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыСоответствия.qvd]
+(qvd);
