@@ -1,6 +1,9 @@
 //Mapping
 $(include=[lib://Holding:DataFiles/Statement 0001. Mapping.qvs]);
 
+//Mapping Custom
+$(include=[lib://Holding:DataFiles/Statement 0002. Mapping Custom.qvs]);
+
 //PL Matching
 $(include=[lib://Holding:DataFiles/Statement 0101. PL Matching.qvs]);
 
