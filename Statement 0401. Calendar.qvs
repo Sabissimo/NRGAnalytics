@@ -145,8 +145,8 @@ drop table TemporaryCalendar;
 
 TemporaryCalendar: 
 LOAD Distinct
-	 monthstart($(vMinDate) + recno() - 1) AS TempDate 
-AUTOGENERATE if(isnull(vMaxDateDept) or isnull(vMinDate),0,$(vMaxDateDept) - $(vMinDate) + 1);
+	 monthstart($(vMinDate2026) + recno() - 1) AS TempDate 
+AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate2026),0,$(vMaxDate) - $(vMinDate2026) + 1);
 
 DeptCalendar:
 Load	
