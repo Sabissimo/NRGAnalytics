@@ -12,6 +12,7 @@ Resident AllDatesStatement;
 Drop Table AllDatesStatement;
 
 LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
+LET vMinDate2026 = 46023;
 //LET vMaxDate = NUM(Now());//If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
 //LET vMaxDate = NUM($(vNow));//NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
 LET vMaxDateBudget = If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
@@ -133,6 +134,53 @@ Load
     if(floor(MonthEnd(TempDate)) = floor(QuarterEnd(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isQEBudget,
     if(floor(MonthEnd(TempDate)) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isMEBudget,
     if(floor(MonthEnd(TempDate)) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYEBudget
+Resident TemporaryCalendar;
+
+drop table TemporaryCalendar;
+
+
+
+
+
+
+TemporaryCalendar: 
+LOAD Distinct
+	 monthstart($(vMinDate) + recno() - 1) AS TempDate 
+AUTOGENERATE if(isnull(vMaxDateDept) or isnull(vMinDate),0,$(vMaxDateDept) - $(vMinDate) + 1);
+
+DeptCalendar:
+Load	
+    [TempDate] as [DateForConnect],
+    date([TempDate]) as [Date Dept],
+    YEAR([TempDate])*100 + MONTH([TempDate]) as [ym Dept],
+    //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
+    'W'&Week	([TempDate])  	as [Week Dept],
+    Year	([TempDate])  	as [Year Dept],
+    Month	([TempDate])		as [Month Dept],
+    pick( match( num(month([TempDate])),1,2,3,4,5,6,7,8,9,10,11,12),
+        dual('იან',1),
+        dual('თებ',2),
+        dual( 'მარ',3),
+        dual('აპრ',4),
+        dual('მაი',5),
+        dual('ივნ',6),
+        dual('ივლ',7),
+        dual('აგვ',8),
+        dual('სექ',9),
+        dual('ოქტ',10),
+        dual('ნოე',11),
+        dual('დეკ',12)
+    ) as [თვე Dept],
+    Day		([TempDate]) 		as [Day Dept],
+    Weekday ([TempDate]) 		as [Weekday Dept],
+    num(month([TempDate]))  as [MONTH_NUM Dept],
+    Year	([TempDate]) *10 + Ceil(Month([TempDate])/3)  as [yq Dept],
+    'Q' & Ceil(Month([TempDate])/3) as [Quarter Dept],
+    dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month Dept],
+    dual( 'Q' & Ceil(Month([TempDate])/3) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *10 + Ceil(Month([TempDate])/3) )  as [Year/Quarter Dept],
+    if(floor(MonthEnd(TempDate)) = floor(QuarterEnd(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isQEDept,
+    if(floor(MonthEnd(TempDate)) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isMEDept,
+    if(floor(MonthEnd(TempDate)) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYEDept
 Resident TemporaryCalendar;
 
 drop table TemporaryCalendar;
