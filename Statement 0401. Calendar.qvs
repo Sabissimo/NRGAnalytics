@@ -1,6 +1,6 @@
 AllDatesStatement:
 Load distinct
-	[Date (BridgeTableOrgDate)] as %lnk_StatementDate
+	[DateForConnect] as %lnk_StatementDate
 Resident BridgeTableOrgDate;
 
 StartAndEndDates:
