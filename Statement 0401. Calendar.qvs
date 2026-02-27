@@ -12,7 +12,8 @@ Resident AllDatesStatement;
 Drop Table AllDatesStatement;
 
 LET vMinDate = NUM(PEEK('MinDate',0,'StartAndEndDates'));
-LET vMinDate2026 = 46023;
+LET vMinDateDept = 46023;
+LET vMinDateBudget = 46023;
 //LET vMaxDate = NUM(Now());//If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
 //LET vMaxDate = NUM($(vNow));//NUM(PEEK('MaxDate', 0, 'StartAndEndDates'));
 LET vMaxDateBudget = If(NUM(PEEK('MaxDate', 0, 'StartAndEndDates')) < NUM(Now()), NUM(Now()), NUM(PEEK('MaxDate', 0, 'StartAndEndDates')));
@@ -98,8 +99,8 @@ drop table TemporaryCalendar;
 
 TemporaryCalendar: 
 LOAD Distinct
-	 monthstart($(vMinDate) + recno() - 1) AS TempDate 
-AUTOGENERATE if(isnull(vMaxDateBudget) or isnull(vMinDate),0,$(vMaxDateBudget) - $(vMinDate) + 1);
+	 monthstart($(vMinDateBudget) + recno() - 1) AS TempDate 
+AUTOGENERATE if(isnull(vMaxDateBudget) or isnull(vMinDateBudget),0,$(vMaxDateBudget) - $(vMinDateBudget) + 1);
 
 BudgetCalendar:
 Load	
@@ -145,8 +146,8 @@ drop table TemporaryCalendar;
 
 TemporaryCalendar: 
 LOAD Distinct
-	 monthstart($(vMinDate2026) + recno() - 1) AS TempDate 
-AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDate2026),0,$(vMaxDate) - $(vMinDate2026) + 1);
+	 monthstart($(vMinDateDept) + recno() - 1) AS TempDate 
+AUTOGENERATE if(isnull(vMaxDate) or isnull(vMinDateDept),0,$(vMaxDate) - $(vMinDateDept) + 1);
 
 DeptCalendar:
 Load	
