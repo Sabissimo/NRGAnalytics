@@ -85,7 +85,8 @@ Load
     If([TempDate] >= MakeDate(2024,2,1), 1, 0) AS ActualDataForStock,
     if(floor(TempDate) = floor(QuarterEnd(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isQE,
     if(floor(TempDate) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isME,
-    if(floor(TempDate) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYE
+    if(floor(TempDate) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYE,
+    if(floor(TempDate) = floor(weekend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isWE
 Resident TemporaryCalendar;
 
 drop table TemporaryCalendar;
