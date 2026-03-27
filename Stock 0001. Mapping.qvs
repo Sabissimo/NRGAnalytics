@@ -126,3 +126,12 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникГруппыСкладовОстатковДляУровнейПополненияЗапасов.qvd]
 (qvd);
+
+MapСправочникСправочники_ЕЛВАРЕ:
+Mapping LOAD
+    [Ссылка],
+    [Наименование];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСправочники_ЕЛВАРЕ.qvd]
+(qvd);
