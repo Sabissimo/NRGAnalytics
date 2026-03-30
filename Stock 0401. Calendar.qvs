@@ -83,7 +83,7 @@ Load
     dual( Month([TempDate]) &'-'& right(Year([TempDate]),2) , Year([TempDate]) *100 + month([TempDate]) )  as [Year/Month Stock],
     If([TempDate] < MonthStart($(vNow)) and [TempDate] >= MakeDate(2024,1,1), 1, 0) AS IncludeInForecastStock,
     If([TempDate] >= MakeDate(2024,2,1), 1, 0) AS ActualDataForStock,
-    If([TempDate] >= MonthStart(AddMonths($(vNow), -12)), 1, 0) AS Last12MonthsForStock,
+    If([TempDate] >= MonthStart(AddMonths($(vNow), -12)), 'ბოლო 12 თვე') AS Last12MonthsForStock,
     if(floor(TempDate) = floor(QuarterEnd(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isQE,
     if(floor(TempDate) = floor(monthend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isME,
     if(floor(TempDate) = floor(yearend(TempDate)) or floor(TempDate) = $(vMaxDate),1,0) as isYE,
