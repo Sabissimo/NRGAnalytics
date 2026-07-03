@@ -186,3 +186,12 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеДаНет.qvd]
 (qvd);
+
+MapПеречислениеНаправленияПокупателей:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеНаправленияПокупателей.qvd]
+(qvd);
