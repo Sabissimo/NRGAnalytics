@@ -135,12 +135,3 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСправочники_ЕЛВАРЕ.qvd]
 (qvd);
-
-MapСправочникКонтрагенты:
-Mapping LOAD
-    [მინიშნება],
-    [(არ გამოიყენება)];
-LOAD
-    *
-FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникКонтрагенты.qvd]
-(qvd);
