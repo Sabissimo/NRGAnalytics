@@ -133,3 +133,30 @@ true() and
 [აქტიური] = '01';
 
 Drop Table РегистрСведенийУровниПополненияЗапасовСрезПоследнихPre;
+
+MapНоменклатураДефПроф:
+Mapping LOAD
+    [მინიშნება],
+    if([დეფიციტ-პროფიციტების ნომენკლატურა] = '00000000000000000000000000000000', [მინიშნება], [დეფიციტ-პროფიციტების ნომენკლატურა]);
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникНоменклатура.qvd]
+(qvd);
+
+MapНоменклатураSLAМинМакс:
+Mapping LOAD
+    [მინიშნება],
+    [SLA (Min/Max)];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникНоменклатура.qvd]
+(qvd);
+
+MapНоменклатураПериодичность:
+Mapping LOAD
+    [მინიშნება],
+    [დღეების რაოდენობა გადახედვებს შორის];
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникНоменклатура.qvd]
+(qvd);
