@@ -374,3 +374,151 @@ where floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
 ;
 
 drop table ClientsPlanFromSheets;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SalesPlanFromSheets:
+Crosstable(Date, Value, 1)
+Replace LOAD *;
+
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_1712611515',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+
+SalesPlanFromSheets:
+Crosstable(Date, Value, 1)
+Add LOAD *;
+
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1VRebtvzdH-Ij2UpG2GdwX0lBCf708UCYBTg_1ojhCy0:_1271825641',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+ПланПродажПоГруппамPreJoin:
+Replace Load
+	Date#([Date],'YYYY-MM-DD') as [დაგეგმვის პერიოდი],
+    [მიმართულება],
+    [Value]
+Resident SalesPlanFromSheets
+where floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+;
+
+drop table SalesPlanFromSheets;
+
+
+
+ДниИнтерваловПланаПродаж:
+Replace Load
+	MonthStart(YearStart($(vNow)) + RowNo() - 1) as [დაგეგმვის პერიოდი],
+	YearStart($(vNow)) + RowNo() - 1 as [გეგმის ინტერვალის დღე],
+    (Floor(MonthEnd(YearStart($(vNow)) + RowNo() - 1)) - Floor(MonthStart(YearStart($(vNow)) + RowNo() - 1)) + 1) - ApplyMap('MapВыходныеПоМесяцам', MonthStart(YearStart($(vNow)) + RowNo() - 1), 0) as [დღეების რაოდენობა თვეში]
+AutoGenerate (YearEnd($(vNow))  - YearStart($(vNow)) +1);
+
+Left Join(ПланПродажПоГруппамPreJoin)
+Replace Load
+  *
+Resident ДниИнтерваловПланаПродаж;
+
+Drop Table ДниИнтерваловПланаПродаж;
+
+ПланПродажПоНаправлениям:
+Replace Load
+	[მიმართულება] & '|' & Date([გეგმის ინტერვალის დღე],'YYYY-MM-DD') as [მიმართულება (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	([Value]/[დღეების რაოდენობა თვეში]) * ApplyMap('MapВыходныеПоДням', [გეგმის ინტერვალის დღე], 1) as [გაყიდვები მიმართულებებით (გეგმა)]
+Resident ПланПродажПоГруппамPreJoin;
+
+Drop Table ПланПродажПоГруппамPreJoin;
+
+
+
+
+
+
+
+
+
+
+
+ProfitPlanFromSheets:
+Crosstable(Date, Value, 1)
+Replace LOAD *;
+
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='122fWdPTf07o9kDdRXfktilXE6iq8ION8aZV1WaS-bxo:_1090834167',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+ProfitPlanFromSheets:
+Crosstable(Date, Value, 1)
+Add LOAD *;
+
+SELECT 
+	*
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1VRebtvzdH-Ij2UpG2GdwX0lBCf708UCYBTg_1ojhCy0:_491976607',
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+ПланПрибылиПоГруппамPreJoin:
+Replace Load
+	Date#([Date],'YYYY-MM-DD') as [დაგეგმვის პერიოდი],
+    [მიმართულება],
+    [Value]
+Resident ProfitPlanFromSheets
+where floor(Date#([Date], 'YYYY-MM-DD')) >= YearStart($(vNow))
+;
+
+drop table ProfitPlanFromSheets;
+
+ДниИнтерваловПланаПрибыли:
+Replace Load
+	MonthStart(YearStart($(vNow)) + RowNo() - 1) as [დაგეგმვის პერიოდი],
+	YearStart($(vNow)) + RowNo() - 1 as [გეგმის ინტერვალის დღე],
+    (Floor(MonthEnd(YearStart($(vNow)) + RowNo() - 1)) - Floor(MonthStart(YearStart($(vNow)) + RowNo() - 1)) + 1) - ApplyMap('MapВыходныеПоМесяцам', MonthStart(YearStart($(vNow)) + RowNo() - 1), 0) as [დღეების რაოდენობა თვეში]
+AutoGenerate (YearEnd($(vNow))  - YearStart($(vNow)) +1);
+
+Left Join(ПланПрибылиПоГруппамPreJoin)
+Replace Load
+  *
+Resident ДниИнтерваловПланаПрибыли;
+
+Drop Table ДниИнтерваловПланаПрибыли;
+
+ПланПрибылиПоНаправлениям:
+Replace Load
+	[მიმართულება] & '|' & Date([გეგმის ინტერვალის დღე],'YYYY-MM-DD') as [მიმართულება (ბიუჯეტისთვის)_დაგეგმვის პერიოდი],
+	([Value]/[დღეების რაოდენობა თვეში]) * ApplyMap('MapВыходныеПоДням', [გეგმის ინტერვალის დღე], 1) as [ამონაგები მიმართულებებით (გეგმა)]
+Resident ПланПрибылиПоГруппамPreJoin;
+
+Drop Table ПланПрибылиПоГруппамPreJoin;
