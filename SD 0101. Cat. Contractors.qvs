@@ -27,13 +27,22 @@ WHERE
 	match ([ეს არის ჯგუფი (გაყიდვები)],'00');
 
 СправочникКонтрагентыИерархия:
-Replace Load 
+Replace Load
 	*,
 	1 as [ტემპ2 (იერარქია კონტრაგენტები)],
     [%lnk_კონტრაგენტი] as [%lnk_კონტრაგენტის ჯგუფი]
 Resident СправочникКонтрагентыИерархияPre;
 
 Drop Table СправочникКонтрагентыИерархияPre;
+
+// ფსევდო-ჯგუფი 'PLAN': SECTION ACCESS-ის რედუქციის ჯაჭვი გაყიდვების ფაქტში ჩამატებული
+// გეგმის სტრიქონებისთვის (SD 0201) — 'PLAN' ჯგუფით ხიდის სტრიქონები (SD 0301) ამ ჩანაწერს
+// უკავშირდება და რედუქცია ვეღარ შლის მათ. Display ველები ცარიელია, რომ ფილტრებში არ გამოჩნდეს.
+Concatenate(СправочникКонтрагентыИерархия)
+Add Load
+	'PLAN' as [%lnk_კონტრაგენტი],
+	'PLAN' as [%lnk_კონტრაგენტის ჯგუფი]
+AutoGenerate 1;
 
 СправочникКонтрагентыОбратнаяИерархияPrePreJoinPre:
 HierarchyBelongsTo
@@ -96,7 +105,15 @@ Replace LOAD DISTINCT
     [Sales Access Email],
     [%lnk_კონტრაგენტი]                    // descendant the user may see
 RESIDENT СправочникКонтрагентыОбратнаяИерархияPre
-WHERE Len([Sales Access Email]) and [Sales Access Role] = 'USER'; 
+WHERE Len([Sales Access Email]) and [Sales Access Role] = 'USER';
+
+// 'PLAN' ფსევდო-ჯგუფი ყველა USER-ს, რომ გეგმის სტრიქონები რედუქციამ არ წაშალოს
+Concatenate(UserDescendants)
+Add LOAD DISTINCT
+	[Sales Access Role],
+    [Sales Access Email],
+    'PLAN' as [%lnk_კონტრაგენტი]
+RESIDENT UserDescendants;
 
 SalesAccessAdminPreJoin:
 Replace LOAD
@@ -106,9 +123,17 @@ RESIDENT SalesAccess
 WHERE [Sales Access Role] = 'ADMIN';
 
 Left Join(SalesAccessAdminPreJoin)
-Replace Load 
+Replace Load
 	[%lnk_კონტრაგენტი]
 Resident СправочникКонтрагенты;
+
+// 'PLAN' ფსევდო-ჯგუფი ყველა ADMIN-ს, რომ გეგმის სტრიქონები რედუქციამ არ წაშალოს
+Concatenate(SalesAccessAdminPreJoin)
+Add LOAD DISTINCT
+	[Sales Access Role],
+    [Sales Access Email],
+    'PLAN' as [%lnk_კონტრაგენტი]
+RESIDENT SalesAccessAdminPreJoin;
 
 SalesAccessAdmin:
 Replace Load 

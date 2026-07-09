@@ -28,8 +28,10 @@ Replace Load distinct
 	ApplyMap('MapСправочникСотрудники',ApplyMap('MapСправочникКонтрагентыОтветственныйМенеджер',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()),Null()) AS [პასუხისმგებელი მენეჯერი (კონტრაგენტები)],
 	ApplyMap('MapСправочникПользователи',ApplyMap('MapСправочникКонтрагентыОтветственныйПользователь',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()),Null()) AS [გაყიდ. მენეჯერი (კონტრაგენტები)],
 	ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыМенеджерПродаж',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()) AS [მომს. მენეჯერი (კონტრაგენტები)],
-    ApplyMap('MapСправочникКонтрагентыГруппа',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()) & '|' & [Date (BridgeTableOrgDate)] & '|' & [ნაშთია (BridgeTableOrgDate)] as [კონტრაგენტის_ჯგუფი_პერიოდი_ნაშთია],
-    ApplyMap('MapСправочникКонтрагентыГруппа',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()) as [%lnk_კონტრაგენტის ჯგუფი (BridgeTableOrgDate)]
+    // გეგმის სტრიქონებს (%lnk_ორგანიზაცია = 'გეგმა') ეძლევათ ფსევდო-ჯგუფი 'PLAN' და არა Null(),
+    // რომ SECTION ACCESS-ის რედუქციამ არ წაშალოს ისინი (იხ. 'PLAN' სტრიქონები SD 0101-ში).
+    if([%lnk_ორგანიზაცია (BridgeTableOrgDate)]='გეგმა', 'PLAN', ApplyMap('MapСправочникКонтрагентыГруппа',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null())) & '|' & [Date (BridgeTableOrgDate)] & '|' & [ნაშთია (BridgeTableOrgDate)] as [კონტრაგენტის_ჯგუფი_პერიოდი_ნაშთია],
+    if([%lnk_ორგანიზაცია (BridgeTableOrgDate)]='გეგმა', 'PLAN', ApplyMap('MapСправочникКонтрагентыГруппа',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null())) as [%lnk_კონტრაგენტის ჯგუფი (BridgeTableOrgDate)]
 Resident BridgeTableOrgDateNonDistinct;
 
 Drop Table BridgeTableOrgDateNonDistinct;
