@@ -18,6 +18,19 @@ add Load distinct
 	[%lnk_ორგანიზაცია (ანგარიშსწორებები მყიდველებთან)] & '|' & [%lnk_კონტრაგენტი (ანგარიშსწორებები მყიდველებთან)] & '|' & DebitorsDate & '|' & [ნაშთია (ანგარიშსწორებები მყიდველებთან)] & '|' & [მიმართულება (ანგარიშსწორებები მყიდველებთან)] as [ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]
 Resident РегистрНакопленияРасчетыСПокупателями;
 
+// P&L ფაქტის ხიდის სტრიქონები — აქ შემოდის [მიმართულება]-ში ლოგისტიკა/ადმინისტრაცია.
+// ბლოკი შეგნებულად დაუცველია (24-გარეშე): ხიდი ყოველ ნაწილობრივ გადატვირთვაზე Replace-ით
+// შენდება და P&L ფაქტი (SD 0206, 24) მეხსიერებაში შენარჩუნებულია — Resident სკანი მუშაობს.
+BridgeTableOrgDateNonDistinct:
+add Load distinct
+    PLDate as [Date (BridgeTableOrgDate)],
+	[ნაშთია (P&L)] as [ნაშთია (BridgeTableOrgDate)],
+	[%lnk_ორგანიზაცია (P&L)] as [%lnk_ორგანიზაცია (BridgeTableOrgDate)],
+	[%lnk_კონტრაგენტი (P&L)] as [%lnk_კონტრაგენტი (BridgeTableOrgDate)],
+	[მიმართულება (P&L)] as [მიმართულება],
+	[%lnk_ორგანიზაცია (P&L)] & '|' & [%lnk_კონტრაგენტი (P&L)] & '|' & PLDate & '|' & [ნაშთია (P&L)] & '|' & [მიმართულება (P&L)] as [ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]
+Resident РегистрНакопленияДоходыИРасходы;
+
 BridgeTableOrgDate:
 Replace Load distinct
     *,
@@ -30,8 +43,9 @@ Replace Load distinct
 	ApplyMap('MapСправочникКонтрагентыДополнительныеРеквизитыМенеджерПродаж',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()) AS [მომს. მენეჯერი (კონტრაგენტები)],
     // გეგმის სტრიქონებს (%lnk_ორგანიზაცია = 'გეგმა') ეძლევათ ფსევდო-ჯგუფი 'PLAN' და არა Null(),
     // რომ SECTION ACCESS-ის რედუქციამ არ წაშალოს ისინი (იხ. 'PLAN' სტრიქონები SD 0101-ში).
-    if([%lnk_ორგანიზაცია (BridgeTableOrgDate)]='გეგმა', 'PLAN', ApplyMap('MapСправочникКонтрагентыГруппа',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null())) & '|' & [Date (BridgeTableOrgDate)] & '|' & [ნაშთია (BridgeTableOrgDate)] as [კონტრაგენტის_ჯგუფი_პერიოდი_ნაშთია],
-    if([%lnk_ორგანიზაცია (BridgeTableOrgDate)]='გეგმა', 'PLAN', ApplyMap('MapСправочникКонтрагентыГруппа',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null())) as [%lnk_კონტრაგენტის ჯგუფი (BridgeTableOrgDate)]
+    // P&L-ის სტრიქონებს (%lnk_კონტრაგენტი = 'PL') — ფსევდო-ჯგუფი 'PL' (მხოლოდ ADMIN-ებს, იხ. SD 0101).
+    if([%lnk_ორგანიზაცია (BridgeTableOrgDate)]='გეგმა', 'PLAN', if([%lnk_კონტრაგენტი (BridgeTableOrgDate)]='PL', 'PL', ApplyMap('MapСправочникКонтрагентыГруппа',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()))) & '|' & [Date (BridgeTableOrgDate)] & '|' & [ნაშთია (BridgeTableOrgDate)] as [კონტრაგენტის_ჯგუფი_პერიოდი_ნაშთია],
+    if([%lnk_ორგანიზაცია (BridgeTableOrgDate)]='გეგმა', 'PLAN', if([%lnk_კონტრაგენტი (BridgeTableOrgDate)]='PL', 'PL', ApplyMap('MapСправочникКонтрагентыГруппа',[%lnk_კონტრაგენტი (BridgeTableOrgDate)],Null()))) as [%lnk_კონტრაგენტის ჯგუფი (BridgeTableOrgDate)]
 Resident BridgeTableOrgDateNonDistinct;
 
 Drop Table BridgeTableOrgDateNonDistinct;

@@ -44,6 +44,14 @@ Add Load
 	'PLAN' as [%lnk_კონტრაგენტის ჯგუფი]
 AutoGenerate 1;
 
+// ფსევდო-ჯგუფი 'PL': იგივე მექანიზმი P&L ფაქტის სტრიქონებისთვის (SD 0206 / SD 0301).
+// წვდომა მხოლოდ ADMIN-ებს ეძლევა (იხ. ქვემოთ) — USER-ები P&L-ს ვერ ხედავენ.
+Concatenate(СправочникКонтрагентыИерархия)
+Add Load
+	'PL' as [%lnk_კონტრაგენტი],
+	'PL' as [%lnk_კონტრაგენტის ჯგუფი]
+AutoGenerate 1;
+
 СправочникКонтрагентыОбратнаяИерархияPrePreJoinPre:
 HierarchyBelongsTo
 (
@@ -133,6 +141,15 @@ Add LOAD DISTINCT
 	[Sales Access Role],
     [Sales Access Email],
     'PLAN' as [%lnk_კონტრაგენტი]
+RESIDENT SalesAccessAdminPreJoin;
+
+// 'PL' ფსევდო-ჯგუფი მხოლოდ ADMIN-ებს — P&L მიმართულებებით (SD 0206) მხოლოდ მათ უჩანთ.
+// USER-ებზე გასახსნელად იგივე სტრიქონი UserDescendants-ის ბლოკშიც უნდა დაემატოს.
+Concatenate(SalesAccessAdminPreJoin)
+Add LOAD DISTINCT
+	[Sales Access Role],
+    [Sales Access Email],
+    'PL' as [%lnk_კონტრაგენტი]
 RESIDENT SalesAccessAdminPreJoin;
 
 SalesAccessAdmin:
