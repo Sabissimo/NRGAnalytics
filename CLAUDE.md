@@ -88,6 +88,12 @@ granted in the **ADMIN block only**; to expose P&L to USERs, add the same one-li
   `შიდა_და_არაძითადები_ფილტрი` = internal-contractors + non-core-items exclusion.
 - **Never retype Georgian/Russian identifiers — always copy-paste.** Cyrillic lookalikes
   (е, а, о, р, ф…) corrupt field names silently and the script still parses.
+- **`Alt()` is numeric-only** — it returns the first argument with a valid NUMBER, so it
+  silently rejects text like 'საცალო'. For text fallbacks use `if(Len(Trim(x))>0, x, y)`.
+- **Never put code literals (table names, statements) verbatim in instruction comments** —
+  search/replace-based edits and greps match the comment instead of the code.
+- A field can hold the literal STRING 'მიმართულების გარეშე' (ApplyMap defaults), not null —
+  emptiness checks alone don't catch "no direction".
 - Partial-reload prefixes (`Replace LOAD` / `Add LOAD`) are used everywhere; keep new
   statements consistent or partial reloads will drop/duplicate data.
 
