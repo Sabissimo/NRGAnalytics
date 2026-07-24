@@ -5,6 +5,9 @@ Qlik Sense (Qlik Cloud) load scripts for Electro Market / NRG analytics apps.
 
 - **Architecture, conventions, and gotchas:** see [CLAUDE.md](CLAUDE.md)
 - **Direction plans design record:** see [docs/direction-plans.md](docs/direction-plans.md)
+- **P&L by direction design record:** see [docs/pl-by-direction.md](docs/pl-by-direction.md) —
+  fact assembly, allocation variants, 1C-order article sorting, previous-month data cap,
+  and the app-side vPLVariant contract
 - **P&L source query (1C):** see [docs/pl.txt](docs/pl.txt) — the original analyst query whose
   register+journal logic the SD 0206 script reimplements (its header comment refers to it as
   pl.txt). Reference only, never executed. Full 1C config dump: `D:\NRG` (clone of

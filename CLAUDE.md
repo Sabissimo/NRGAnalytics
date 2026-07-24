@@ -35,10 +35,10 @@ circular reference (Qlik silently "loosely couples" a table → charts show 0):
 Sales fact ──┐
 Debitors ────┼─[ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]── BridgeTableOrgDate
 P&L fact ────┘        (org|contractor|date|ნაშთია|direction)      │
-                                    [კონტრაგენტის_ჯგუфи_პერიოდი_ნაშთია]
+                                    [კონტრაგენტის_ჯგუფი_პერიოდი_ნაშთია]
                                                                   │
-   СправочникКонтрагентыИерархия ──[%lnk_კონტрагентის ჯგუфи]── BridgeTableContrDate
-   СправочникКонтрагентыОбратная  ──[%lnk_… ჯგუфи_დაგეგმვის პერიოდი]──┤
+   СправочникКонтрагентыИерархия ──[%lnk_კონტრაგენტის ჯგუფი]── BridgeTableContrDate
+   СправочникКонтрагентыОбратная  ──[%lnk_… ჯგუფი_დაგეგმვის პერიოდი]──┤
         └── segment plan tables                            [DateForConnect]
                                                                   │
    royalty fact + royalty budget ──[DateForConnect]────────── SDCalendar
@@ -54,7 +54,12 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
 - P&L fact (`SD 0206. Reg. PL Directions 24.qvs`, daily/24): standalone fact keyed
   `orgGUID|'PL'|date|0|direction`; adds directions ლოგისტიკა/ადმინისტრაცია. Its bridge block in
   `SD 0301` is deliberately UNguarded (must re-scan the persisted fact on every partial reload).
-  Full design: `D:\Claude\ExecutiveDashboard\docs\05-pl-by-direction.md`.
+  Data window ends at the month BEFORE the reload date (`vPLEnd`) — current month is excluded
+  on purpose. Allocation variants: group field + allocated overhead copies + 12-row link table
+  on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
+  measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
+  1C `რიგითობა` order as the numeric part of `dual()` values → charts sort on plain Auto.
+  Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
   Sheet direction names must exactly match `MapПеречислениеНаправленияПокупателей` output.
 - Direction plans are **concatenated into the sales fact** as rows with pseudo-org `'გეგმა'` —
@@ -63,7 +68,7 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
 ## SECTION ACCESS — the #1 trap
 
 `SD 0101` has `SECTION ACCESS` reducing on `[%lnk_კონტრაგენტი]` (lives only in
-`СправочникКонтрагентыИерархია`). On **app open** (not reload) Qlik deletes every row not
+`СправочникКонтрагентыИерархия`). On **app open** (not reload) Qlik deletes every row not
 transitively associated with the user's allowed values — **rows whose link chain ends in a
 null die for everyone, including admins**. Symptom: fields exist, unconditional `Sum()` = 0,
 rows counted = 0, yet the reload log shows rows loaded.
@@ -85,9 +90,19 @@ granted in the **ADMIN block only**; to expose P&L to USERs, add the same one-li
   If it is 0, the rows are physically absent — think section-access reduction or empty source.
 - Exec-dashboard period variables (`მიმდინარე_წელი`, `…_დღეის_ჩათვლით`, etc.) are defined
   app-side (not in these scripts) and modify calendar fields `[Year SD]`/`[Date SD]`;
-  `შიდა_და_არაძითადები_ფილტрი` = internal-contractors + non-core-items exclusion.
+  `შიდა_და_არაძითადები_ფილტრი` = internal-contractors + non-core-items exclusion.
 - **Never retype Georgian/Russian identifiers — always copy-paste.** Cyrillic lookalikes
   (е, а, о, р, ф…) corrupt field names silently and the script still parses.
+- Copy-paste discipline is NOT enough: generation itself injects Cyrillic phonetic chars into
+  Georgian words (ф→ფ, х→ხ, е→ე, б→ბ, у→უ, л→ლ). **After ANY edit touching Georgian text, run
+  a scan for words mixing Georgian (U+10A0–10FF) and Cyrillic (U+0400–04FF)** and fix to zero;
+  the only legitimate mixes are Georgian+Latin (`%lnk_*`, `path`, `sort`). Then verify token
+  counts of new field names across all build sites.
+- **Set-analysis literals match a dual field's TEXT, not its number.** For dual values like
+  `[გადანაწილების ვარიანტი]`, `{<F={$(v)}>}` with a numeric variable silently matches nothing
+  — use the label in quotes: `{<F={'$(v)'}>}`. Conversely, dual's numeric part is what Auto
+  sorting uses — baking a rank into `dual(name, rank)` beats per-chart sort expressions
+  (pivot tables apply expression sorting unreliably).
 - **`Alt()` is numeric-only** — it returns the first argument with a valid NUMBER, so it
   silently rejects text like 'საცალო'. For text fallbacks use `if(Len(Trim(x))>0, x, y)`.
 - **Never put code literals (table names, statements) verbatim in instruction comments** —
@@ -108,7 +123,7 @@ granted in the **ADMIN block only**; to expose P&L to USERs, add the same one-li
 
 1. Upload ALL changed `.qvs` files, full reload, then **close and reopen the app**
    (reduction happens at open).
-2. Unconditional `Sum([გაყიდвები მიმართულებებით (გეგმა)])` > 0.
+2. Unconditional `Sum([გაყიდვები მიმართულებებით (გეგმა)])` > 0.
 3. Table: dimension `[მიმართულება]` + plan + fact measures — every direction shows both
    (a direction with only one side = spelling mismatch sheet vs enum).
 4. Master-calendar month/year selections slice the plan, including future dates.
