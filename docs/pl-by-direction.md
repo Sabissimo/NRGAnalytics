@@ -53,6 +53,37 @@ semantics" below for the routing table and the double-counting trap.
    (income/expense types on Операция; account-group codes 6–9 on ВводНачальныхОстатков;
    loan-interest codes 6–9 on ПриходнаяНакладная); credit side enters with flipped sign.
 
+## Internal / non-core filtering (2026-07-28)
+
+Sales sheets filter with `[Internal (კონტრაგენტები)]={'არა'}, [არ არის ძირითადი (ნომენკლატურა)]={'არა'}`.
+The P&L fact now carries its own equivalents so P&L measures can be filtered the same way
+instead of the exclusion being hardcoded:
+
+| Row origin | `[Internal (P&L)]` / `[არ არის ძირითადი (P&L)]` |
+|---|---|
+| sales injection (revenue + COGS) | **real values** from the sales fact; grain extended by both |
+| register / journal (static, dynamic, fractional) | both `'არა'` — such rows are neither internal nor non-core, so the standard filter keeps them |
+| allocation-variant copies | carried through from the source row |
+
+⚠ **The names deliberately differ from the sales-side fields.** `[Internal (კონტრაგენტები)]`
+lives on `BridgeTableOrgDate` (`SD 0301`) and `[არ არის ძირითადი (ნომენკლატურა)]` on the items
+dimension (`SD 0102`). Reusing either name on the P&L fact would give it a second shared field
+with a table it already associates to → synthetic key / circular reference (the single-
+attachment-point rule in CLAUDE.md). Hence `(P&L)`-suffixed twins, per the per-fact suffix
+convention. Consequence: P&L measures need their **own** modifier, e.g.
+`{<[Internal (P&L)]={'არა'}, [არ არის ძირითადი (P&L)]={'არა'}>}` — the sales variable
+`შიდა_და_არაძირითადები_ფილტრი` will not reach P&L rows.
+
+**The COGS-share basis stays script-filtered** (`ДолиСебестоимостиPre`, internal + non-core
+excluded). Shares are a script-time aggregate that must sum to 1 so every allocated row is
+distributed in full; making them respond to selections would change the P&L expense total
+whenever a contractor or item filter moved. The basis already matches the filter users apply,
+so a filtered P&L and its allocation weights agree.
+
+Note the direction rule sends internal / non-core / direction-less sales to `'ლოგისტიკა'`, so
+filtering both flags to `'არა'` shrinks ლოგისტიკა — that is the intended parity with sales,
+not a bug.
+
 ## Matching sheet semantics
 
 Google Sheet, PL Directions tab. Columns: `მუხლი` | `სტრუქტურული ერთეული` | `სულ` (control sum,
