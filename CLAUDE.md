@@ -59,6 +59,12 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
   1C `რიგითობა` order as the numeric part of `dual()` values → charts sort on plain Auto.
+  Matching-sheet rows route to **three mutually exclusive branches**: >1 numeric weight → fixed
+  fractions (normalized by the row's own sum), a single weight 1 → static, `დინამიურად` or no
+  row → dynamic. Adding a branch means NARROWING the others' `Where` clauses — the dynamic one
+  claims everything the static map didn't, so leaving it open double counts silently. Fractions
+  need a joined weight table, not a map: `ApplyMap` returns one value per key.
+  Full design: `docs/pl-by-direction.md`.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
   Sheet direction names must exactly match `MapПеречислениеНаправленияПокупателей` output.

@@ -1,6 +1,8 @@
 # P&L by direction — design record (SD 0206)
 
-Status: live since 2026-07-24. Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
+Status: live since 2026-07-24; fixed fractional splits + `[ანგარიშის კოდი (P&L)]` added
+2026-07-28 (`330d2ce`, live after the next daily full reload).
+Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
 incl. Порядок, ПодразделенияЗатратДоходовСчетов, НаправленияДеятельности, ВидСчетаPL column
@@ -12,6 +14,11 @@ on the management chart of accounts).
 `orgGUID | 'PL' | date | 0 | direction` (`[ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]`,
 contractor segment is the literal `'PL'`). Grain: org × day × direction × article × account.
 Measures: `[შემოსავალი (P&L)]`, `[ხარჯი (P&L)]`, `[თანხა (P&L)]` (= revenue − expense).
+Audit attributes: `[ანგარიშის დასახელება (P&L)]` + `[ანგარიშის კოდი (P&L)]` (empty code = GUID
+not in the chart of accounts), `[მუხლი (P&L)]` (empty = account has no ВидСчетаPL),
+`[დამატჩებულია (P&L)]` (`'არა'` = key absent from the sheet), `[წილები დაბალანსებულია (P&L)]`
+(`'არა'` = fractional weights don't total 100%). Those four separate the distinct
+"unmatched" causes, which otherwise look identical.
 Its bridge block in `SD 0301` is deliberately UNguarded — it re-scans the persisted fact on
 every partial reload and rebuilds identical keys, so fact-side changes need no bridge edits
 as long as the key recipe is preserved.
@@ -21,24 +28,64 @@ MonthStart(reload date)`, exclusive — current month is still being closed in 1
 month in the fact is always the previous month. All four entry points cut at `vPLEnd`:
 register pass, both journal passes, sales-injection staging.
 
-## Assembly (four passes + allocation)
+## Assembly (five passes + allocation)
 
-1. **Static** — articles matched in the Google Sheet with weight 1: whole amount to one
-   direction via the static direction map (`MapНаправлениеСтатично`, key = trimmed
-   article|structural-unit).
-2. **Dynamic** — sheet value `'დინამიურად'` or key not found at all: row exploded into ≤3 rows
+Passes 1–3 are mutually exclusive and exhaustive over the staging rows — see "Matching sheet
+semantics" below for the routing table and the double-counting trap.
+
+1. **Static** — articles matched in the Google Sheet with weight 1 on exactly one direction:
+   whole amount to that direction via the static direction map (`MapНаправлениеСтатично`,
+   key = trimmed article|structural-unit).
+2. **Fixed fractions** (2026-07-28) — more than one numeric weight on the row: exploded into one
+   row per weighted direction, amount × weight normalized by the row's own sum
+   (`ФиксДолиПЛ`, marker map `MapНаправлениеФиксДоли`).
+3. **Dynamic** — sheet value `'დინამიურად'` or key not found at all: row exploded into ≤3 rows
    by monthly COGS shares (`ДолиСебестоимости`: month × direction share of
    `[თვითღირებულება (გაყიდვები)]`, commercial directions only, same exclusions as
    `შიდა_და_არაძირითადები_ფილტრი`). Months with no shares fall back to the literal
    `'მიმართულების გარეშე'`.
-3. **Sales injection (revenue + COGS)** — register/journal rows on the directions'
+4. **Sales injection (revenue + COGS)** — register/journal rows on the directions'
    revenue/COGS accounts are excluded (per account|registrar pairs that actually occur in
    the sales fact) and replaced by rows built from the sales fact, direction per document;
    internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`.
-4. **Journal side** (within 1–2 above): Управленческий ledger rows not covered by the
+5. **Journal side** (within 1–3 above): Управленческий ledger rows not covered by the
    register, via anti-join on registrar + the three filter branches from pl.txt
    (income/expense types on Операция; account-group codes 6–9 on ВводНачальныхОстатков;
    loan-interest codes 6–9 on ПриходнаяНакладная); credit side enters with flipped sign.
+
+## Matching sheet semantics
+
+Google Sheet, PL Directions tab. Columns: `მუხლი` | `სტრუქტურული ერთეული` | `სულ` (control sum,
+**not loaded**) | `საცალო` | `დისტრიბუცია` | `კორპორატიული` | `ლოგისტიკა` | `ადმინისტრაცია`.
+`[მუხლი]` is the account's **ВидСчетаPL name**, not the account name.
+
+| Row content | Branch |
+|---|---|
+| `1` / `100%` on exactly one direction | static |
+| two or more numeric weights (`60%`, `40%`) | fixed fractions, normalized |
+| `დინამიურად` | dynamic (monthly COGS shares) |
+| no row for the key | dynamic, flagged `[დამატჩებულია (P&L)] = 'არა'` |
+
+- Percent-formatted cells arrive as numbers (`100%` → 1) — confirmed in production.
+- Weights are normalized by the row's own sum, so the amount is always distributed in full and
+  the P&L ties to the register even when the row doesn't total 100%; such rows are flagged
+  `[წილები დაბალანსებულია (P&L)] = 'არა'`.
+- `[სულ]` is decorative — it is never loaded, so a row that reads 100% across in the spreadsheet
+  is no guarantee Qlik honoured it. The flag field is the real check.
+
+⚠ **Routing trap.** A fractional key must be excluded from BOTH the static and the dynamic
+`Where` clauses (`MapНаправлениеФиксДоли … = 0`, `SD 0206:533` and `:544`). The dynamic branch
+historically claimed everything the static map didn't; leaving it open makes fractional rows
+flow down two branches and double count.
+
+⚠ Fractions could not be done through `MapНаправлениеСтатично`: it is a **mapping** table and
+`ApplyMap` returns one value per key. Hence the separate joined weight table.
+
+⚠ Two `1`s on one row used to resolve to whichever loaded first; since 2026-07-28 that is a
+2-weight row → even split, flagged unbalanced.
+
+Known gap: `დინამიურად` mixed with a numeric weight ignores the number and goes fully dynamic
+flagged `'კი'` — nothing announces it.
 
 ## Allocation variants (გადანაწილების ვარიანტები)
 
@@ -111,3 +158,6 @@ pivot object).
 5. Last month present in P&L = month before the reload date.
 6. Articles appear in 1C order with chart sorting on Auto.
 7. Partial reload → allocated rows still in the bridge; direction + calendar still slice.
+8. Fractions: per-key `Sum([თანხა (P&L)])` unchanged by making a key fractional (normalization
+   guarantees it) — a change means a branch double counts. `[წილები დაბალანსებულია (P&L)]='არა'`
+   lists exactly the sheet rows whose weights don't total 100%.
