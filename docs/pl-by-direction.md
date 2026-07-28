@@ -115,8 +115,14 @@ flow down two branches and double count.
 ⚠ Two `1`s on one row used to resolve to whichever loaded first; since 2026-07-28 that is a
 2-weight row → even split, flagged unbalanced.
 
-Known gap: `დინამიურად` mixed with a numeric weight ignores the number and goes fully dynamic
-flagged `'კი'` — nothing announces it.
+Accepted behaviour (not a defect): `დინამიურად` mixed with a numeric weight ignores the number
+and goes fully dynamic flagged `'კი'` — nothing announces it. Deliberately unhandled, since
+mixing a keyword with a number has no meaningful normalization; confirmed a non-issue in
+practice 2026-07-28. Worth knowing before filling a row that way.
+
+The `ВидыСчетовPL` extraction deliberately keeps **no `ПометкаУдаления` filter** (user decision
+2026-07-28): deletion-marked elements reach the QVD, because filtering them would strand
+historical postings that still reference those GUIDs.
 
 ## Allocation variants (გადანაწილების ვარიანტები)
 
@@ -167,8 +173,22 @@ Reproduced by baking the order into the values, not per-chart sort expressions:
   sorting reproduces 1C order in every object**, pivots included. MatchKey sites keep
   `Trim()` so Google-Sheet matching stays byte-identical.
 - `[_მუხლი sort (P&L)]` (the padded path) stays on the hierarchy table for verification.
-- Caveat: two articles with the same name would show as two identical-looking values
-  (different ranks).
+- Caveat: two articles with the same name show as two identical-looking values (different
+  ranks). Diagnosing that symptom — two chart rows with the same article text:
+  - `=Num([მუხლი (იერარქია)1])` returns the two ranks. **`რიგითობა` is not the rank**:
+    `რიგითობა` orders siblings within one parent, the rank is the node's global depth-first
+    position, so `რიგითობა`=6 appearing as rank 11 is normal.
+  - The rank comes only from `MapМухлиРангПЛ`, keyed on `Ссылка`. A mapping table cannot
+    return two values for one key, so **two different numbers can only mean two GUIDs** — no
+    other explanation needs checking.
+  - **Check the extraction date first.** In the one real occurrence (2026-07-28) the QVD was
+    simply stale and a re-extraction resolved it. Rule out that before hunting 1C duplicates.
+  - If it is a genuine 1C duplicate: fix with `Замена ссылок` in 1C, not by filtering the
+    catalog — dropping the element strands postings that reference its GUID, and they lose
+    their article name entirely. A Qlik-side alternative is ranking by trimmed name so
+    duplicates share a rank and merge, at the cost of merging same-named distinct articles.
+  - `:79` builds the hierarchy node name **untrimmed** while `:58` trims it, so names
+    differing only by whitespace look identical here but not there.
 
 ## Accounting-style display (app side)
 
