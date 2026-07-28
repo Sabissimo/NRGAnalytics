@@ -76,6 +76,9 @@ Replace Load
     //Year	([TempDate]) & floor (Month	([TempDate])) as [YM],
     'W'&Week	([TempDate])  	as [Week SD],
     Year	([TempDate])  	as [Year SD],
+    // მიმდინარე + წინა წელი; ძველი თარიღებისთვის null → ფილტრის პანელში საერთოდ არ ჩანს.
+    // მონაცემები არ იჭრება — სხვა ფურცლები სრულ ისტორიას ხედავენ.
+    if([TempDate] >= YearStart(YearStart($(vNow))-1), Year([TempDate])) as [Year SD (ბოლო 2 წელი)],
     Month	([TempDate])		as [Month SD],
     pick( match( num(month([TempDate])),1,2,3,4,5,6,7,8,9,10,11,12),
         dual('იან',1),
