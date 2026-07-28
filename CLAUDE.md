@@ -64,6 +64,11 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   row → dynamic. Adding a branch means NARROWING the others' `Where` clauses — the dynamic one
   claims everything the static map didn't, so leaving it open double counts silently. Fractions
   need a joined weight table, not a map: `ApplyMap` returns one value per key.
+  P&L carries its own `[Internal (P&L)]` / `[არ არის ძირითადი (P&L)]` (real values on
+  sales-injected rows, `'არა'` on register/journal rows) — **the sales-side names could not be
+  reused**: they live on `BridgeTableOrgDate` / the items dimension, so putting them on the fact
+  would add a second shared field with an already-associated table → synthetic key. P&L measures
+  therefore need their own modifier, not `$(შიდა_და_არაძირითადები_ფილტრი)`.
   Full design: `docs/pl-by-direction.md`.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
