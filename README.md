@@ -9,6 +9,10 @@ Qlik Sense (Qlik Cloud) load scripts for Electro Market / NRG analytics apps.
   fact assembly, matching-sheet cell semantics (weight 1 / fixed fractions / `დინამიურად`),
   allocation variants, 1C-order article sorting, previous-month data cap, and the app-side
   vPLVariant contract
+- **P&L budget (parked):** see [docs/pl-budget-parked.md](docs/pl-budget-parked.md) — design
+  decisions and reference implementation for budgeting the P&L from Google Sheets. Written and
+  reverted 2026-07-29 pending a new sheet format; only the load block is format-specific. Raw
+  diff kept as [docs/pl-budget-v1.patch](docs/pl-budget-v1.patch)
 - **P&L source query (1C):** see [docs/pl.txt](docs/pl.txt) — the original analyst query whose
   register+journal logic the SD 0206 script reimplements (its header comment refers to it as
   pl.txt). Reference only, never executed. Full 1C config dump: `D:\NRG` (clone of
