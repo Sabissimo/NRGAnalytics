@@ -79,9 +79,10 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   Departments: names are normalised through the SAME 1C register the Statement app uses
   (`СоответствияЗначений`, type `'EEE განყოფილების ჩანაცვლება'`), but ONLY on the displayed field —
   `[_MatchKey (P&L)]` deliberately keeps the RAW name, because the Google Sheet's unit column holds
-  raw names. Normalising both sides silently breaks the match for every remapped department. Sales
-  rows get a department only from 2026 (`РасшифровкаБухгалтерии` rule); earlier rows empty by
-  design, and sales rows never touch the match key so their department is display-only.
+  raw names. Normalising both sides silently breaks the match for every remapped department. The
+  2026 cut-off (`vPLDeptFrom`) likewise applies ONLY to the displayed field, for every source — the
+  match key carries the department regardless of year, because gating it would move money between
+  directions. Sales rows never touch the match key at all, so their department is display-only.
   Full design: `docs/pl-by-direction.md`.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).

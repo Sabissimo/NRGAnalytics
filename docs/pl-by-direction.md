@@ -174,8 +174,16 @@ Previously `Null()`. Now resolved in the `ПродажиДляПЛ` staging by t
   : empty
 ```
 
-Cut-off and literal live in `SET vPLSalesDeptFrom` / `SET vPLProjectSalesUnit` at the top of
-`SD 0206`. Pre-2026 rows are empty **by design**, then take the normal fallbacks.
+Cut-off and literal live in `vPLDeptFrom` / `vPLProjectSalesUnit` at the top of `SD 0206`.
+
+### The 2026 cut-off applies to every source, but only to the displayed field
+
+`[სტრუქტურული ერთეული (P&L)]` is empty before 2026-01-01 for **all** sources — register, journal
+and sales alike (`:563` for register/journal, `:336` in the sales staging).
+
+`[_MatchKey (P&L)]` is **not** gated: it carries the raw department regardless of year. That is
+deliberate — gating the key would change which sheet row a pre-2026 line matches and therefore
+move money between directions. The cut-off is a presentation rule, not an allocation rule.
 
 ⚠ `'ELV_საპროექტო გაყიდვები'` is a name literal — renaming that unit in 1C silently disables the
 branch.
@@ -206,9 +214,10 @@ that is the name of the order document itself, not of the attribute pointing at 
 - `Sum([თანხა (P&L)])` per direction must be **unchanged**;
 - the `[დამატჩებულია (P&L)] = 'არა'` list must be **unchanged**.
 
-Anything that moves means the key was normalised somewhere it should not have been. The only
-visible differences should be department *labels* on register/journal rows, and departments
-appearing on 2026+ sales rows where there were previously blanks.
+Anything that moves means the key was normalised or year-gated somewhere it should not have been.
+The only visible differences should be department *labels*: normalised on 2026+ rows of every
+source, blank on everything before 2026, and present on 2026+ sales rows where there were
+previously blanks.
 
 Column names, confirmed 2026-07-29:
 

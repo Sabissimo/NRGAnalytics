@@ -97,7 +97,7 @@ MapЗаказЕдиницаПродажиПЛ:
 Mapping LOAD
     [მინიშნება],
     [განყოფილება]
-FROM [lib://$(vSpace24):DataFiles/$(vSpacePrefix24)_$(vPrefix24)_ДокументЗаказПокупателя.qvd]
+FROM [lib://$(vSpace24):DataFiles/$(vSpacePrefix24)_$(vPrefix24)_ДокументЗаказПокупателя-*.qvd]
 (qvd);
 
 End If
