@@ -132,6 +132,101 @@ future per-row attribute on the sales injection.
 ⚠ Failure mode if the QVD column name or the code format is wrong: `ApplyMap` returns empty and
 every row silently reads `'არა'`. Visible as "no `'კი'` bucket at all", not as an error.
 
+## Departments (2026-07-29)
+
+The department is half the matching key, so how it is resolved decides what matches.
+
+### Name matching — shared with the Statement app
+
+`SD 0004` builds `MapСоответствиеНаименованийПодразделенийПЛ` (NAME → NAME) from
+`РегистрСведений.СоответствияЗначений`, filtered to type `'EEE განყოფილების ჩანაცვლება'` —
+the same register and the same filter the Statement app uses (`Statement 0002`). Applied as
+`ApplyMap(map, name, name)`, so an unmatched name passes through unchanged.
+
+⚠ The type filter is not optional: without it every matching type in that register leaks into the
+department map. It was once commented out in Statement and had to be re-enabled (`786ad1e`).
+
+⚠ **Deliberate asymmetry — do not "fix" it.** The matching is applied to the **displayed** field
+(`SD 0206:561`) but **not** to `[_MatchKey (P&L)]` (`:563`), which keeps the **raw** name.
+
+The Google Sheet's `[სტრუქტურული ერთეული]` column holds raw names — after the account overlay
+`ПодразделенияЗатратДоходовСчетов`, before normalisation — so the key must be built from the raw
+name to line up with it. Normalising both sides silently breaks the match for **every** remapped
+department: those rows stop matching their sheet row and fall through to the dynamic COGS split,
+with `დამატჩებულია = 'არა'` as the only visible symptom.
+
+Consequence for whoever maintains the sheet: the P&L pivot shows the **normalised** name while the
+sheet needs the **raw** one, so names cannot be copied out of the P&L display for remapped
+departments.
+
+Because the key is untouched, **this change alters no matching outcome at all** — see Verification.
+
+### Sales-sourced rows
+
+Previously `Null()`. Now resolved in the `ПродажиДляПЛ` staging by the same rule 1C uses in
+`РасшифровкаБухгалтерии`:
+
+```
+Период >= 2026-01-01
+  ? (order's СтруктурнаяЕдиницаПродажи name = 'ELV_საპროექტო გაყიდვები'
+       ? that unit
+       : document's Подразделение)
+  : empty
+```
+
+Cut-off and literal live in `SET vPLSalesDeptFrom` / `SET vPLProjectSalesUnit` at the top of
+`SD 0206`. Pre-2026 rows are empty **by design**, then take the normal fallbacks.
+
+⚠ `'ELV_საპროექტო გაყიდვები'` is a name literal — renaming that unit in 1C silently disables the
+branch.
+
+The new staging field is in **both** injection `Group By` lists; they aggregate, so a select-list
+addition alone fails the reload.
+
+### Register/journal rows — unchanged
+
+`ApplyMap('MapПодразделенияЗатратДоходовСчетовПЛ', org|account, [_ერთეული (P&L)])` at `:562-564`
+keeps the account register as the **override** and the row's own department as the fallback, so an
+empty row department already picks up the account register. Deliberately not inverted.
+
+### Extraction dependency
+
+None of this works until `_ElvareAnalytics.txt` is re-extracted. It gained
+`РасходнаяНакладная.Подразделение`, `РасходнаяНакладная.Заказ`,
+`ЗаказПокупателя.СтруктурнаяЕдиницаПродажи`, and two new queries
+(`РегистрСведений.СоответствияЗначений`, `Перечисление.ТипыСоответствия`).
+
+Note the order reference on the invoice is `Заказ` (→ `[შეკვეთა]`), **not** `ЗаказПокупателя` —
+that is the name of the order document itself, not of the attribute pointing at it.
+
+### Verification invariant
+
+`[_MatchKey (P&L)]` is **byte-identical** before and after this change, so:
+
+- `Sum([თანხა (P&L)])` per direction must be **unchanged**;
+- the `[დამატჩებულია (P&L)] = 'არა'` list must be **unchanged**.
+
+Anything that moves means the key was normalised somewhere it should not have been. The only
+visible differences should be department *labels* on register/journal rows, and departments
+appearing on 2026+ sales rows where there were previously blanks.
+
+Column names, confirmed 2026-07-29:
+
+| QVD column | 1C attribute | Document |
+|---|---|---|
+| `[განყოფილება]` | `Подразделение` | `РасходнаяНакладная` |
+| `[შეკვეთა]` | `Заказ` | `РасходнаяНакладная` |
+| `[განყოფილება]` | `СтруктурнаяЕдиницаПродажи` | `ЗаказПокупателя` |
+
+Note the first and third share the column name `[განყოფილება]` while being different attributes on
+different documents. They live in separate QVDs so there is no collision, but they are easy to
+confuse when editing.
+
+⚠ Still assumed: that `ДокументРасходнаяНакладная` is month-partitioned in the ELV batch (loaded as
+`-*.qvd`). That one fails loudly if wrong. A wrong *column* name would instead make `ApplyMap`
+return empty **with no error** — verify by finding a populated department, not by the absence of a
+failure.
+
 ## Matching sheet semantics
 
 Google Sheet, PL Directions tab. Columns: `მუხლი` | `სტრუქტურული ერთეული` | `სულ` (control sum,

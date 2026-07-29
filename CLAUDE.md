@@ -76,6 +76,12 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   `[ექვემდებარება ანგარიშს]`). They are therefore identical on non-sales rows and diverge only
   on sales rows. Any new per-row attribute on the sales injection must also go into BOTH
   injection `Group By` lists; they aggregate, so a select-list-only addition fails the reload.
+  Departments: names are normalised through the SAME 1C register the Statement app uses
+  (`СоответствияЗначений`, type `'EEE განყოფილების ჩანაცვლება'`), but ONLY on the displayed field —
+  `[_MatchKey (P&L)]` deliberately keeps the RAW name, because the Google Sheet's unit column holds
+  raw names. Normalising both sides silently breaks the match for every remapped department. Sales
+  rows get a department only from 2026 (`РасшифровкаБухгалтерии` rule); earlier rows empty by
+  design, and sales rows never touch the match key so their department is display-only.
   Full design: `docs/pl-by-direction.md`.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
