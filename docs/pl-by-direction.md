@@ -59,11 +59,11 @@ Sales sheets filter with `[Internal (კონტრაგენტები)]={
 The P&L fact now carries its own equivalents so P&L measures can be filtered the same way
 instead of the exclusion being hardcoded:
 
-| Row origin | `[Internal (P&L)]` / `[არ არის ძირითადი (P&L)]` |
-|---|---|
-| sales injection (revenue + COGS) | **real values** from the sales fact; grain extended by both |
-| register / journal (static, dynamic, fractional) | both `'არა'` — such rows are neither internal nor non-core, so the standard filter keeps them |
-| allocation-variant copies | carried through from the source row |
+| Row origin | `[Internal (P&L)]` | `[არ არის ძირითადი (P&L)]` |
+|---|---|---|
+| sales injection (revenue + COGS) | real value from the sales fact; grain extended by both | real value from the sales fact |
+| register / journal (static, dynamic, fractional) | account-derived — see below (was `'არა'` until 2026-07-29) | `'არა'` — such rows are never non-core, so the standard filter keeps them |
+| allocation-variant copies | carried through from the source row | carried through from the source row |
 
 ⚠ **The names deliberately differ from the sales-side fields.** `[Internal (კონტრაგენტები)]`
 lives on `BridgeTableOrgDate` (`SD 0301`) and `[არ არის ძირითადი (ნომენკლატურა)]` on the items
@@ -98,8 +98,32 @@ The list lives in one place, `SET vPLInternalEEE` at the top of `SD 0206`; a fou
 one-line edit. It needs `MapСправочникКонтрагентыКод` (`SD 0002`) — nothing mapped the contractor
 code before, though the extraction has always pulled it (`_SD.txt:108`).
 
-A contractor that is internal by the broad flag but **not** in the code list is `'არა'` here —
-the two flags are independent, not nested.
+A contractor that is internal by the broad flag but **not** in the code list is `'არა'` on
+sales-injected rows — on that side the two flags are independent, not nested.
+
+**Non-sales rows resolve both flags from the account (2026-07-29).** Register and journal rows
+have no counterparty, so neither flag can key off a contractor. Both are instead `'კი'` when the
+posting's account — **or any of its ancestors** — has a code in `SET vPLInternalEEEAccounts`:
+
+- `Hierarchy()` over the chart of accounts builds each account's root-to-node path of *codes*;
+- the path is exploded one row per ancestor and checked with `Exists` against the code list;
+- so a posting on a child of `8110/19` is flagged, while `8110` itself is not.
+
+The parent column on that catalog is `[ექვემდებარება ანგარიშს]` (same one `Accounting 0101`
+uses) — not the `Родитель`/`ჯგუფში` names other catalogs use.
+
+Two consequences to keep in mind:
+
+- **On non-sales rows the two flags are identical**, sharing one map and one list. They diverge
+  only on sales-injected rows. If the broad flag should ever cover more accounts than the EEE
+  list, it needs its own list and a second map.
+- **The two sides are asymmetric by construction** — sales keyed on contractor, non-sales on
+  account. A transaction with an EEE company can therefore be flagged on the sales side and not
+  on the register side if its account is absent from the list.
+
+⚠ Silent failure: a listed code that does not exist in the chart of accounts, or differs in
+padding (`7450/09` vs `7450/9`), matches nothing and raises no error. Verify by listing
+`[ანგარიშის კოდი (P&L)]` where the flag is `'კი'` and confirming every listed code appears.
 
 ⚠ Both injection `Group By` lists carry the field. They aggregate, so adding a flag to the select
 list without adding it to the grouping fails the reload outright — the same trap applies to any

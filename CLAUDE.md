@@ -70,9 +70,12 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   would add a second shared field with an already-associated table → synthetic key. P&L measures
   therefore need their own modifier, not `$(შიდა_და_არაძირითადები_ფილტრი)`. A second, narrower
   flag `[Internal EEE (P&L)]` keys off an explicit contractor-code list (`SET vPLInternalEEE`)
-  instead of the additional attribute — the two are independent, not nested. Any new per-row
-  attribute on the sales injection must also go into BOTH injection `Group By` lists; they
-  aggregate, so a select-list-only addition fails the reload.
+  instead of the additional attribute. On **non-sales rows there is no contractor**, so BOTH
+  flags come from the posting's account instead: `'კი'` when the account or any ancestor has a
+  code in `SET vPLInternalEEEAccounts` (real `Hierarchy()` walk; the CoA parent column is
+  `[ექვემდებარება ანგარიშს]`). They are therefore identical on non-sales rows and diverge only
+  on sales rows. Any new per-row attribute on the sales injection must also go into BOTH
+  injection `Group By` lists; they aggregate, so a select-list-only addition fails the reload.
   Full design: `docs/pl-by-direction.md`.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
