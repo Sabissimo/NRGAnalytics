@@ -68,7 +68,11 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   sales-injected rows, `'არა'` on register/journal rows) — **the sales-side names could not be
   reused**: they live on `BridgeTableOrgDate` / the items dimension, so putting them on the fact
   would add a second shared field with an already-associated table → synthetic key. P&L measures
-  therefore need their own modifier, not `$(შიდა_და_არაძირითადები_ფილტრი)`.
+  therefore need their own modifier, not `$(შიდა_და_არაძირითადები_ფილტრი)`. A second, narrower
+  flag `[Internal EEE (P&L)]` keys off an explicit contractor-code list (`SET vPLInternalEEE`)
+  instead of the additional attribute — the two are independent, not nested. Any new per-row
+  attribute on the sales injection must also go into BOTH injection `Group By` lists; they
+  aggregate, so a select-list-only addition fails the reload.
   Full design: `docs/pl-by-direction.md`.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).

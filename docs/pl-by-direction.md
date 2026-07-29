@@ -84,6 +84,30 @@ Note the direction rule sends internal / non-core / direction-less sales to `'�
 filtering both flags to `'არა'` shrinks ლოგისტიკა — that is the intended parity with sales,
 not a bug.
 
+### `[Internal EEE (P&L)]` (2026-07-29)
+
+A **second, narrower** internal flag, populated the same way per row origin (real value on
+sales-injected rows, `'არა'` on register/journal/fractional, carried through allocation copies)
+but resolved differently:
+
+- the broad flag comes from the contractor's 1C **additional attribute**;
+- `[Internal EEE (P&L)]` is `'კი'` only when the contractor's 1C **code** is in an explicit
+  list — the group's own companies appearing as counterparties.
+
+The list lives in one place, `SET vPLInternalEEE` at the top of `SD 0206`; a fourth company is a
+one-line edit. It needs `MapСправочникКонтрагентыКод` (`SD 0002`) — nothing mapped the contractor
+code before, though the extraction has always pulled it (`_SD.txt:108`).
+
+A contractor that is internal by the broad flag but **not** in the code list is `'არა'` here —
+the two flags are independent, not nested.
+
+⚠ Both injection `Group By` lists carry the field. They aggregate, so adding a flag to the select
+list without adding it to the grouping fails the reload outright — the same trap applies to any
+future per-row attribute on the sales injection.
+
+⚠ Failure mode if the QVD column name or the code format is wrong: `ApplyMap` returns empty and
+every row silently reads `'არა'`. Visible as "no `'კი'` bucket at all", not as an error.
+
 ## Matching sheet semantics
 
 Google Sheet, PL Directions tab. Columns: `მუხლი` | `სტრუქტურული ერთეული` | `სულ` (control sum,
