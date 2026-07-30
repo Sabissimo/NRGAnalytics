@@ -340,6 +340,12 @@ what implements it, in each of the three paths.
 The basis is derived from `ПродажиДляПЛ` rather than the sales fact directly, so the department is
 defined exactly once and cannot disagree with what the injected sales rows carry.
 
+⚠ `ПродажиДляПЛ`'s `[_ერთეული (P&L გაყიდვები)]` is a **GUID**, not a name — the name only appears
+inside the `if()` comparison against the project-sales unit. The share table resolves it to a
+**normalised name** immediately (`:397-400`), because allocation writes it straight into
+`[სტრუქტურული ერთეული (P&L)]`, which holds names everywhere else. Grouping is on the normalised
+name too, so two departments remapped onto one count as one for allocation purposes.
+
 ⚠ **Row count grows.** Dynamic previously exploded one row into ≤3; it is now ≤3 × the number of
 departments with COGS that month, and fixed fractions compound the same way. Watch the fact size on
 the first reload.
