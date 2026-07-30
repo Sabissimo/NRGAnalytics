@@ -350,9 +350,24 @@ Reproduced by baking the order into the values, not per-chart sort expressions:
 - A second `Hierarchy()` pass builds a per-node path of 10-digit zero-padded რიგითობა
   values; ordering by that path yields a global depth-first rank (`МухлиРангПЛ` → mapping).
 - `[მუხლი (იერარქია)]` (and therefore all generated level fields) and the fact-side
-  `[მუხლი (P&L)]` (via the article-name map) are `dual(name, rank)` → **plain Auto/numeric
-  sorting reproduces 1C order in every object**, pivots included. MatchKey sites keep
-  `Trim()` so Google-Sheet matching stays byte-identical.
+  `[მუხლი (P&L)]` (via the article-name map) are `dual(name, rank)`, the intent being that plain
+  Auto/numeric sorting reproduces 1C order in every object. MatchKey sites keep `Trim()` so
+  Google-Sheet matching stays byte-identical.
+
+⚠ **The ordering claim above does not hold — open issue, 2026-07-30.** Ranks read out of the live
+app are not depth-first: the level-1 nodes rank as a block (3, 5, 11) and every deeper node follows
+much later (52–105), so children do not sit under their parents. Sorting on the dual therefore
+looks right at the top level and wrong as soon as the hierarchy is expanded.
+
+Likely cause: a root node's `[_მუხლი sort (P&L)]` is a single `Num()` value — a numeric dual —
+while a deeper node's is a concatenated string, and Qlik sorts numerics before text. So the
+`Order By` in `МухлиРангПЛ` splits into "all roots, then everything else alphabetically" instead of
+one depth-first walk.
+
+Not yet fixed. If it matters, the fix is in `МухлиРангПЛ` — force the path to text for every node
+(e.g. build the root's path as a string too) so one comparison rule applies throughout. Building a
+form from these ranks is the wrong approach; reconstruct the tree from `[მუხლი path (P&L)]` instead,
+which is what the budget-sheet generator ended up doing.
 - `[_მუხლი sort (P&L)]` (the padded path) stays on the hierarchy table for verification.
 - Caveat: two articles with the same name show as two identical-looking values (different
   ranks). Diagnosing that symptom — two chart rows with the same article text:
