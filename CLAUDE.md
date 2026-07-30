@@ -1,5 +1,11 @@
 # NRGAnalytics — Qlik Sense load scripts
 
+**Working rules.** No project knowledge in assistant memory — the user works across several
+machines, so everything durable lives in this repo's `.md` files and must be pushed; memory does not
+travel. "push" means update the affected docs first, then commit and push — never ship code with
+docs describing the old behaviour; but do not push unprompted.
+
+
 Qlik Cloud (tenant `elvare.de.qlikcloud.com`) load scripts for Electro Market / NRG analytics.
 Data source: 1C exports QVDs with **Russian** table/field names; scripts rename fields to **Georgian**.
 The `_*.txt` files are the 1C-side query definitions (reference only, not executed here).
