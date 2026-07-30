@@ -9,6 +9,14 @@ Let vNow = Floor(now());
 // გადატვირთვის წინა თვეა: ზედა ზღვარი მიმდინარე თვის დასაწყისია, არაჩათვლით.
 Let vPLEnd = Num(MonthStart($(vNow)));
 
+// P&L-ის ქვედა ზღვარი: მიმდინარე + წინა წელი, ოღონდ 2026-ზე ადრე არასდროს.
+// ორივე პირობა რჩება: 2026-ში — 2026/01/01, 2028-ში — 2027/01/01 (ე.ი. ფანჯარა ორ წელზე
+// მეტი არ ხდება). იმავე ფორმულით შენდება კალენდრის [Year SD (ბოლო 2 წელი, 2026+)], რომ
+// ფილტრი და მონაცემთა ფანჯარა ერთმანეთს დაემთხვეს.
+// შეგნებულად ცალკე ცვლადია განყოფილების ზღვრისგან (vPLDeptFrom) — დღეს ერთი და იგივე
+// თარიღია, მაგრამ მომავალში შეიძლება დაშორდნენ.
+Let vPLStart = Num(RangeMax(YearStart(YearStart($(vNow))-1), MakeDate(2026,1,1)));
+
 // 'Internal EEE' — ჯგუფის საკუთარი კომპანიები კონტრაგენტების მხარეს, 1C-ის კოდების სიით.
 // განზრახ ცალკე დროშაა ჩვეულებრივი შიდა-კონტრაგენტის დროშისგან: ის კონტრაგენტის დამატებით
 // რეკვიზიტს ეყრდნობა და უფრო ფართოა. სია აქ დგას, რომ ერთ ადგილას იცვლებოდეს.
@@ -347,6 +355,7 @@ NoConcatenate Load
     [თვითღირებულება (გაყიდვები)] as [_თვითღირებულება (P&L გაყიდვები)]
 Resident РегистрНакопленияПродажи
 Where not [%lnk_ორგანიზაცია (გაყიდვები)] = 'გეგმა'
+    and SalesDate >= $(vPLStart)
     and SalesDate < $(vPLEnd);
 
 // შემოსავლისა და თვითღირებულების (ანგარიში|რეგისტრატორი) წყვილები:
@@ -436,7 +445,7 @@ NoConcatenate Load
 Resident РегистрНакопленияДоходыИРасходыPre
 Where
     floor(AddYears([Период],-2000)) < $(vPLEnd)
-    and floor(AddYears([Период],-2000)) >= YearStart(YearStart($(vNow))-1)
+    and floor(AddYears([Период],-2000)) >= $(vPLStart)
     and match([ორგანიზაცია],
     '85070A94EF044E4711EB87F29D540806', // elvare
     '80C6382C4ABBB43711E7363EBFB98EBD', // electric
@@ -466,7 +475,7 @@ NoConcatenate Load
 Resident УправленческийПЛPre
 Where
     floor(AddYears([Период],-2000)) < $(vPLEnd)
-    and floor(AddYears([Период],-2000)) >= YearStart(YearStart($(vNow))-1)
+    and floor(AddYears([Период],-2000)) >= $(vPLStart)
     and match([ორგანიზაცია],
     '85070A94EF044E4711EB87F29D540806', // elvare
     '80C6382C4ABBB43711E7363EBFB98EBD', // electric
@@ -498,7 +507,7 @@ Load
 Resident УправленческийПЛPre
 Where
     floor(AddYears([Период],-2000)) < $(vPLEnd)
-    and floor(AddYears([Период],-2000)) >= YearStart(YearStart($(vNow))-1)
+    and floor(AddYears([Период],-2000)) >= $(vPLStart)
     and match([ორგანიზაცია],
     '85070A94EF044E4711EB87F29D540806', // elvare
     '80C6382C4ABBB43711E7363EBFB98EBD', // electric

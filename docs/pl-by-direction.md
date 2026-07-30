@@ -23,10 +23,22 @@ Its bridge block in `SD 0301` is deliberately UNguarded — it re-scans the pers
 every partial reload and rebuilds identical keys, so fact-side changes need no bridge edits
 as long as the key recipe is preserved.
 
-**Data window**: lower bound `YearStart(YearStart(vNow)-1)`; upper bound `vPLEnd =
-MonthStart(reload date)`, exclusive — current month is still being closed in 1C, so the last
-month in the fact is always the previous month. All four entry points cut at `vPLEnd`:
-register pass, both journal passes, sales-injection staging.
+**Data window**: lower bound
+`vPLStart = RangeMax(YearStart(YearStart(vNow)-1), MakeDate(2026,1,1))` — current + previous year,
+but never earlier than 2026. Both conditions stay: 2026-01-01 in 2026, 2027-01-01 in 2028, so the
+window never exceeds two years. Upper bound `vPLEnd = MonthStart(reload date)`, exclusive — the
+current month is still being closed in 1C, so the last month in the fact is always the previous
+one. All four entry points cut at both bounds: register pass, both journal passes, and the
+sales-injection staging (which previously had no lower bound at all).
+
+Same formula as the calendar's `[Year SD (ბოლო 2 წელი, 2026+)]`, so the filter and the data window
+agree by construction.
+
+`vPLStart` is deliberately a **separate variable** from `vPLDeptFrom` (the department cut-off).
+Same date today, expected to diverge — do not collapse them.
+
+The COGS-share table is unbounded and will compute months no P&L row references — unused, not
+wrong.
 
 ## Assembly (five passes + allocation)
 
