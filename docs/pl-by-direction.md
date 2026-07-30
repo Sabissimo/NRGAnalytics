@@ -18,8 +18,9 @@ Audit attributes: `[ანგარიშის დასახელება (
 not in the chart of accounts), `[მუხლი (P&L)]` (**`Null`** = account has no ВидСчетаPL — test with
 `IsNull()`, not `Len(Trim(…)) = 0`; the match key still uses `''` there so the key does not change),
 `[დამატჩებულია (P&L)]` (`'არა'` = key absent from the sheet), `[წილები დაბალანსებულია (P&L)]`
-(`'არა'` = fractional weights don't total 100%). Those four separate the distinct
-"unmatched" causes, which otherwise look identical.
+(`'არა'` = fractional weights don't total 100%), and
+`[სტრუქტურული ერთეული (P&L, საწყისი)]` (the raw department — what the sheet must contain).
+Those separate the distinct "unmatched" causes, which otherwise look identical.
 Its bridge block in `SD 0301` is deliberately UNguarded — it re-scans the persisted fact on
 every partial reload and rebuilds identical keys, so fact-side changes need no bridge edits
 as long as the key recipe is preserved.

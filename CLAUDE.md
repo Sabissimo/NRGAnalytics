@@ -54,7 +54,10 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
 - P&L fact (`SD 0206. Reg. PL Directions 24.qvs`, daily/24): standalone fact keyed
   `orgGUID|'PL'|date|0|direction`; adds directions ლოგისტიკა/ადმინისტრაცია. Its bridge block in
   `SD 0301` is deliberately UNguarded (must re-scan the persisted fact on every partial reload).
-  Data window ends at the month BEFORE the reload date (`vPLEnd`) — current month is excluded
+  Data window: starts at `vPLStart` = `RangeMax(YearStart(YearStart(vNow)-1), MakeDate(2026,1,1))`
+  — rolling two years but never before 2026, same formula as the calendar's
+  `[Year SD (ბოლო 2 წელი, 2026+)]` so filter and window agree. Ends at the month BEFORE the reload
+  date (`vPLEnd`) — current month is excluded
   on purpose. Allocation variants: group field + allocated overhead copies + 12-row link table
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
