@@ -5,7 +5,6 @@ machines, so everything durable lives in this repo's `.md` files and must be pus
 travel. "push" means update the affected docs first, then commit and push — never ship code with
 docs describing the old behaviour; but do not push unprompted.
 
-
 Qlik Cloud (tenant `elvare.de.qlikcloud.com`) load scripts for Electro Market / NRG analytics.
 Data source: 1C exports QVDs with **Russian** table/field names; scripts rename fields to **Georgian**.
 The `_*.txt` files are the 1C-side query definitions (reference only, not executed here).
@@ -92,14 +91,16 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   2026 cut-off (`vPLDeptFrom`) likewise applies ONLY to the displayed field, for every source — the
   match key carries the department regardless of year, because gating it would move money between
   directions. Sales rows never touch the match key at all, so their department is display-only.
-  **Allocation reassigns the DEPARTMENT as well as the direction** in all three deriving paths
-  (dynamic, fixed fractions, variants): direction first, then departments inside it by COGS —
-  one share for dynamic (same basis), two steps for percentages (direction comes from the sheet).
+  **Allocation reassigns the DEPARTMENT as well as the direction** everywhere a direction is
+  assigned — static (100% in the sheet), fixed fractions, dynamic, and the variants; only
+  sales-injected rows keep theirs. Direction first, then departments inside it by COGS: one share
+  for dynamic (same basis), two steps wherever the direction comes from the sheet. A lone 100% is
+  a set percentage like any other — static and fixed fractions differ only in HOW the direction is
+  chosen, never in whether departments are spread.
   A direction with no COGS basis (always ლოგისტიკა/ადმინისტრაცია) keeps its OWN department at
   share 1 — do not "improve" this into an equal split, there is no population to split over.
   `[სტრუქტურული ერთეული (P&L, საწყისი)]` is never reassigned: incurred vs attributed stay separate,
   and it is what the Google Sheet is keyed on.
-  Full design: `docs/pl-by-direction.md`.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
   Sheet direction names must exactly match `MapПеречислениеНаправленияПокупателей` output.
