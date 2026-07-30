@@ -15,7 +15,8 @@ on the management chart of accounts).
 contractor segment is the literal `'PL'`). Grain: org × day × direction × article × account.
 Measures: `[შემოსავალი (P&L)]`, `[ხარჯი (P&L)]`, `[თანხა (P&L)]` (= revenue − expense).
 Audit attributes: `[ანგარიშის დასახელება (P&L)]` + `[ანგარიშის კოდი (P&L)]` (empty code = GUID
-not in the chart of accounts), `[მუხლი (P&L)]` (empty = account has no ВидСчетаPL),
+not in the chart of accounts), `[მუხლი (P&L)]` (**`Null`** = account has no ВидСчетаPL — test with
+`IsNull()`, not `Len(Trim(…)) = 0`; the match key still uses `''` there so the key does not change),
 `[დამატჩებულია (P&L)]` (`'არა'` = key absent from the sheet), `[წილები დაბალანსებულია (P&L)]`
 (`'არა'` = fractional weights don't total 100%). Those four separate the distinct
 "unmatched" causes, which otherwise look identical.
