@@ -76,7 +76,7 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   sales-injected rows, `'არა'` on register/journal rows) — **the sales-side names could not be
   reused**: they live on `BridgeTableOrgDate` / the items dimension, so putting them on the fact
   would add a second shared field with an already-associated table → synthetic key. P&L measures
-  therefore need their own modifier, not `$(შიდა_და_არაძირითადები_ფილტრი)`. A second, narrower
+  therefore need their own modifier, not `$(შიდა_და_არაძითადები_ფილტრი)`. A second, narrower
   flag `[Internal EEE (P&L)]` keys off an explicit contractor-code list (`SET vPLInternalEEE`)
   instead of the additional attribute. On **non-sales rows there is no contractor**, so BOTH
   flags come from the posting's account instead: `'კი'` when the account or any ancestor has a
@@ -132,7 +132,10 @@ granted in the **ADMIN block only**; to expose P&L to USERs, add the same one-li
   If it is 0, the rows are physically absent — think section-access reduction or empty source.
 - Exec-dashboard period variables (`მიმდინარე_წელი`, `…_დღეის_ჩათვლით`, etc.) are defined
   app-side (not in these scripts) and modify calendar fields `[Year SD]`/`[Date SD]`;
-  `შიდა_და_არაძირითადები_ფილტრი` = internal-contractors + non-core-items exclusion.
+  `შიდა_და_არაძითადები_ფილტრი` = internal-contractors + non-core-items exclusion.
+  That variable (and the measure `ჩეკები (შიდა და არაძითადების გარეშე)`) is spelled WITHOUT
+  რი (არაძითადები) in the app itself — confirmed by the user 2026-07-30; do not "correct" it,
+  a corrected name stops matching the app object.
 - **Never retype Georgian/Russian identifiers — always copy-paste.** Cyrillic lookalikes
   (е, а, о, р, ф…) corrupt field names silently and the script still parses.
 - Copy-paste discipline is NOT enough: generation itself injects Cyrillic phonetic chars into

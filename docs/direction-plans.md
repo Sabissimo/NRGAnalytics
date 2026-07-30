@@ -80,7 +80,7 @@ App `d5fbc0e4-9d85-431b-976d-4004f656e299`. Names follow the old family's conven
 - `ამონაგების გეგმა (მიმართულებები, …same six…)`
 - `გაყიდვების გადახრა (მიმართულებები, მიმდინარე თვე | წელი)` and
   `ამონაგების გადახრა (…)` — `(fact/plan)−1`, fact side inlined with
-  `$(შიდა_და_არაძირითადები_ფილტრი)`, plan side without it.
+  `$(შიდა_და_არაძითადები_ფილტრი)`, plan side without it.
 
 Deliberate differences from the segment-plan measures: no
 `$(ფილტრი_ინსტალერები_მომხმარებლები)` on plan sums (plan rows have no segment — the modifier

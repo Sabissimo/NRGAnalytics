@@ -57,7 +57,7 @@ semantics" below for the routing table and the double-counting trap.
 3. **Dynamic** — sheet value `'დინამიურად'` or key not found at all: row exploded into ≤3 rows
    by monthly COGS shares (`ДолиСебестоимости`: month × direction share of
    `[თვითღირებულება (გაყიდვები)]`, commercial directions only, same exclusions as
-   `შიდა_და_არაძირითადები_ფილტრი`). Months with no shares fall back to the literal
+   `შიდა_და_არაძითადები_ფილტრი`). Months with no shares fall back to the literal
    `'მიმართულების გარეშე'`.
 4. **Sales injection (revenue + COGS)** — register/journal rows on the directions'
    revenue/COGS accounts are excluded (per account|registrar pairs that actually occur in
@@ -87,7 +87,7 @@ with a table it already associates to → synthetic key / circular reference (th
 attachment-point rule in CLAUDE.md). Hence `(P&L)`-suffixed twins, per the per-fact suffix
 convention. Consequence: P&L measures need their **own** modifier, e.g.
 `{<[Internal (P&L)]={'არა'}, [არ არის ძირითადი (P&L)]={'არა'}>}` — the sales variable
-`შიდა_და_არაძირითადები_ფილტრი` will not reach P&L rows.
+`შიდა_და_არაძითადები_ფილტრი` will not reach P&L rows.
 
 **The COGS-share basis stays script-filtered** (`ДолиСебестоимостиPre`, internal + non-core
 excluded). Shares are a script-time aggregate that must sum to 1 so every allocated row is
