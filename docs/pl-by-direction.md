@@ -185,6 +185,21 @@ and sales alike (`:563` for register/journal, `:336` in the sales staging).
 deliberate — gating the key would change which sheet row a pre-2026 line matches and therefore
 move money between directions. The cut-off is a presentation rule, not an allocation rule.
 
+The gate sits at the three normalisation points only (`:562`, `:759`, `:806`); nothing upstream of
+them is year-dependent, so the raw value exists for every year on every source.
+
+### Two department fields on the fact
+
+| Field | Normalised? | Year-gated? | Use |
+|---|---|---|---|
+| `[სტრუქტურული ერთეული (P&L)]` | yes | yes — blank before 2026 | display; agrees with Statement |
+| `[სტრუქტურული ერთეული (P&L, საწყისი)]` | **no** | **no** | what the Google Sheet needs |
+
+The raw field exists because the sheet is keyed on raw names, so a name cannot be copied out of the
+display field for a remapped department. Pair it with `[მუხლი (P&L)]` and you have exactly the
+`article|unit` the sheet expects — which is what an "unmatched departments and articles" sheet
+should show.
+
 ⚠ `'ELV_საპროექტო გაყიდვები'` is a name literal — renaming that unit in 1C silently disables the
 branch.
 

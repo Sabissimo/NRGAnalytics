@@ -79,6 +79,10 @@ Replace Load
     // მიმდინარე + წინა წელი; ძველი თარიღებისთვის null → ფილტრის პანელში საერთოდ არ ჩანს.
     // მონაცემები არ იჭრება — სხვა ფურცლები სრულ ისტორიას ხედავენ.
     if([TempDate] >= YearStart(YearStart($(vNow))-1), Year([TempDate])) as [Year SD (ბოლო 2 წელი)],
+    // იგივე, ოღონდ 2026-ზე ადრე არ ჩამოდის: P&L-ს 2026-მდე განყოფილება არ აქვს, ამიტომ
+    // ამ ფილტრს აზრი აქვს მხოლოდ 2026-იდან. 2026-ში ერთი წელი გამოჩნდება, 2027-ში — ორი და ა.შ.
+    if([TempDate] >= RangeMax(YearStart(YearStart($(vNow))-1), MakeDate(2026,1,1)),
+        Year([TempDate])) as [Year SD (ბოლო 2 წელი, 2026+)],
     Month	([TempDate])		as [Month SD],
     pick( match( num(month([TempDate])),1,2,3,4,5,6,7,8,9,10,11,12),
         dual('იან',1),
