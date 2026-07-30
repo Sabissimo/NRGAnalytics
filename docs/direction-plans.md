@@ -25,10 +25,10 @@ One row per direction × day of current year, spread across working days via
   match the row's literal key, guarantees no collision with real keys (real orgs are 32-char hex),
   and labels the rows for debugging. Contractor link left **null** so `Count(distinct contractor)`
   is not inflated.
-- `[ორგანიზაცია_კონტрагентი_პერიოდი_ნაშთია]` = `'გეგმა' & '||' & day & '|0|' & direction`
+- `[ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]` = `'გეგმა' & '||' & day & '|0|' & direction`
 - `[მიმართულება (გაყიდვები)]` = direction — same field as actual rows → one chart dimension
   slices plan and fact together
-- Measures: `[გაყიდвები მიმართულებებით (გეგმა)]`, `[ამონაგები მიმართულებებით (გეგმა)]`
+- Measures: `[გაყიდვები მიმართულებებით (გეგმა)]`, `[ამონაგები მიმართულებებით (გეგმა)]`
 
 The existing bridge code picks these rows up automatically (it resident-scans the fact),
 creating `BridgeTableOrgDate` rows (group `'PLAN'`) → `BridgeTableContrDate` rows with
@@ -58,7 +58,7 @@ document-level, so the concatenate-into-fact pattern is the loop-free equivalent
 ## The section-access incident (why `'PLAN'` exists)
 
 First deployment loaded correctly but every plan value read 0. Root cause: SECTION ACCESS
-reduction on `[%lnk_კონტрагентი]` — plan rows' bridge chain ended in a null group
+reduction on `[%lnk_კონტრაგენტი]` — plan rows' bridge chain ended in a null group
 (`ApplyMap` group of a null contractor), so reduction deleted the entire chain at app open,
 for admins too. Fix: plan bridge rows get group `'PLAN'` (SD 0301), a `'PLAN'` hierarchy
 pseudo-row provides the reduction anchor (SD 0101), and `'PLAN'` is appended to every
@@ -69,7 +69,7 @@ Debugging note for posterity: this was chased as an association problem for a wh
 `exit script` bisecting inside the `NonDistinct → final → Drop` sandwich of SD 0301 produces
 a synthetic-key/circular-reference model that also zeroes plans — a different, fake failure.
 Valid bisect points are only AFTER `Drop` statements. The real tell was: fields present,
-unconditional sums = 0, zero rows with `'გеგმა'` — data physically absent, which associations
+unconditional sums = 0, zero rows with `'გეგმა'` — data physically absent, which associations
 can never cause.
 
 ## Exec dashboard master measures (created 2026-07-09)
@@ -78,12 +78,12 @@ App `d5fbc0e4-9d85-431b-976d-4004f656e299`. Names follow the old family's conven
 
 - `გაყიდვების გეგმა (მიმართულებები, მიმდინარე დღე | დღე სრული | თვე | თვე სრული | წელი | წელი სრული)`
 - `ამონაგების გეგმა (მიმართულებები, …same six…)`
-- `გაყიდвების გადახრა (მიმართულებები, მიმდინარე თვე | წელი)` and
+- `გაყიდვების გადახრა (მიმართულებები, მიმდინარე თვე | წელი)` and
   `ამონაგების გადახრა (…)` — `(fact/plan)−1`, fact side inlined with
-  `$(შიდა_და_არაძითადები_ფილტрი)`, plan side without it.
+  `$(შიდა_და_არაძირითადები_ფილტრი)`, plan side without it.
 
 Deliberate differences from the segment-plan measures: no
-`$(ფილტри_ინსტალерები_მომხმარебლები)` on plan sums (plan rows have no segment — the modifier
+`$(ფილტრი_ინსტალერები_მომხმარებლები)` on plan sums (plan rows have no segment — the modifier
 would zero them), and deviations are self-contained (no master-measure name references).
 
 Chart recipe: dimension `[მიმართულება]` (bridge field — includes directions with plan but no
