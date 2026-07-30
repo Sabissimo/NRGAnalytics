@@ -92,6 +92,13 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   2026 cut-off (`vPLDeptFrom`) likewise applies ONLY to the displayed field, for every source — the
   match key carries the department regardless of year, because gating it would move money between
   directions. Sales rows never touch the match key at all, so their department is display-only.
+  **Allocation reassigns the DEPARTMENT as well as the direction** in all three deriving paths
+  (dynamic, fixed fractions, variants): direction first, then departments inside it by COGS —
+  one share for dynamic (same basis), two steps for percentages (direction comes from the sheet).
+  A direction with no COGS basis (always ლოგისტიკა/ადმინისტრაცია) keeps its OWN department at
+  share 1 — do not "improve" this into an equal split, there is no population to split over.
+  `[სტრუქტურული ერთეული (P&L, საწყისი)]` is never reassigned: incurred vs attributed stay separate,
+  and it is what the Google Sheet is keyed on.
   Full design: `docs/pl-by-direction.md`.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
 - Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
