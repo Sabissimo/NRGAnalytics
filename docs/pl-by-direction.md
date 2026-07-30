@@ -49,7 +49,8 @@ semantics" below for the routing table and the double-counting trap.
 
 1. **Static** — articles matched in the Google Sheet with weight 1 on exactly one direction:
    whole amount to that direction via the static direction map (`MapНаправлениеСтатично`,
-   key = trimmed article|structural-unit).
+   key = trimmed article|structural-unit), then split across that direction's **departments** by
+   COGS — 100% is a set percentage like any other (see *Allocation reassigns the department*).
 2. **Fixed fractions** (2026-07-28) — more than one numeric weight on the row: exploded into one
    row per weighted direction, amount × weight normalized by the row's own sum
    (`ФиксДолиПЛ`, marker map `MapНаправлениеФиксДоли`).
@@ -307,9 +308,14 @@ historical postings that still reference those GUIDs.
 
 ## Allocation reassigns the department too (2026-07-30)
 
-Allocation used to rewrite only the direction. It now rewrites the **department** as well, in all
-three paths that derive a direction: dynamic, fixed fractions, and the allocation variants. Static
-rows and sales-injected rows are never allocated, so they keep theirs.
+Allocation used to rewrite only the direction. It now rewrites the **department** as well, everywhere
+a direction is assigned: static (100% in the sheet), fixed fractions, dynamic, and the allocation
+variants. Only sales-injected rows keep theirs, since they never consult the sheet at all.
+
+It applies to **all four** branches, including static: a lone 100% in the sheet is still a set
+percentage, so departments are allocated within that direction too. Static and fixed fractions
+differ only in *how* the direction is chosen, never in whether departments get spread — treating
+100% and 60/40 differently would have been arbitrary.
 
 The rule is one composition — *direction first, then departments inside that direction* — but it
 collapses to a single multiplication for dynamic, because both factors come from the same COGS
@@ -325,7 +331,7 @@ So the share table carries **two** flavours:
 | Share | Denominator | Used by |
 |---|---|---|
 | `[_წილი (P&L)]` | month total | dynamic, allocation variants |
-| `[_წილი მიმართულებაში (P&L)]` | that direction's month total | fixed fractions (× the sheet weight) |
+| `[_წილი მიმართულებაში (P&L)]` | that direction's month total | **static** and fixed fractions (× the sheet weight, which is 1 for static) |
 
 Percentages cannot collapse, because their direction factor comes from the **sheet**, not from COGS
 — hence the two-step fan-out in `ПЛФиксДоли`: join `ФиксДолиПЛ` on the match key for the direction,
