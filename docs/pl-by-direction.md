@@ -305,6 +305,53 @@ The `ВидыСчетовPL` extraction deliberately keeps **no `Пометка�
 2026-07-28): deletion-marked elements reach the QVD, because filtering them would strand
 historical postings that still reference those GUIDs.
 
+## Allocation reassigns the department too (2026-07-30)
+
+Allocation used to rewrite only the direction. It now rewrites the **department** as well, in all
+three paths that derive a direction: dynamic, fixed fractions, and the allocation variants. Static
+rows and sales-injected rows are never allocated, so they keep theirs.
+
+The rule is one composition — *direction first, then departments inside that direction* — but it
+collapses to a single multiplication for dynamic, because both factors come from the same COGS
+basis:
+
+```
+cogs(m,dir,dept) / cogs_total(m)  ==  [cogs(m,dir)/cogs_total(m)] x [cogs(m,dir,dept)/cogs(m,dir)]
+        one unconditional share            direction share          dept share within direction
+```
+
+So the share table carries **two** flavours:
+
+| Share | Denominator | Used by |
+|---|---|---|
+| `[_წილი (P&L)]` | month total | dynamic, allocation variants |
+| `[_წილი მიმართულებაში (P&L)]` | that direction's month total | fixed fractions (× the sheet weight) |
+
+Percentages cannot collapse, because their direction factor comes from the **sheet**, not from COGS
+— hence the two-step fan-out in `ПЛФиксДоли`: join `ФиксДолиПЛ` on the match key for the direction,
+then join `ДолиДепПоНаправлениюПЛ` on **month + direction** for the departments.
+
+**Fallback when a direction has no COGS basis** — always the case for ლოგისტიკა/ადმინისტრაცია
+(the basis is filtered to the three commercial directions) and for any month with no shares: the
+row keeps **its own department**, share 1. No department population is invented, and totals are
+preserved by construction. `Alt(share, 1)` plus a `Len(Trim(...)) > 0` guard on the department is
+what implements it, in each of the three paths.
+
+The basis is derived from `ПродажиДляПЛ` rather than the sales fact directly, so the department is
+defined exactly once and cannot disagree with what the injected sales rows carry.
+
+⚠ **Row count grows.** Dynamic previously exploded one row into ≤3; it is now ≤3 × the number of
+departments with COGS that month, and fixed fractions compound the same way. Watch the fact size on
+the first reload.
+
+⚠ `[სტრუქტურული ერთეული (P&L, საწყისი)]` is deliberately **not** rewritten — it stays the department
+where the cost was incurred and what the sheet is keyed on. So "incurred" and "attributed" are two
+separate visible facts, and the unmatched report keeps working.
+
+⚠ Matching happens **before** allocation, so an allocated row can carry an `(article, department)`
+pair that the sheet maps to a *different* direction. Nothing re-matches, so it is not circular, but
+anyone reconciling against the sheet must use the `საწყისი` field, not the display one.
+
 ## Allocation variants (გადანაწილების ვარიანტები)
 
 The report supports 4 views: (1) all 5 directions as-is, (2) ლოგისტიკა reallocated onto
