@@ -55,7 +55,11 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   scanning the facts. Any change to a key (e.g. adding the direction segment) must be made
   identically in every build site: sales fact, plan rows, debitors (×2 blocks), both bridge scans.
 - `[მიმართულება]` (global direction dimension, filters sales + plans + debitors + P&L) lives on
-  `BridgeTableOrgDate`.
+  `BridgeTableOrgDate`. Since 2026-07-31 it is a `dual()`: text unchanged, numeric part = the
+  display rank (საცალო 1, კორპორატიული 2, დისტრიბუცია 3, ლოგისტიკა 4, ადმინისტრაცია 5,
+  მიმართულების გარეშე 6; unknown 9) via `MapНаправлениеСорт` inline in `SD 0301` — charts on
+  Auto sort follow that order. ALL THREE bridge write sites must go through the map (first load
+  wins the dual); set-analysis/selections still match the text.
 - P&L fact (`SD 0206. Reg. PL Directions 24.qvs`, daily/24): standalone fact keyed
   `orgGUID|'PL'|date|0|direction`; adds directions ლოგისტიკა/ადმინისტრაცია. Its bridge block in
   `SD 0301` is deliberately UNguarded (must re-scan the persisted fact on every partial reload).
