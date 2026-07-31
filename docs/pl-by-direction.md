@@ -72,11 +72,14 @@ sum to 1:
 3. **(c) Unmatched key** — no sheet row at all: exploded over the month's FULL 5-bucket basis
    (`ДолиСебестоимости`), flagged `[დამატჩებულია (P&L)] = 'არა'`; a month with no basis stays
    whole on `'მიმართულების გარეშე'`.
-4. **Sales injection (revenue + COGS)** — unchanged: register/journal rows on the directions'
-   revenue/COGS accounts are excluded (per account|registrar pairs that actually occur in
-   the sales fact) and replaced by rows built from the sales fact, direction per document;
-   internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`. These rows keep their
-   real department — including non-store retail departments.
+4. **Sales injection (revenue + COGS)** — unchanged mechanics: register/journal rows on the
+   directions' revenue/COGS accounts are excluded (per account|registrar pairs that actually
+   occur in the sales fact) and replaced by rows built from the sales fact, direction per
+   document; internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`. Their real
+   department is **displayed only inside საცალო** (user decision 2026-07-31) — on any other
+   direction the display department is empty like on allocated rows; the raw field keeps the
+   real department always, and the injection grain is unchanged (still grouped by the real
+   department GUID).
 5. **Journal side** (within a–c above): Управленческий ledger rows not covered by the
    register, via anti-join on registrar + the three filter branches from pl.txt
    (income/expense types on Операция; account-group codes 6–9 on ВводНачальныхОстатков;
@@ -220,7 +223,8 @@ Cut-off and literal live in `vPLDeptFrom` / `vPLProjectSalesUnit` at the top of 
 ### The 2026 cut-off applies to every source, but only to the displayed field
 
 `[სტრუქტურული ერთეული (P&L)]` is empty before 2026-01-01 for **all** sources — register, journal
-and sales alike.
+and sales alike. Since 2026-07-31 sales-injected rows additionally blank it outside საცალო
+(the direction condition sits in the same `if()` as the year gate, in both injection blocks).
 
 `[_MatchKey (P&L)]` is **not** gated: it carries the raw department regardless of year. That is
 deliberate — gating the key would change which sheet row a pre-2026 line matches and therefore
@@ -355,9 +359,11 @@ buckets and the department is simply the bucket's:
 
 - store buckets → the store name (which equals the sheet column header, normalised);
 - every other direction and `'მიმართულების გარეშე'` → **empty** (`''`);
-- sales-injected rows keep their real department (they never consult the sheet) — this is the
-  only place non-store retail departments still appear, and it is intended: those departments
-  carry their own sales/COGS and nothing else;
+- sales-injected rows show their real department **only when their direction is საცალო**
+  (user decision 2026-07-31: outside retail the display department is empty on every row,
+  injected sales included) — so non-store retail departments still appear inside საცალო,
+  carrying their own sales/COGS and nothing else, while ლოგისტიკა-routed internal/non-core
+  sales display no department;
 - allocation-variant copies take the bucket's department too (empty on
   დისტრიბუცია/კორპორატიული); the guard there is on the **direction** being joined, not on the
   department being non-empty — otherwise the empty დისტრ/კორპ bucket department would be

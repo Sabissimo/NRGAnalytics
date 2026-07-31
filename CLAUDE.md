@@ -100,8 +100,10 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   match key carries the department regardless of year, because gating it would move money between
   directions. Sales rows never touch the match key at all, so their department is display-only.
   **The department on every allocated row IS the bucket's** (store name / empty) — the
-  2026-07-30 "departments within the direction by COGS" layer is gone; only sales-injected rows
-  keep their real department (so non-store retail departments carry ONLY their own sales/COGS).
+  2026-07-30 "departments within the direction by COGS" layer is gone. The DISPLAY department
+  exists only inside საცალო: sales-injected rows show theirs only when their direction is
+  საცალო (non-store retail departments carry ONLY their own sales/COGS there), every other
+  direction shows empty on every row; the raw `საწყისი` field keeps the real department always.
   Dynamic months with no basis in the marked buckets stay whole on 'მიმართულების გარეშე'
   (NOT re-routed to ლოგისტიკა — that fallback is sales-injection-only); variant copies in
   no-share months keep the source direction and department at share 1.
