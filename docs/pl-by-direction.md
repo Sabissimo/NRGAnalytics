@@ -1,7 +1,9 @@
 # P&L by direction — design record (SD 0206)
 
 Status: live since 2026-07-24; fixed fractional splits + `[ანგარიშის კოდი (P&L)]` added
-2026-07-28 (`330d2ce`, live after the next daily full reload).
+2026-07-28 (`330d2ce`); **retail split into 3 stores + single-wave allocation rewritten
+2026-07-31 — NOT yet deployed** (requires the Google Sheet to gain the 3 store columns first;
+see *Deployment order* below).
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -12,7 +14,8 @@ on the management chart of accounts).
 
 `РегистрНакопленияДоходыИРасходы` — standalone fact keyed
 `orgGUID | 'PL' | date | 0 | direction` (`[ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]`,
-contractor segment is the literal `'PL'`). Grain: org × day × direction × article × account.
+contractor segment is the literal `'PL'`). Grain: org × day × bucket (direction + department:
+store name inside საცალო, empty elsewhere) × article × account.
 Measures: `[შემოსავალი (P&L)]`, `[ხარჯი (P&L)]`, `[თანხა (P&L)]` (= revenue − expense).
 Audit attributes: `[ანგარიშის დასახელება (P&L)]` + `[ანგარიშის კოდი (P&L)]` (empty code = GUID
 not in the chart of accounts), `[მუხლი (P&L)]` (**`Null`** = account has no ВидСчетаPL — test with
@@ -42,31 +45,54 @@ Same date today, expected to diverge — do not collapse them.
 The COGS-share table is unbounded and will compute months no P&L row references — unused, not
 wrong.
 
-## Assembly (five passes + allocation)
+## Assembly (single-wave allocation into final buckets, 2026-07-31)
 
-Passes 1–3 are mutually exclusive and exhaustive over the staging rows — see "Matching sheet
-semantics" below for the routing table and the double-counting trap.
+Allocation targets are **buckets** = (direction, department): (დისტრიბუცია, ''),
+(კორპორატიული, ''), (ლოგისტიკა, ''), (ადმინისტრაცია, ''), and the 3 retail stores
+(საცალო, store name) — the store list is `SET vPLRetailStores` at the top of the script.
+The sheet's 7 target columns map onto these buckets (a store column = საცალო + that store as
+department); the two-layer "direction first, then departments within it by COGS" composition is
+**gone**. Non-store retail departments receive no allocated costs at all — only their own
+injected sales/COGS.
 
-1. **Static** — articles matched in the Google Sheet with weight 1 on exactly one direction:
-   whole amount to that direction via the static direction map (`MapНаправлениеСтатично`,
-   key = trimmed article|structural-unit), then split across that direction's **departments** by
-   COGS — 100% is a set percentage like any other (see *Allocation reassigns the department*).
-2. **Fixed fractions** (2026-07-28) — more than one numeric weight on the row: exploded into one
-   row per weighted direction, amount × weight normalized by the row's own sum
-   (`ФиксДолиПЛ`, marker map `MapНаправлениеФиксДоли`).
-3. **Dynamic** — sheet value `'დინამიურად'` or key not found at all: row exploded into ≤3 rows
-   by monthly COGS shares (`ДолиСебестоимости`: month × direction share of
-   `[თვითღირებულება (გაყიდვები)]`, commercial directions only, same exclusions as
-   `შიდა_და_არაძითადები_ფილტრი`). Months with no shares fall back to the literal
-   `'მიმართულების გარეშე'`.
-4. **Sales injection (revenue + COGS)** — register/journal rows on the directions'
+The three sheet-driven parts read the same staging (`ПЛСтейджинг2`), guarded by key-marker maps
+(`MapКлючФиксПЛ` / `MapКлючДинамПЛ` / `MapКлючМатчПЛ`). A **mixed row** (numbers +
+`დინამიურად`) deliberately flows through BOTH (a) and (b) — the shares are complementary and
+sum to 1:
+
+1. **(a) Fixed part** — every numeric cell becomes one row per its bucket, amount ×
+   `[_ფიქს წილი (P&L)]` (`ФиксДолиПЛ`, joined on the match key). No month/COGS dependency —
+   a 100% cell is just the single-cell case. Weight semantics: absolute on mixed rows with
+   sum < 100%, normalized by the row's own sum otherwise.
+2. **(b) Dynamic part** — `დინამიურად`-marked buckets only (`ДинамНаправленияПЛ` keeps WHICH
+   column held the mark — the old marker map discarded that): amount × remainder
+   (`MapДинамОстатокПЛ`: 1 − numeric sum; 1 on number-free rows) × the bucket's monthly COGS
+   share renormalized over the marked subset (`ДинамДолиНормПЛ`, joined on key + month).
+   A month where no marked bucket has a share stays whole on `'მიმართულების გარეშე'`.
+3. **(c) Unmatched key** — no sheet row at all: exploded over the month's FULL 5-bucket basis
+   (`ДолиСебестоимости`), flagged `[დამატჩებულია (P&L)] = 'არა'`; a month with no basis stays
+   whole on `'მიმართულების გარეშე'`.
+4. **Sales injection (revenue + COGS)** — unchanged: register/journal rows on the directions'
    revenue/COGS accounts are excluded (per account|registrar pairs that actually occur in
    the sales fact) and replaced by rows built from the sales fact, direction per document;
-   internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`.
-5. **Journal side** (within 1–3 above): Управленческий ledger rows not covered by the
+   internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`. These rows keep their
+   real department — including non-store retail departments.
+5. **Journal side** (within a–c above): Управленческий ledger rows not covered by the
    register, via anti-join on registrar + the three filter branches from pl.txt
    (income/expense types on Операция; account-group codes 6–9 on ВводНачальныхОстатков;
    loan-interest codes 6–9 on ПриходнаяНакладная); credit side enters with flipped sign.
+
+**Department on allocated rows comes from the bucket**: the store name on store buckets,
+**empty** everywhere else (დისტრიბუცია/კორპორატიული/ლოგისტიკა/ადმინისტრაცია and
+`'მიმართულების გარეშე'`) — departments outside retail are deliberately not tracked.
+`[სტრუქტურული ერთეული (P&L, საწყისი)]` still holds where the cost was incurred.
+
+**COGS basis** (`ДолиСебестоимости`): month × bucket share of `[თვითღირებულება (გაყიდვები)]`,
+same exclusions as `შიდა_და_არაძითადები_ფილტრი`. დისტრიბუცია/კორპორატიული are aggregated to
+the direction level (department ''); საცალო is restricted to the 3 stores by **normalised**
+department name. ⚠ Retail COGS on non-store departments is **excluded from the basis
+entirely** — direction totals shift vs the pre-2026-07-31 scheme by design (retail's dynamic
+weight now comes from the stores only).
 
 ## Internal / non-core filtering (2026-07-28)
 
@@ -77,7 +103,7 @@ instead of the exclusion being hardcoded:
 | Row origin | `[Internal (P&L)]` | `[არ არის ძირითადი (P&L)]` |
 |---|---|---|
 | sales injection (revenue + COGS) | real value from the sales fact; grain extended by both | real value from the sales fact |
-| register / journal (static, dynamic, fractional) | account-derived — see below (was `'არა'` until 2026-07-29) | `'არა'` — such rows are never non-core, so the standard filter keeps them |
+| register / journal (fixed part, dynamic part, unmatched) | account-derived — see below (was `'არა'` until 2026-07-29) | `'არა'` — such rows are never non-core, so the standard filter keeps them |
 | allocation-variant copies | carried through from the source row | carried through from the source row |
 
 ⚠ **The names deliberately differ from the sales-side fields.** `[Internal (კონტრაგენტები)]`
@@ -162,7 +188,7 @@ the same register and the same filter the Statement app uses (`Statement 0002`).
 department map. It was once commented out in Statement and had to be re-enabled (`786ad1e`).
 
 ⚠ **Deliberate asymmetry — do not "fix" it.** The matching is applied to the **displayed** field
-(`SD 0206:561`) but **not** to `[_MatchKey (P&L)]` (`:563`), which keeps the **raw** name.
+but **not** to `[_MatchKey (P&L)]` (both built in `ПЛСтейджинг2`), which keeps the **raw** name.
 
 The Google Sheet's `[სტრუქტურული ერთეული]` column holds raw names — after the account overlay
 `ПодразделенияЗатратДоходовСчетов`, before normalisation — so the key must be built from the raw
@@ -194,14 +220,16 @@ Cut-off and literal live in `vPLDeptFrom` / `vPLProjectSalesUnit` at the top of 
 ### The 2026 cut-off applies to every source, but only to the displayed field
 
 `[სტრუქტურული ერთეული (P&L)]` is empty before 2026-01-01 for **all** sources — register, journal
-and sales alike (`:563` for register/journal, `:336` in the sales staging).
+and sales alike.
 
 `[_MatchKey (P&L)]` is **not** gated: it carries the raw department regardless of year. That is
 deliberate — gating the key would change which sheet row a pre-2026 line matches and therefore
 move money between directions. The cut-off is a presentation rule, not an allocation rule.
 
-The gate sits at the three normalisation points only (`:562`, `:759`, `:806`); nothing upstream of
-them is year-dependent, so the raw value exists for every year on every source.
+The gate sits at the three normalisation points only (`ПЛСтейджинг2` and the two injection
+blocks); nothing upstream of them is year-dependent, so the raw value exists for every year on
+every source. Bucket departments written by allocation are ungated (see *Department on allocated
+rows*).
 
 ### Two department fields on the fact
 
@@ -223,8 +251,8 @@ addition alone fails the reload.
 
 ### Register/journal rows — unchanged
 
-`ApplyMap('MapПодразделенияЗатратДоходовСчетовПЛ', org|account, [_ერთეული (P&L)])` at `:562-564`
-keeps the account register as the **override** and the row's own department as the fallback, so an
+`ApplyMap('MapПодразделенияЗатратДоходовСчетовПЛ', org|account, [_ერთეული (P&L)])` in
+`ПЛСтейджинг2` keeps the account register as the **override** and the row's own department as the fallback, so an
 empty row department already picks up the account register. Deliberately not inverted.
 
 ### Extraction dependency
@@ -266,95 +294,92 @@ confuse when editing.
 return empty **with no error** — verify by finding a populated department, not by the absence of a
 failure.
 
-## Matching sheet semantics
+## Matching sheet semantics (2026-07-31)
 
 Google Sheet, PL Directions tab. Columns: `მუხლი` | `სტრუქტურული ერთეული` | `სულ` (control sum,
-**not loaded**) | `საცალო` | `დისტრიბუცია` | `კორპორატიული` | `ლოგისტიკა` | `ადმინისტრაცია`.
+**not loaded**) | `ELV_ბათუმის ფილიალი` | `ELV_აგლაძის ფილიალი` | `ELV_ალექსეევკის ფილიალი` |
+`დისტრიბუცია` | `კორპორატიული` | `ლოგისტიკა` | `ადმინისტრაცია`.
 `[მუხლი]` is the account's **ВидСчетаPL name**, not the account name.
 
-| Row content | Branch |
+⚠ The 3 store column headers must byte-match the stores' **normalised** department names (they
+are matched against the COGS basis and written into `[სტრუქტურული ერთეული (P&L)]` verbatim).
+A mismatched header makes that store's COGS share silently 0 — the store column then never
+receives dynamic money and its static/fixed money carries a department name that exists nowhere
+else. The same three names live in `SET vPLRetailStores` in the script; change both together.
+
+Cell semantics per row (key = `მუხლი|ერთეული`):
+
+| Row content | Result |
 |---|---|
-| `1` / `100%` on exactly one direction | static |
-| two or more numeric weights (`60%`, `40%`) | fixed fractions, normalized |
-| `დინამიურად` | dynamic (monthly COGS shares) |
-| no row for the key | dynamic, flagged `[დამატჩებულია (P&L)] = 'არა'` |
+| numbers only | each cell's bucket gets weight ÷ row sum (60/40 works; a lone `50%` gets 100%); sum ≠ 100% flagged `[წილები დაბალანსებულია (P&L)] = 'არა'` |
+| `დინამიურად` only | whole amount split by monthly COGS shares **among the marked columns only** (renormalized over the marked subset) |
+| numbers + `დინამიურად` (mixed) | numbers are **absolute** percentages; the remainder (1 − sum) is split by COGS among the marked columns. Sum ≥ 100% → numbers normalized, dynamic part 0, flagged `'არა'` |
+| no row for the key | split over the month's full 5-bucket basis, flagged `[დამატჩებულია (P&L)] = 'არა'` |
 
 - Percent-formatted cells arrive as numbers (`100%` → 1) — confirmed in production.
-- Weights are normalized by the row's own sum, so the amount is always distributed in full and
-  the P&L ties to the register even when the row doesn't total 100%; such rows are flagged
-  `[წილები დაბალანსებულია (P&L)] = 'არა'`.
+- A month where the marked (or, for unmatched keys, any) buckets have no COGS stays whole on
+  `'მიმართულების გარეშე'` — it is **not** re-routed to ლოგისტიკა; that fallback exists only in
+  the sales-injection direction rule.
+- `დინამიურად` under ლოგისტიკა/ადმინისტრაცია marks nothing: those buckets never exist in the
+  COGS basis, so the mark contributes no split (if it is the row's only mark, the whole dynamic
+  part lands on `'მიმართულების გარეშე'`).
 - `[სულ]` is decorative — it is never loaded, so a row that reads 100% across in the spreadsheet
   is no guarantee Qlik honoured it. The flag field is the real check.
 
-⚠ **Routing trap.** A fractional key must be excluded from BOTH the static and the dynamic
-`Where` clauses (`MapНаправлениеФиксДоли … = 0`, `SD 0206:533` and `:544`). The dynamic branch
-historically claimed everything the static map didn't; leaving it open makes fractional rows
-flow down two branches and double count.
+Behaviour changes vs the pre-2026-07-31 scheme, worth knowing when editing the sheet:
 
-⚠ Fractions could not be done through `MapНаправлениеСтатично`: it is a **mapping** table and
-`ApplyMap` returns one value per key. Hence the separate joined weight table.
+- a **lone numeric weight ≠ 1** (e.g. a single `60%`) used to fall through to the dynamic branch
+  silently; it now allocates 100% to its column, flagged `'არა'`;
+- a **mixed row** used to ignore its numbers and go fully dynamic; the numbers now count;
+- `1` in two columns still splits evenly (2-weight row), flagged unbalanced (sum = 2).
 
-⚠ Two `1`s on one row used to resolve to whichever loaded first; since 2026-07-28 that is a
-2-weight row → even split, flagged unbalanced.
+⚠ **Routing.** Branch guards are the key-marker maps built from `КлючиПЛ`: `MapКлючФиксПЛ`
+(has numeric cells), `MapКлючДинамПЛ` (has marks AND a positive remainder), `MapКлючМатчПЛ`
+(in the sheet at all — the unmatched branch requires `= 0`). Fixed and dynamic parts of a mixed
+key overlap **by design** (complementary shares); everything else must stay mutually exclusive —
+widening one guard double counts silently.
 
-Accepted behaviour (not a defect): `დინამიურად` mixed with a numeric weight ignores the number
-and goes fully dynamic flagged `'კი'` — nothing announces it. Deliberately unhandled, since
-mixing a keyword with a number has no meaningful normalization; confirmed a non-issue in
-practice 2026-07-28. Worth knowing before filling a row that way.
+⚠ Fractions cannot be done through a mapping table: `ApplyMap` returns one value per key. Hence
+the joined weight tables (`ФиксДолиПЛ` on the key; `ДинамДолиНормПЛ` on key + month).
 
 The `ВидыСчетовPL` extraction deliberately keeps **no `ПометкаУдаления` filter** (user decision
 2026-07-28): deletion-marked elements reach the QVD, because filtering them would strand
 historical postings that still reference those GUIDs.
 
-## Allocation reassigns the department too (2026-07-30)
+## Department on allocated rows = the bucket (2026-07-31; replaces the 2026-07-30 two-layer scheme)
 
-Allocation used to rewrite only the direction. It now rewrites the **department** as well, everywhere
-a direction is assigned: static (100% in the sheet), fixed fractions, dynamic, and the allocation
-variants. Only sales-injected rows keep theirs, since they never consult the sheet at all.
+The 2026-07-30 scheme ("direction first, then departments within it by COGS", two share
+flavours, `ДолиДепСтатичноПЛ`/`ДолиДепПоНаправлениюПЛ`) lived for one day and is **gone**.
+Departments outside retail are not tracked at all, so allocation lands directly in the final
+buckets and the department is simply the bucket's:
 
-It applies to **all four** branches, including static: a lone 100% in the sheet is still a set
-percentage, so departments are allocated within that direction too. Static and fixed fractions
-differ only in *how* the direction is chosen, never in whether departments get spread — treating
-100% and 60/40 differently would have been arbitrary.
+- store buckets → the store name (which equals the sheet column header, normalised);
+- every other direction and `'მიმართულების გარეშე'` → **empty** (`''`);
+- sales-injected rows keep their real department (they never consult the sheet) — this is the
+  only place non-store retail departments still appear, and it is intended: those departments
+  carry their own sales/COGS and nothing else;
+- allocation-variant copies take the bucket's department too (empty on
+  დისტრიბუცია/კორპორატიული); the guard there is on the **direction** being joined, not on the
+  department being non-empty — otherwise the empty დისტრ/კორპ bucket department would be
+  "corrected" back to the source row's department. A no-share month keeps the source direction
+  and department (share 1), so totals hold.
 
-The rule is one composition — *direction first, then departments inside that direction* — but it
-collapses to a single multiplication for dynamic, because both factors come from the same COGS
-basis:
-
-```
-cogs(m,dir,dept) / cogs_total(m)  ==  [cogs(m,dir)/cogs_total(m)] x [cogs(m,dir,dept)/cogs(m,dir)]
-        one unconditional share            direction share          dept share within direction
-```
-
-So the share table carries **two** flavours:
-
-| Share | Denominator | Used by |
-|---|---|---|
-| `[_წილი (P&L)]` | month total | dynamic, allocation variants |
-| `[_წილი მიმართულებაში (P&L)]` | that direction's month total | **static** and fixed fractions (× the sheet weight, which is 1 for static) |
-
-Percentages cannot collapse, because their direction factor comes from the **sheet**, not from COGS
-— hence the two-step fan-out in `ПЛФиксДоли`: join `ФиксДолиПЛ` on the match key for the direction,
-then join `ДолиДепПоНаправлениюПЛ` on **month + direction** for the departments.
-
-**Fallback when a direction has no COGS basis** — always the case for ლოგისტიკა/ადმინისტრაცია
-(the basis is filtered to the three commercial directions) and for any month with no shares: the
-row keeps **its own department**, share 1. No department population is invented, and totals are
-preserved by construction. `Alt(share, 1)` plus a `Len(Trim(...)) > 0` guard on the department is
-what implements it, in each of the three paths.
-
-The basis is derived from `ПродажиДляПЛ` rather than the sales fact directly, so the department is
-defined exactly once and cannot disagree with what the injected sales rows carry.
+The basis is derived from `ПродажиДляПЛ` rather than the sales fact directly, so the department
+is defined exactly once and cannot disagree with what the injected sales rows carry.
 
 ⚠ `ПродажиДляПЛ`'s `[_ერთეული (P&L გაყიდვები)]` is a **GUID**, not a name — the name only appears
 inside the `if()` comparison against the project-sales unit. The share table resolves it to a
-**normalised name** immediately (`:397-400`), because allocation writes it straight into
+**normalised name** immediately, because allocation writes it straight into
 `[სტრუქტურული ერთეული (P&L)]`, which holds names everywhere else. Grouping is on the normalised
 name too, so two departments remapped onto one count as one for allocation purposes.
 
-⚠ **Row count grows.** Dynamic previously exploded one row into ≤3; it is now ≤3 × the number of
-departments with COGS that month, and fixed fractions compound the same way. Watch the fact size on
-the first reload.
+⚠ The bucket department is written **ungated** (no 2026 cut-off) — same as the 2026-07-30
+behaviour for allocated departments. The cut-off still applies where it always did: the
+staging/injection display field for the rows' *own* departments.
+
+**Row count shrinks** vs the 2026-07-30 scheme: the fixed part no longer fans out across a
+direction's departments (one row per weighted cell, month-independent), dynamic fans over ≤5
+buckets. Note the new fact size on the first reload.
 
 ⚠ `[სტრუქტურული ერთეული (P&L, საწყისი)]` is deliberately **not** rewritten — it stays the department
 where the cost was incurred and what the sheet is keyed on. So "incurred" and "attributed" are two
@@ -364,11 +389,23 @@ separate visible facts, and the unmatched report keeps working.
 pair that the sheet maps to a *different* direction. Nothing re-matches, so it is not circular, but
 anyone reconciling against the sheet must use the `საწყისი` field, not the display one.
 
+## Deployment order (sheet first, then push)
+
+The new script SELECTs the 3 store columns **by name** — a reload against a sheet without them
+fails outright (and `sync-to-qlik.yml` deploys every push to main immediately, with a nightly
+full reload at 00:00 UTC). The safe sequence:
+
+1. In the Google Sheet, ADD the 3 store columns (headers byte-exact as above) and author their
+   values; **keep the old `საცალო` column and its values untouched** — the old script keeps
+   working off it, the new one never reads it. Every intermediate nightly reload stays green.
+2. Push this script change. Next full reload switches allocation to the new scheme.
+3. Verify (see checklist), then delete the `საცალო` column from the sheet whenever convenient.
+
 ## Allocation variants (გადანაწილების ვარიანტები)
 
-The report supports 4 views: (1) all 5 directions as-is, (2) ლოგისტიკა reallocated onto
-საცალო/დისტრიბუცია/კორპორატიული by monthly COGS shares, (3) ადმინისტრაცია reallocated,
-(4) both.
+The report supports 4 views: (1) all 5 directions as-is, (2) ლოგისტიკა reallocated onto the
+5-bucket COGS basis (დისტრიბუცია, კორპორატიული, and the 3 საცალო stores) by monthly shares,
+(3) ადმინისტრაცია reallocated, (4) both.
 
 Implementation — row groups + link table, all inside SD 0206:
 
@@ -376,7 +413,8 @@ Implementation — row groups + link table, all inside SD 0206:
   LOG_ALLOC / ADM_ALLOC (Latin values on purpose).
 - Allocated copies of overhead rows (everything sitting on ლოგისტიკა/ადმინისტრაცია, incl.
   sales-injection fallback rows) are concatenated into the fact: amounts × monthly COGS
-  share, direction + composite key rebuilt to the target commercial direction, original
+  share, direction + composite key rebuilt to the target bucket's direction, the department
+  set to the bucket's (store name / empty — see *Department on allocated rows*), original
   article and attributes preserved, marker `[გადანაწილების წყარო (P&L)]` =
   'ლოგისტიკიდან'/'ადმინისტრაციიდან' ('საკუთარი' on originals). Months with no positive
   shares: one copy stays on the source direction at share 1 — **totals are preserved in
@@ -457,13 +495,25 @@ pivot object).
 2. Data model viewer: no `$Syn`; variant link table connects to the fact only; variant field
    4 values, group field 5.
 3. Totals invariant: `Sum({<[გადანაწილების ვარიანტი]={'<label>'}>}[თანხა (P&L)])` identical
-   across all four labels.
-4. Variant 2 → ლოგისტიკა ≈ 0 (residue only in no-COGS months); variant 3 → ადმინისტრაცია 0;
+   across all four labels, and (per label) unchanged vs the previous reload — allocation moves
+   money between buckets, never creates or destroys it.
+4. Per-key invariant: `Sum([თანხა (P&L)])` per `[_MatchKey (P&L)]` unchanged vs the previous
+   reload; the `[დამატჩებულია (P&L)]='არა'` key list unchanged (unless sheet rows were
+   added/removed). Direction totals MOVE by design (stores-only retail basis + re-authored
+   sheet) — reconcile deliberately, don't treat as regression.
+5. Store-name guard: each of the 3 store columns shows non-zero allocated amounts in months
+   with sales. A store at 0 everywhere = header/name byte-mismatch (silent failure).
+6. Purity: zero rows with `[მიმართულება (P&L)]='საცალო'`, `[წყარო (P&L)]<>'გაყიდვები'` and
+   `[სტრუქტურული ერთეული (P&L)]` outside the 3 store names (check both 'საკუთარი' rows and
+   the ALLOC variant copies). Non-store retail departments must carry only injected sales/COGS.
+7. Mixed rows: per-key total = the full amount; each numeric column receives exactly its
+   percentage; the remainder splits across the marked columns only.
+8. Variant 2 → ლოგისტიკა ≈ 0 (residue only in no-COGS months); variant 3 → ადმინისტრაცია 0;
    variant 4 → both. Marker splits საკუთარი vs ლოგისტიკიდან/ადმინისტრაციიდან and the
    allocated part equals variant 1's overhead total.
-5. Last month present in P&L = month before the reload date.
-6. Articles appear in 1C order with chart sorting on Auto.
-7. Partial reload → allocated rows still in the bridge; direction + calendar still slice.
-8. Fractions: per-key `Sum([თანხა (P&L)])` unchanged by making a key fractional (normalization
-   guarantees it) — a change means a branch double counts. `[წილები დაბალანსებულია (P&L)]='არა'`
-   lists exactly the sheet rows whose weights don't total 100%.
+9. Last month present in P&L = month before the reload date.
+10. Articles appear in 1C order with chart sorting on Auto.
+11. Partial reload → allocated rows still in the bridge; direction + calendar still slice.
+12. `[წილები დაბალანსებულია (P&L)]='არა'` lists exactly: number-only rows with sum ≠ 100% and
+    mixed rows with sum ≥ 100%.
+13. Fact row count: expected DOWN vs the 2026-07-30 scheme — note the new number.

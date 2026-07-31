@@ -67,11 +67,19 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
   1C `რიგითობა` order as the numeric part of `dual()` values → charts sort on plain Auto.
-  Matching-sheet rows route to **three mutually exclusive branches**: >1 numeric weight → fixed
-  fractions (normalized by the row's own sum), a single weight 1 → static, `დინამიურად` or no
-  row → dynamic. Adding a branch means NARROWING the others' `Where` clauses — the dynamic one
-  claims everything the static map didn't, so leaving it open double counts silently. Fractions
-  need a joined weight table, not a map: `ApplyMap` returns one value per key.
+  Allocation is a **single wave into final buckets** (2026-07-31): the sheet has 7 target
+  columns — 3 retail stores (`SET vPLRetailStores`; store column = direction 'საცალო' +
+  department = store name, headers must byte-match the NORMALISED department names) + the 4
+  other directions (department kept EMPTY on allocated rows — only stores are tracked).
+  Three parts guarded by key-marker maps: numeric cells → fixed part (joined on the match key,
+  month-independent); `დინამიურად` marks → dynamic part over the MARKED buckets only,
+  renormalized (a real marks table remembers which column held the mark); key absent → the
+  month's full 5-bucket COGS basis, flagged. Mixed rows are supported: numbers are absolute,
+  the remainder splits dynamically — a mixed key flows through BOTH the fixed and dynamic
+  parts by design (complementary shares); everything else must stay mutually exclusive, and
+  widening a guard double counts silently. Fractions need joined weight tables, not a map:
+  `ApplyMap` returns one value per key. The COGS basis excludes retail COGS on non-store
+  departments entirely.
   P&L carries its own `[Internal (P&L)]` / `[არ არის ძირითადი (P&L)]` (real values on
   sales-injected rows, `'არა'` on register/journal rows) — **the sales-side names could not be
   reused**: they live on `BridgeTableOrgDate` / the items dimension, so putting them on the fact
@@ -91,14 +99,12 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   2026 cut-off (`vPLDeptFrom`) likewise applies ONLY to the displayed field, for every source — the
   match key carries the department regardless of year, because gating it would move money between
   directions. Sales rows never touch the match key at all, so their department is display-only.
-  **Allocation reassigns the DEPARTMENT as well as the direction** everywhere a direction is
-  assigned — static (100% in the sheet), fixed fractions, dynamic, and the variants; only
-  sales-injected rows keep theirs. Direction first, then departments inside it by COGS: one share
-  for dynamic (same basis), two steps wherever the direction comes from the sheet. A lone 100% is
-  a set percentage like any other — static and fixed fractions differ only in HOW the direction is
-  chosen, never in whether departments are spread.
-  A direction with no COGS basis (always ლოგისტიკა/ადმინისტრაცია) keeps its OWN department at
-  share 1 — do not "improve" this into an equal split, there is no population to split over.
+  **The department on every allocated row IS the bucket's** (store name / empty) — the
+  2026-07-30 "departments within the direction by COGS" layer is gone; only sales-injected rows
+  keep their real department (so non-store retail departments carry ONLY their own sales/COGS).
+  Dynamic months with no basis in the marked buckets stay whole on 'მიმართულების გარეშე'
+  (NOT re-routed to ლოგისტიკა — that fallback is sales-injection-only); variant copies in
+  no-share months keep the source direction and department at share 1.
   `[სტრუქტურული ერთეული (P&L, საწყისი)]` is never reassigned: incurred vs attributed stay separate,
   and it is what the Google Sheet is keyed on.
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
