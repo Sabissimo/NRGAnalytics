@@ -9,6 +9,11 @@ user's request because the Google-Sheet format is being redesigned. The raw diff
 at the top and all three non-sales branches changed. Treat it as a reference implementation, not
 something to replay.
 
+⚠ Superseded assumption (2026-07-31): the allocation has since been redesigned — retail split
+into 3 store buckets, single wave, `დინამიურად` restricted to marked columns, mixed rows.
+A revived budget must decide how budgeted overhead maps onto the store buckets (budgeted COGS
+exists per direction, not per store) — the "budgeted COGS shares" decision below predates that.
+
 Most of the design below is independent of the sheet layout. Only the load block is not.
 
 ## Decisions already taken (user-confirmed)

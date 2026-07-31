@@ -1,9 +1,10 @@
 # P&L by direction — design record (SD 0206)
 
 Status: live since 2026-07-24; fixed fractional splits + `[ანგარიშის კოდი (P&L)]` added
-2026-07-28 (`330d2ce`); **retail split into 3 stores + single-wave allocation rewritten
-2026-07-31 — NOT yet deployed** (requires the Google Sheet to gain the 3 store columns first;
-see *Deployment order* below).
+2026-07-28 (`330d2ce`); **retail split into 3 stores + single-wave allocation DEPLOYED and
+verified 2026-07-31** (`31ef5f3`; same day: displayed departments blanked outside retail,
+`5065640`, and `[მიმართულება]` made a sort-ranked dual in `SD 0301`, `63f70b5`). The old
+`საცალო` sheet column has been deleted — the *Deployment order* section below is historical.
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -42,8 +43,8 @@ agree by construction.
 `vPLStart` is deliberately a **separate variable** from `vPLDeptFrom` (the department cut-off).
 Same date today, expected to diverge — do not collapse them.
 
-The COGS-share table is unbounded and will compute months no P&L row references — unused, not
-wrong.
+The COGS-share table derives from `ПродажиДляПЛ`, which carries the same window — so shares
+exist for exactly the months the fact can reference.
 
 ## Assembly (single-wave allocation into final buckets, 2026-07-31)
 
@@ -395,17 +396,16 @@ separate visible facts, and the unmatched report keeps working.
 pair that the sheet maps to a *different* direction. Nothing re-matches, so it is not circular, but
 anyone reconciling against the sheet must use the `საწყისი` field, not the display one.
 
-## Deployment order (sheet first, then push)
+## Deployment order (historical — executed 2026-07-31; keep the pattern for future column changes)
 
-The new script SELECTs the 3 store columns **by name** — a reload against a sheet without them
-fails outright (and `sync-to-qlik.yml` deploys every push to main immediately, with a nightly
-full reload at 00:00 UTC). The safe sequence:
+The script SELECTs the sheet columns **by name** — a reload against a sheet lacking a listed
+column fails outright (and `sync-to-qlik.yml` deploys every push to main immediately, with a
+nightly full reload at 00:00 UTC). Any future column change must follow the same sequence:
 
-1. In the Google Sheet, ADD the 3 store columns (headers byte-exact as above) and author their
-   values; **keep the old `საცალო` column and its values untouched** — the old script keeps
-   working off it, the new one never reads it. Every intermediate nightly reload stays green.
-2. Push this script change. Next full reload switches allocation to the new scheme.
-3. Verify (see checklist), then delete the `საცალო` column from the sheet whenever convenient.
+1. ADD the new columns in the Google Sheet first, keeping the old ones untouched — the deployed
+   script only reads columns it names, so every intermediate nightly reload stays green.
+2. Push the script change; the next full reload switches over.
+3. Verify, then delete the obsolete columns whenever convenient (done for `საცალო` 2026-07-31).
 
 ## Allocation variants (გადანაწილების ვარიანტები)
 
