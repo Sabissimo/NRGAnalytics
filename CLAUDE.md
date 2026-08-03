@@ -65,9 +65,10 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   `SD 0301` is deliberately UNguarded (must re-scan the persisted fact on every partial reload).
   Data window: starts at `vPLStart` = `RangeMax(YearStart(YearStart(vNow)-1), MakeDate(2026,1,1))`
   — rolling two years but never before 2026, same formula as the calendar's
-  `[Year SD (ბოლო 2 წელი, 2026+)]` so filter and window agree. Ends at the month BEFORE the reload
-  date (`vPLEnd`) — current month is excluded
-  on purpose. Allocation variants: group field + allocated overhead copies + 12-row link table
+  `[Year SD (ბოლო 2 წელი, 2026+)]` so filter and window agree. Upper bound `vPLEnd`
+  (2026-08-03): the previous month becomes visible only from the **6th** of the current month —
+  on days 1–5 the last month present is two months back; the current month is always excluded.
+  Budget rows are exempt from the window (they cover future months). Allocation variants: group field + allocated overhead copies + 12-row link table
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
   1C `რიგითობა` order as the numeric part of `dual()` values → charts sort on plain Auto.
@@ -97,24 +98,44 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   on sales rows. Any new per-row attribute on the sales injection must also go into BOTH
   injection `Group By` lists; they aggregate, so a select-list-only addition fails the reload.
   Departments: names are normalised through the SAME 1C register the Statement app uses
-  (`СоответствияЗначений`, type `'EEE განყოფილების ჩანაცვლება'`), but ONLY on the displayed field —
-  `[_MatchKey (P&L)]` deliberately keeps the RAW name, because the Google Sheet's unit column holds
-  raw names. Normalising both sides silently breaks the match for every remapped department. The
-  2026 cut-off (`vPLDeptFrom`) likewise applies ONLY to the displayed field, for every source — the
-  match key carries the department regardless of year, because gating it would move money between
-  directions. Sales rows never touch the match key at all, so their department is display-only.
+  (`СоответствияЗначений`, type `'EEE განყოფილების ჩანაცვლება'`). Since 2026-08-03 normalisation
+  applies EVERYWHERE — `[_MatchKey (P&L)]`, the `საწყისი` field and the display alike — because
+  the Google Sheet's unit column now holds NORMALISED names (the earlier rule was the opposite:
+  key raw / display normalised; a raw name left in the sheet now silently matches nothing). The
+  2026 cut-off (`vPLDeptFrom`) applies ONLY to the displayed field, for every source — the
+  match key carries the (normalised) department regardless of year, because gating it would move
+  money between directions. Sales rows never touch the match key at all, so their department is
+  display-only.
   **The department on every allocated row IS the bucket's** (store name / empty) — the
   2026-07-30 "departments within the direction by COGS" layer is gone. The DISPLAY department
   exists only inside საცალო: sales-injected rows show theirs only when their direction is
   საცალო (non-store retail departments carry ONLY their own sales/COGS there), every other
-  direction shows empty on every row; the raw `საწყისი` field keeps the real department always.
+  direction shows empty on every row; the `საწყისი` field keeps the incurring department always
+  (normalised since 2026-08-03).
   Dynamic months with no basis in the marked buckets stay whole on 'მიმართულების გარეშე'
   (NOT re-routed to ლოგისტიკა — that fallback is sales-injection-only); variant copies in
   no-share months keep the source direction and department at share 1.
   `[სტრუქტურული ერთეული (P&L, საწყისი)]` is never reassigned: incurred vs attributed stay separate,
-  and it is what the Google Sheet is keyed on.
+  and it is what the Google Sheet is keyed on (normalised since 2026-08-03).
   Full design: `docs/pl-by-direction.md`; original 1C query: `docs/pl.txt`.
-- Budget/plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
+- P&L budget (გეგმა, 2026-08-03, end of `SD 0206`): flat budget tab (`მუხლი` | `სტრუქტურული
+  ერთეული` | `მიმართულება` | month columns, three fixed columns FIRST) → amounts land ONLY in
+  `[ბიუჯეტი (P&L)]` (report sign, other measures null → existing measures untouched); pseudo-org
+  `'ბიუჯეტი'` (holding level), contractor `'PL'` (SA covered, bridge picks group by contractor),
+  `[წყარო (P&L)]='ბიუჯეტი'`, NOT windowed. Every row allocates through the SAME matching sheet
+  and marker maps as register/journal rows — except the two sales articles
+  (`SET vPLBudgetSalesArticles`) **with a filled direction** (საცალო/დისტრიბუცია/კორპორატიული):
+  those bypass matching, and the budgeted COGS article builds the plan's own month × 5-bucket
+  basis for dynamic/unmatched splits AND a separate LOG/ADM variant wave (the actuals wave
+  excludes `[წყარო (P&L)]='ბიუჯეტი'`). A sales-article row with an EMPTY direction is NOT sales
+  data — it routes through matching and stays out of the basis. Article names resolve to GUIDs
+  via a leaf-only, deletion-mark-filtered map; unresolved rows keep their money (unmatched
+  flag, article Null). Deletion-marked catalog elements are also excluded from the rank and the
+  hierarchy dimension, but the GUID→name map stays UNfiltered (old postings keep their article
+  names). New fact field `[მიმართულება (P&L, საწყისი)]`: raw pre-rule direction, sales rows only
+  (actuals injection + budget sales; both injection `Group By` lists now include it).
+  Full design: `docs/pl-by-direction.md`, *Budget* section.
+- Sales plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
   Sheet direction names must exactly match `MapПеречислениеНаправленияПокупателей` output.
 - Direction plans are **concatenated into the sales fact** as rows with pseudo-org `'გეგმა'` —
   see `docs/direction-plans.md` for the full design and why every alternative fails.
