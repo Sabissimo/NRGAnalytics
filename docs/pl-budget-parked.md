@@ -1,7 +1,14 @@
 # P&L budget — parked design (2026-07-29)
 
-**Status: parked, nothing deployed.** A first implementation was written and reverted at the
-user's request because the Google-Sheet format is being redesigned. The raw diff is kept as
+**Status: SUPERSEDED — a budget was implemented 2026-08-03 in a different form** (single flat
+tab article × department × months, all rows through the matching-sheet allocation, budgeted-COGS
+basis; see the *Budget* section of [pl-by-direction.md](pl-by-direction.md)). This file stays as
+history: of its decisions, the fact plumbing (pseudo-org, `'PL'` contractor, `[ბიუჯეტი (P&L)]`
+field, "allocation must be split") carried over; the per-direction-tab sheet format and the
+leaf-only-drop rule did not (unresolved articles are now kept and flagged, not dropped).
+
+**Original status: parked, nothing deployed.** A first implementation was written and reverted at
+the user's request because the Google-Sheet format was being redesigned. The raw diff is kept as
 [pl-budget-v1.patch](pl-budget-v1.patch).
 
 ⚠ The patch was generated against `fc62b69`, before the `Internal EEE` work landed in

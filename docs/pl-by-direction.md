@@ -46,6 +46,9 @@ sales-injection staging (which previously had no lower bound at all).
 Same formula as the calendar's `[Year SD (ბოლო 2 წელი, 2026+)]`, so the filter and the data window
 agree by construction.
 
+**Budget rows are exempt from the window** — the budget (see *Budget* section below) deliberately
+covers future months of the current year; neither `vPLStart` nor `vPLEnd` applies to it.
+
 `vPLStart` is deliberately a **separate variable** from `vPLDeptFrom` (the department cut-off).
 Same date today, expected to diverge — do not collapse them.
 
@@ -464,6 +467,63 @@ Implementation — row groups + link table, all inside SD 0206:
 
 - Quotes are mandatory: set-analysis literals match a dual field's TEXT representation; an
   unquoted number silently matches nothing → empty results.
+
+## Budget (გეგმა) — implemented 2026-08-03
+
+The budget flows through the SAME machinery as actuals, with the budget's own COGS as every
+basis. Block sits at the end of `SD 0206`, after the actuals variant wave, before the variant
+link table. Supersedes the parked 2026-07-29 design (`pl-budget-parked.md` kept as history).
+
+**Source**: budget workbook (`1VRebtvzdH…`, same one SD 0201/0205 read), tab gid `139208043`.
+Columns: `მუხლი` | `სტრუქტურული ერთეული` | `მიმართულება` | month columns (header = first day
+of month, `YYYY-MM-DD`). Loaded `LOAD *` + `Crosstable(…, 3)` — a new month column needs no
+script change, but the three fixed columns must be FIRST and in this order. ⚠ Deployment gate:
+the `მიმართულება` column must exist in the tab BEFORE the script is pushed — the staging load
+references it by name and the full reload fails without it.
+
+**Semantics**:
+
+- Amounts arrive in report sign (income +, costs −) and land verbatim in `[ბიუჯეტი (P&L)]`;
+  `შემოსავალი/ხარჯი/თანხა` stay null on budget rows → no existing measure changes. Empty /
+  non-numeric / zero cells are skipped, so the tab can be filled gradually.
+- Pseudo-org `'ბიუჯეტი'` (holding level — selecting a real company hides budget, honest),
+  contractor `'PL'` (existing SA grant covers it, ADMIN-only; bridge picks the group by
+  contractor → `SD 0301`/`SD 0101` untouched), `[წყარო (P&L)]='ბიუჯეტი'`.
+- Every row allocates like a register/journal row: same `[_MatchKey (P&L)]`
+  (`Trim(მუხლი)|unit`, unit passed through the normalisation map — pass-through since the tab
+  already holds normalised names), same marker maps, same `ФиксДолиПЛ` weights and remainder
+  (`ФиксДолиПЛ`/`ДинамНаправленияПЛ` now drop inside the budget block, not after the actuals
+  branches). Article name → GUID via the leaf-only `MapМухлиИдЛистПЛ` (`Родитель`-based):
+  a group/total row that sneaks into the tab cannot resolve and lands unmatched-flagged —
+  money is kept, never silently dropped.
+- **Except the two sales articles** (`SET vPLBudgetSalesArticles`: შემოსავალი რეალიზაციიდან,
+  რეალიზებული პროდუქციის თვითირებულება — the latter spelled without ღ, as in 1C): they are
+  the plan's sales injection. They bypass matching; direction comes from the `მიმართულება`
+  column — legal values only `საცალო`/`დისტრიბუცია`/`კორპორატიული` or empty, the raw sales
+  semantics — through the same rule as actuals (empty or `მიმართულების გარეშე` → `ლოგისტიკა`;
+  budget sales never produce `მიმართულების გარეშე`). Display department inside `საცალო` only.
+- **Basis** `ДолиСебестоимостиБюджет`: month × 5 commercial buckets from the COGS article
+  (`SET vPLBudgetCogsArticle`) via `Fabs()` (sign-agnostic). Same bucket rules as actuals:
+  დისტრიბუცია/კორპორატიული at direction level, საცალო restricted to `vPLRetailStores` —
+  non-ELV-store retail COGS (e.g. ELE stores) is excluded from the basis while its amounts
+  still land in საცალო. Feeds `ДинамДолиНормБюджет` (renormalized over marked columns, from
+  the still-alive `ДинамНаправленияПЛ`) and `ДолиДляАллокацииБюджет` (the budget's own LOG/ADM
+  variant wave). No-basis months: dynamic/unmatched amounts stay on `მიმართულების გარეშე`,
+  variant copies stay on the source direction at share 1 — totals conserved in every variant.
+- The ACTUALS variant wave now carries `and not [წყარო (P&L)] = 'ბიუჯეტი'` — belt-and-braces
+  (the budget block also runs after it); without a separate wave the plan would silently be
+  spread by actual shares (the parked doc's #1 failure mode).
+
+**`[მიმართულება (P&L, საწყისი)]`** — new fact field (2026-08-03, same commit): the raw,
+pre-rule direction, mirror of the department `საწყისი` field. Populated on actuals
+sales-injected rows (raw sales-fact direction; both injection `Group By` lists extended → row
+count may grow, totals unchanged) and on budget sales rows (the sheet column verbatim); null
+on register/journal and allocated-expense rows; carried through variant copies on both waves.
+
+**Measures (app-side contract)**: `Sum({<[გადანაწილების ვარიანტი]={'$(vPLVariant)'}>}
+[ბიუჯეტი (P&L)])` — the variant modifier is mandatory exactly like for actuals. Budget rows
+carry `'არა'` in Internal/EEE/non-core so the standard filters keep them. Compare at month
+granularity or coarser (budget sits on the 1st); selecting a real organization hides budget.
 
 ## Article ordering (1C parity)
 
