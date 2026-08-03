@@ -5,6 +5,9 @@ Status: live since 2026-07-24; fixed fractional splits + `[ანგარიშ
 verified 2026-07-31** (`31ef5f3`; same day: displayed departments blanked outside retail,
 `5065640`, and `[მიმართულება]` made a sort-ranked dual in `SD 0301`, `63f70b5`). The old
 `საცალო` sheet column has been deleted — the *Deployment order* section below is historical.
+**Match-key departments normalised 2026-08-03** — the sheet was re-authored with mapped
+(normalised) department names, so the key, the `საწყისი` field and the display now all carry the
+normalised name; see *Name matching*.
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -89,7 +92,8 @@ sum to 1:
 **Department on allocated rows comes from the bucket**: the store name on store buckets,
 **empty** everywhere else (დისტრიბუცია/კორპორატიული/ლოგისტიკა/ადმინისტრაცია and
 `'მიმართულების გარეშე'`) — departments outside retail are deliberately not tracked.
-`[სტრუქტურული ერთეული (P&L, საწყისი)]` still holds where the cost was incurred.
+`[სტრუქტურული ერთეული (P&L, საწყისი)]` still holds where the cost was incurred (since 2026-08-03
+under its normalised name).
 
 **COGS basis** (`ДолиСебестоимости`): month × bucket share of `[თვითღირებულება (გაყიდვები)]`,
 same exclusions as `შიდა_და_არაძითადები_ფილტრი`. დისტრიბუცია/კორპორატიული are aggregated to
@@ -191,20 +195,27 @@ the same register and the same filter the Statement app uses (`Statement 0002`).
 ⚠ The type filter is not optional: without it every matching type in that register leaks into the
 department map. It was once commented out in Statement and had to be re-enabled (`786ad1e`).
 
-⚠ **Deliberate asymmetry — do not "fix" it.** The matching is applied to the **displayed** field
-but **not** to `[_MatchKey (P&L)]` (both built in `ПЛСтейджинг2`), which keeps the **raw** name.
+⚠ **The old "key raw / display normalised" asymmetry was INVERTED on 2026-08-03.** The Google
+Sheet's `[სტრუქტურული ერთეული]` column was re-authored with **normalised** names, so
+`ПЛСтейджинг2` now resolves the final unit GUID to its normalised name **once** — a middle
+preceding load producing the helper `[_ერთეული სახელი (P&L)]` — and uses it in all three places:
+`[_MatchKey (P&L)]`, the display field, and `[სტრუქტურული ერთეული (P&L, საწყისი)]`. The two
+sales-injection `საწყისი` sites normalise the same way. The helper never reaches the fact (the
+three branch outputs list fields explicitly).
 
-The Google Sheet's `[სტრუქტურული ერთეული]` column holds raw names — after the account overlay
-`ПодразделенияЗатратДоходовСчетов`, before normalisation — so the key must be built from the raw
-name to line up with it. Normalising both sides silently breaks the match for **every** remapped
-department: those rows stop matching their sheet row and fall through to the dynamic COGS split,
-with `დამატჩებულია = 'არა'` as the only visible symptom.
+Consequences:
 
-Consequence for whoever maintains the sheet: the P&L pivot shows the **normalised** name while the
-sheet needs the **raw** one, so names cannot be copied out of the P&L display for remapped
-departments.
+- a **raw** (pre-mapping) name in the sheet is now the mismatch case — that row silently stops
+  matching and its fact rows fall through to the dynamic COGS split, with `დამატჩებულია = 'არა'`
+  as the only visible symptom;
+- names CAN now be copied out of the P&L pivot (or the unmatched report) straight into the sheet;
+- two raw departments remapped onto one canonical name merge into ONE match key — the sheet needs
+  a single row for them.
 
-Because the key is untouched, **this change alters no matching outcome at all** — see Verification.
+One-time invariant break at this deploy: `Sum([თანხა (P&L)])` per `[_MatchKey (P&L)]` and the
+`[დამატჩებულია (P&L)]='არა'` list are unchanged **only for departments the mapping register does
+not remap**; remapped keys rename/merge once, and their rows — which had been falling through as
+unmatched since the sheet was re-authored — match their sheet rows again.
 
 ### Sales-sourced rows
 
@@ -227,26 +238,27 @@ Cut-off and literal live in `vPLDeptFrom` / `vPLProjectSalesUnit` at the top of 
 and sales alike. Since 2026-07-31 sales-injected rows additionally blank it outside საცალო
 (the direction condition sits in the same `if()` as the year gate, in both injection blocks).
 
-`[_MatchKey (P&L)]` is **not** gated: it carries the raw department regardless of year. That is
-deliberate — gating the key would change which sheet row a pre-2026 line matches and therefore
-move money between directions. The cut-off is a presentation rule, not an allocation rule.
+`[_MatchKey (P&L)]` is **not** gated: it carries the (since 2026-08-03 normalised) department
+regardless of year. That is deliberate — gating the key would change which sheet row a pre-2026
+line matches and therefore move money between directions. The cut-off is a presentation rule,
+not an allocation rule.
 
-The gate sits at the three normalisation points only (`ПЛСтейджинг2` and the two injection
-blocks); nothing upstream of them is year-dependent, so the raw value exists for every year on
-every source. Bucket departments written by allocation are ungated (see *Department on allocated
-rows*).
+The gate sits at the three display-field sites only (`ПЛСтейджинг2` and the two injection
+blocks); normalisation itself is ungated and nothing upstream is year-dependent, so the
+normalised value exists for every year on every source. Bucket departments written by allocation
+are ungated (see *Department on allocated rows*).
 
 ### Two department fields on the fact
 
 | Field | Normalised? | Year-gated? | Use |
 |---|---|---|---|
 | `[სტრუქტურული ერთეული (P&L)]` | yes | yes — blank before 2026 | display; agrees with Statement |
-| `[სტრუქტურული ერთეული (P&L, საწყისი)]` | **no** | **no** | what the Google Sheet needs |
+| `[სტრუქტურული ერთეული (P&L, საწყისი)]` | **yes — since 2026-08-03** | **no** | what the Google Sheet needs |
 
-The raw field exists because the sheet is keyed on raw names, so a name cannot be copied out of the
-display field for a remapped department. Pair it with `[მუხლი (P&L)]` and you have exactly the
-`article|unit` the sheet expects — which is what an "unmatched departments and articles" sheet
-should show.
+Since 2026-08-03 both fields are normalised; `საწყისი` differs only in being ungated and in not
+being overwritten by the allocation bucket (the name is historical — it meant "raw" while the key
+was raw). Pair it with `[მუხლი (P&L)]` and you have exactly the `article|unit` the sheet expects —
+which is what an "unmatched departments and articles" sheet should show.
 
 ⚠ `'ELV_საპროექტო გაყიდვები'` is a name literal — renaming that unit in 1C silently disables the
 branch.
@@ -270,9 +282,11 @@ None of this works until `_ElvareAnalytics.txt` is re-extracted. It gained
 Note the order reference on the invoice is `Заказ` (→ `[შეკვეთა]`), **not** `ЗаказПокупателя` —
 that is the name of the order document itself, not of the attribute pointing at it.
 
-### Verification invariant
+### Verification invariant (historical — the 2026-07-29 change; superseded 2026-08-03)
 
-`[_MatchKey (P&L)]` is **byte-identical** before and after this change, so:
+**Superseded 2026-08-03:** the key is now normalised by design; the one-time invariant break and
+the current checks live under *Name matching* above. For the 2026-07-29 change itself the rule
+was: `[_MatchKey (P&L)]` is **byte-identical** before and after, so:
 
 - `Sum([თანხა (P&L)])` per direction must be **unchanged**;
 - the `[დამატჩებულია (P&L)] = 'არა'` list must be **unchanged**.
@@ -305,6 +319,9 @@ Google Sheet, PL Directions tab. Columns: `მუხლი` | `სტრუქ�
 **not loaded**) | `ELV_ბათუმის ფილიალი` | `ELV_აგლაძის ფილიალი` | `ELV_ალექსეევკის ფილიალი` |
 `დისტრიბუცია` | `კორპორატიული` | `ლოგისტიკა` | `ადმინისტრაცია`.
 `[მუხლი]` is the account's **ВидСчетаPL name**, not the account name.
+`[სტრუქტურული ერთეული]` holds **normalised** department names since 2026-08-03 (the sheet was
+re-authored; the match key is normalised to agree) — a raw pre-mapping name in this column no
+longer matches anything.
 
 ⚠ The 3 store column headers must byte-match the stores' **normalised** department names (they
 are matched against the COGS basis and written into `[სტრუქტურული ერთეული (P&L)]` verbatim).
@@ -389,8 +406,8 @@ direction's departments (one row per weighted cell, month-independent), dynamic 
 buckets. Note the new fact size on the first reload.
 
 ⚠ `[სტრუქტურული ერთეული (P&L, საწყისი)]` is deliberately **not** rewritten — it stays the department
-where the cost was incurred and what the sheet is keyed on. So "incurred" and "attributed" are two
-separate visible facts, and the unmatched report keeps working.
+where the cost was incurred (normalised since 2026-08-03) and what the sheet is keyed on. So
+"incurred" and "attributed" are two separate visible facts, and the unmatched report keeps working.
 
 ⚠ Matching happens **before** allocation, so an allocated row can carry an `(article, department)`
 pair that the sheet maps to a *different* direction. Nothing re-matches, so it is not circular, but
