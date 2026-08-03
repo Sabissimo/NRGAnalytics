@@ -497,11 +497,15 @@ references it by name and the full reload fails without it.
   a group/total row that sneaks into the tab cannot resolve and lands unmatched-flagged —
   money is kept, never silently dropped.
 - **Except the two sales articles** (`SET vPLBudgetSalesArticles`: შემოსავალი რეალიზაციიდან,
-  რეალიზებული პროდუქციის თვითირებულება — the latter spelled without ღ, as in 1C): they are
-  the plan's sales injection. They bypass matching; direction comes from the `მიმართულება`
-  column — legal values only `საცალო`/`დისტრიბუცია`/`კორპორატიული` or empty, the raw sales
-  semantics — through the same rule as actuals (empty or `მიმართულების გარეშე` → `ლოგისტიკა`;
-  budget sales never produce `მიმართულების გარეშე`). Display department inside `საცალო` only.
+  რეალიზებული პროდუქციის თვითირებულება — the latter spelled without ღ, as in 1C), and only
+  their rows **with a filled `მიმართულება`** (legal values `საცალო`/`დისტრიბუცია`/
+  `კორპორატიული`): those are the plan's sales injection — they bypass matching and take the
+  column's direction verbatim. Display department inside `საცალო` only.
+  **A sales-article row with an EMPTY direction is NOT sales data** (user rule 2026-08-03):
+  it flows through the matching sheet like any register/journal row and stays OUT of the COGS
+  basis — the actuals parity being that such a posting arrives from the register/journal and
+  gets matched, not injected. (A stray `მიმართულების გარეშე` in the column is treated as
+  empty.) There is no `ლოგისტიკა` fallback in the plan's sales stream.
 - **Basis** `ДолиСебестоимостиБюджет`: month × 5 commercial buckets from the COGS article
   (`SET vPLBudgetCogsArticle`) via `Fabs()` (sign-agnostic). Same bucket rules as actuals:
   დისტრიბუცია/კორპორატიული at direction level, საცალო restricted to `vPLRetailStores` —
