@@ -370,9 +370,19 @@ widening one guard double counts silently.
 ⚠ Fractions cannot be done through a mapping table: `ApplyMap` returns one value per key. Hence
 the joined weight tables (`ФиксДолиПЛ` on the key; `ДинамДолиНормПЛ` on key + month).
 
-The `ВидыСчетовPL` extraction deliberately keeps **no `ПометкаУдаления` filter** (user decision
-2026-07-28): deletion-marked elements reach the QVD, because filtering them would strand
-historical postings that still reference those GUIDs.
+**Deletion-marked articles are filtered since 2026-08-03** (reverses the 2026-07-28 decision —
+the catalog turned out to hold deletion-marked duplicates, e.g. `წმინდა მოგება M`-style
+leftovers). The extraction now exports `ПометкаУдаления`; `SD 0206` excludes flagged elements
+from the **rank** (`МухлиСортПЛ`), the **hierarchy dimension** (`МухлиИерархияПЛ`) and the
+**budget name→GUID leaf map** (`MapМухлиИдЛистПЛ` — a deleted duplicate can never capture a
+name). The GUID→name map (`MapСправочникВидыСчетовPLПЛ`) is deliberately still UNfiltered, so a
+historical posting on a deleted article keeps its article name — it just has no hierarchy row
+(levels null, rank falls to the 9999999 default) instead of losing the name entirely.
+⚠ Ordering: the script references the QVD column `[ПометкаУдаления]` — re-sync the ELV
+zaprosqlik project and re-run the daily extraction BEFORE deploying the script, or the full
+reload fails. ⚠ Caveat: if a deletion-marked element is the PARENT of live elements, filtering
+it re-roots those children in the hierarchy — 1C-side cleanup (`Замена ссылок`) remains the
+real fix for duplicates.
 
 ## Department on allocated rows = the bucket (2026-07-31; replaces the 2026-07-30 two-layer scheme)
 
