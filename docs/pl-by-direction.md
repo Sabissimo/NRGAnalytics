@@ -7,7 +7,9 @@ verified 2026-07-31** (`31ef5f3`; same day: displayed departments blanked outsid
 `საცალო` sheet column has been deleted — the *Deployment order* section below is historical.
 **Match-key departments normalised 2026-08-03** — the sheet was re-authored with mapped
 (normalised) department names, so the key, the `საწყისი` field and the display now all carry the
-normalised name; see *Name matching*.
+normalised name; see *Name matching*. **Same day, all deployed and user-verified working**:
+`vPLEnd` hides the previous month until the 6th; the **budget** went live (see *Budget*);
+deletion-marked articles excluded from rank/hierarchy/budget leaf map (extraction re-run done).
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
