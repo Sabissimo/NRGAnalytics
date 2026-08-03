@@ -35,9 +35,12 @@ as long as the key recipe is preserved.
 **Data window**: lower bound
 `vPLStart = RangeMax(YearStart(YearStart(vNow)-1), MakeDate(2026,1,1))` — current + previous year,
 but never earlier than 2026. Both conditions stay: 2026-01-01 in 2026, 2027-01-01 in 2028, so the
-window never exceeds two years. Upper bound `vPLEnd = MonthStart(reload date)`, exclusive — the
-current month is still being closed in 1C, so the last month in the fact is always the previous
-one. All four entry points cut at both bounds: register pass, both journal passes, and the
+window never exceeds two years. Upper bound `vPLEnd`, exclusive — since 2026-08-03:
+`MonthStart(reload date)` from the **6th** of the month onward, `MonthStart` of the *previous*
+month on days 1–5. The current month is still being closed in 1C, and the previous month's
+closing itself runs into the first days of the new month, so the previous month appears in the
+fact only from the 6th; before that the last month is two months back.
+All four entry points cut at both bounds: register pass, both journal passes, and the
 sales-injection staging (which previously had no lower bound at all).
 
 Same formula as the calendar's `[Year SD (ბოლო 2 წელი, 2026+)]`, so the filter and the data window
@@ -534,7 +537,8 @@ pivot object).
 8. Variant 2 → ლოგისტიკა ≈ 0 (residue only in no-COGS months); variant 3 → ადმინისტრაცია 0;
    variant 4 → both. Marker splits საკუთარი vs ლოგისტიკიდან/ადმინისტრაციიდან and the
    allocated part equals variant 1's overhead total.
-9. Last month present in P&L = month before the reload date.
+9. Last month present in P&L = month before the reload date (from the 6th of the month);
+   on days 1–5 it is the month before that.
 10. Articles appear in 1C order with chart sorting on Auto.
 11. Partial reload → allocated rows still in the bridge; direction + calendar still slice.
 12. `[წილები დაბალანსებულია (P&L)]='არა'` lists exactly: number-only rows with sum ≠ 100% and
