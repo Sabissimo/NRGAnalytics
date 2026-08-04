@@ -10,6 +10,8 @@ verified 2026-07-31** (`31ef5f3`; same day: displayed departments blanked outsid
 normalised name; see *Name matching*. **Same day, all deployed and user-verified working**:
 `vPLEnd` hides the previous month until the 6th; the **budget** went live (see *Budget*);
 deletion-marked articles excluded from rank/hierarchy/budget leaf map (extraction re-run done).
+**Budget article map made leaf-priority 2026-08-04** — a plan row on a group-only article name
+now resolves to that group node instead of landing unmatched (see *Budget*).
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -376,7 +378,7 @@ the joined weight tables (`ФиксДолиПЛ` on the key; `ДинамДоли
 the catalog turned out to hold deletion-marked duplicates, e.g. `წმინდა მოგება M`-style
 leftovers). The extraction now exports `ПометкаУдаления`; `SD 0206` excludes flagged elements
 from the **rank** (`МухлиСортПЛ`), the **hierarchy dimension** (`МухлиИерархияПЛ`) and the
-**budget name→GUID leaf map** (`MapМухлиИдЛистПЛ` — a deleted duplicate can never capture a
+**budget name→GUID map** (`MapМухлиИдПЛ` — a deleted duplicate can never capture a
 name). The GUID→name map (`MapСправочникВидыСчетовPLПЛ`) is deliberately still UNfiltered, so a
 historical posting on a deleted article keeps its article name — it just has no hierarchy row
 (levels null, rank falls to the 9999999 default) instead of losing the name entirely.
@@ -508,9 +510,16 @@ references it by name and the full reload fails without it.
   (`Trim(მუხლი)|unit`, unit passed through the normalisation map — pass-through since the tab
   already holds normalised names), same marker maps, same `ФиксДолиПЛ` weights and remainder
   (`ФиксДолиПЛ`/`ДинамНаправленияПЛ` now drop inside the budget block, not after the actuals
-  branches). Article name → GUID via the leaf-only `MapМухлиИдЛистПЛ` (`Родитель`-based):
-  a group/total row that sneaks into the tab cannot resolve and lands unmatched-flagged —
-  money is kept, never silently dropped.
+  branches). Article name → GUID via the **leaf-priority** `MapМухлиИдПЛ` (2026-08-04;
+  previously leaf-only `MapМухлиИдЛистПЛ`): all non-deleted articles load leaves-first and the
+  mapping keeps the FIRST occurrence per name, so a name that exists as both group and leaf
+  (e.g. რეალიზებული პროდუქციის თვითირებულება, twice in the catalog) resolves to the LEAF —
+  exactly the old behaviour — while a name that exists ONLY as a group node now resolves to
+  that group's GUID and shows in the hierarchy the same way a fact posting on a group node
+  does. Rationale: postings/plans are supposed to sit on leaves but in practice sometimes sit
+  on groups; fact tolerated that (GUID comes straight from the posting), budget didn't. Only
+  names missing from the non-deleted catalog still land unmatched-flagged — money is kept,
+  never silently dropped.
 - **Except the two sales articles** (`SET vPLBudgetSalesArticles`: შემოსავალი რეალიზაციიდან,
   რეალიზებული პროდუქციის თვითირებულება — the latter spelled without ღ, as in 1C), and only
   their rows **with a filled `მიმართულება`** (legal values `საცალო`/`დისტრიბუცია`/
