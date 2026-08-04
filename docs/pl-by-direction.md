@@ -503,6 +503,10 @@ references it by name and the full reload fails without it.
   as empty (2026-08-04): a bottom preceding load in `БюджетСтейджинг` turns `-` into `''` in
   the three text columns before keys/maps are built; a `-` amount is non-numeric and is
   dropped by the existing `IsNum` filter, exactly like a 0.
+  ⚠ Sheet EDITS reach the app only at the next FULL reload — the 30-min partials never
+  re-read the tab (`SD 0206` is 24-gated). After pasting new months, trigger a full reload
+  before judging the result (2026-08-04: freshly pasted Jul–Dec looked "missing" for exactly
+  this reason).
 - Pseudo-org `'ბიუჯეტი'` (holding level — selecting a real company hides budget, honest),
   contractor `'PL'` (existing SA grant covers it, ADMIN-only; bridge picks the group by
   contractor → `SD 0301`/`SD 0101` untouched), `[წყარო (P&L)]='ბიუჯეტი'`.
