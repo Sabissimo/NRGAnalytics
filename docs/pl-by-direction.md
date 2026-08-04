@@ -497,7 +497,10 @@ references it by name and the full reload fails without it.
 
 - Amounts arrive in report sign (income +, costs −) and land verbatim in `[ბიუჯეტი (P&L)]`;
   `შემოსავალი/ხარჯი/თანხა` stay null on budget rows → no existing measure changes. Empty /
-  non-numeric / zero cells are skipped, so the tab can be filled gradually.
+  non-numeric / zero cells are skipped, so the tab can be filled gradually. A `-` cell counts
+  as empty (2026-08-04): a bottom preceding load in `БюджетСтейджинг` turns `-` into `''` in
+  the three text columns before keys/maps are built; a `-` amount is non-numeric and is
+  dropped by the existing `IsNum` filter, exactly like a 0.
 - Pseudo-org `'ბიუჯეტი'` (holding level — selecting a real company hides budget, honest),
   contractor `'PL'` (existing SA grant covers it, ADMIN-only; bridge picks the group by
   contractor → `SD 0301`/`SD 0101` untouched), `[წყარო (P&L)]='ბიუჯეტი'`.
