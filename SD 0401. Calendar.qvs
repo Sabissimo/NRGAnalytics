@@ -3,18 +3,20 @@ Replace Load distinct
 	[Date (BridgeTableContrDate)] as %lnk_SDDate
 Resident BridgeTableContrDate;
 
+// Add: უპრეფიქსო Load ნაწილობრივ გადატვირთვაზე გამოტოვებულია — კალენდრის დიაპაზონი მხოლოდ
+// ხიდის თარიღებზე რჩებოდა. Add სრულზეც ჩვეულებრივ იტვირთება და ნაწილობრივზეც (2026-08-05).
 AllDatesSD:
-Load distinct
+Add Load distinct
 	[Date (BridgeTableItemDate)] as %lnk_SDDate
 Resident BridgeTableItemDate;
 
 AllDatesSD:
-Load distinct
+Add Load distinct
 	RoyaltyDate as %lnk_SDDate
 Resident РегистрСведенийДанныеДляРасчетаРоялти;
 
 AllDatesSD:
-Load distinct
+Add Load distinct
 	RoyaltyBudgetDate as %lnk_SDDate
 Resident БюджетРоялти;
 

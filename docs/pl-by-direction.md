@@ -507,6 +507,15 @@ references it by name and the full reload fails without it.
   re-read the tab (`SD 0206` is 24-gated). After pasting new months, trigger a full reload
   before judging the result (2026-08-04: freshly pasted Jul–Dec looked "missing" for exactly
   this reason).
+- **PLDate is `Floor()`ed to a pure number (2026-08-05) — never remove this.** `Date#` alone
+  returns a dual whose text (`'2026-07-01'`) becomes the field's symbol for every date that
+  exists nowhere else in `PLDate` — i.e. all future months, since register/journal/injection
+  stop at `vPLEnd`. That text then lands in the composite bridge key and in `DateForConnect`
+  (`'2026-07-01|0'` can never match the calendar's numeric `'46204|0'`). Symptom (Aug 2026):
+  future-month budget rows survived every FULL reload but went missing/unlinked after every
+  PARTIAL, while months ≤ June (numbers already known from register rows, hence unified to
+  numeric form) always survived. Rule of thumb: **only pure-numeric dates may enter key
+  fields** — `Floor()` any `Date#`/`MakeDate` result used in a key.
 - Pseudo-org `'ბიუჯეტი'` (holding level — selecting a real company hides budget, honest),
   contractor `'PL'` (existing SA grant covers it, ADMIN-only; bridge picks the group by
   contractor → `SD 0301`/`SD 0101` untouched), `[წყარო (P&L)]='ბიუჯეტი'`.
