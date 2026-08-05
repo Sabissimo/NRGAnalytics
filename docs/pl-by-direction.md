@@ -12,6 +12,10 @@ normalised name; see *Name matching*. **Same day, all deployed and user-verified
 deletion-marked articles excluded from rank/hierarchy/budget leaf map (extraction re-run done).
 **Budget article map made leaf-priority 2026-08-04** — a plan row on a group-only article name
 now resolves to that group node instead of landing unmatched (see *Budget*).
+**Budget `PLDate` `Floor()`ed 2026-08-05** (`85525b5`, user-verified: survives partials) — bare
+`Date#` text-dual dates poisoned the composite key/`DateForConnect` for future months, which
+vanished on every partial reload; same commit `Add`-prefixed `SD 0401`'s non-bridge
+`AllDatesSD` blocks (plain LOADs are skipped on partials).
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog

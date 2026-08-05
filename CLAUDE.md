@@ -129,10 +129,19 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   basis for dynamic/unmatched splits AND a separate LOG/ADM variant wave (the actuals wave
   excludes `[წყარო (P&L)]='ბიუჯეტი'`). A sales-article row with an EMPTY direction is NOT sales
   data — it routes through matching and stays out of the basis. Article names resolve to GUIDs
-  via a leaf-only, deletion-mark-filtered map; unresolved rows keep their money (unmatched
-  flag, article Null). Deletion-marked catalog elements are also excluded from the rank and the
-  hierarchy dimension, but the GUID→name map stays UNfiltered (old postings keep their article
-  names). New fact field `[მიმართულება (P&L, საწყისი)]`: raw pre-rule direction, sales rows only
+  via the **leaf-priority**, deletion-mark-filtered map `MapМухлиИдПЛ` (2026-08-04; leaves load
+  first, mapping keeps the first occurrence, so a duplicate name resolves to the leaf and a
+  group-only name resolves to the group node — plans on non-leaf articles show like fact
+  postings there); unresolved rows keep their money (unmatched flag, article Null).
+  Deletion-marked catalog elements are also excluded from the rank and the hierarchy dimension,
+  but the GUID→name map stays UNfiltered (old postings keep their article names). A `-` cell
+  in the tab counts as empty (2026-08-04): text columns → `''`, amounts → dropped like 0.
+  Sheet EDITS reach the app only at the next FULL reload (the tab is 24-gated).
+  ⚠ Budget `PLDate` is `Floor()`ed — NEVER remove it (2026-08-05): a bare `Date#` dual's text
+  becomes the symbol for future-month dates (they exist nowhere else in `PLDate`) and poisons
+  the composite key + `DateForConnect`; symptom was future-month plan rows vanishing after
+  every 30-min partial while surviving full reloads.
+  New fact field `[მიმართულება (P&L, საწყისი)]`: raw pre-rule direction, sales rows only
   (actuals injection + budget sales; both injection `Group By` lists now include it).
   Full design: `docs/pl-by-direction.md`, *Budget* section.
 - Sales plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
@@ -188,7 +197,20 @@ granted in the **ADMIN block only**; to expose P&L to USERs, add the same one-li
 - A field can hold the literal STRING 'მიმართულების გარეშე' (ApplyMap defaults), not null —
   emptiness checks alone don't catch "no direction".
 - Partial-reload prefixes (`Replace LOAD` / `Add LOAD`) are used everywhere; keep new
-  statements consistent or partial reloads will drop/duplicate data.
+  statements consistent or partial reloads will drop/duplicate data. **Plain (unprefixed)
+  LOADs are silently SKIPPED on partials** — that's how the non-bridge `AllDatesSD` blocks in
+  `SD 0401` went missing from partial calendars until they got `Add` prefixes (2026-08-05).
+- **Only pure-numeric dates may enter key fields** — `Floor()` any `Date#`/`MakeDate` result
+  used in a composite key or `DateForConnect`. A `Date#` dual's original text becomes the
+  field symbol whenever the number exists nowhere else in that field, and text
+  (`'2026-07-01|0'`) never matches the calendar's numeric keys (`'46204|0'`). Cost of
+  learning this: future-month budget rows silently dying on every partial reload (2026-08-05,
+  see `docs/pl-by-direction.md` *Budget*).
+- When "impossible" partial-reload behavior appears, diff the FULL and PARTIAL reload logs:
+  per-statement `lines fetched` counts locate the divergence precisely (that's what cornered
+  the `Date#` bug), and a trailing `$Syn` line in one log but not the other means the partial
+  left a duplicate table (running partials against a just-CHANGED script can orphan tables —
+  one full reload heals it).
 
 ## Related Qlik apps
 
