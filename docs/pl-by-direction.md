@@ -147,6 +147,19 @@ Note the direction rule sends internal / non-core / direction-less sales to `'�
 filtering both flags to `'არა'` shrinks ლოგისტიკა — that is the intended parity with sales,
 not a bug.
 
+### electric arrives already `კორპორატიული` (2026-08-06)
+
+The org-level override lives on the sales fact in `SD 0201` (design record:
+`docs/direction-plans.md`), upstream of every rule here, so `SD 0206` was not touched. Intended
+consequences:
+
+- the internal / non-core / direction-less → `'ლოგისტიკა'` fallback still runs **on top** of the
+  override — those electric rows go to ლოგისტიკა, not კორპორატიული;
+- electric's COGS now joins the `კორპორატიული` bucket of the 5-bucket monthly basis, so the
+  dynamic shares and **all direction totals move**. Judge only after a full reload;
+- `[მიმართულება (P&L, საწყისი)]` carries the overridden value — it is raw relative to the P&L
+  direction rule, not to 1C.
+
 ### `[Internal EEE (P&L)]` (2026-07-29)
 
 A **second, narrower** internal flag, populated the same way per row origin (real value on

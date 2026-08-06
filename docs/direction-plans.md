@@ -14,6 +14,38 @@ actuals by direction AND date, reacting to master-calendar selections including 
 | Direction in bridge | `SD 0301` | `[მიმართულება]` field on `BridgeTableOrgDate`; key rebuilds include direction; plan rows get group `'PLAN'` |
 | Section-access survival | `SD 0101` | `'PLAN'` pseudo-row in `СправочникКонтрагентыИерархия`; `'PLAN'` per user/admin in SA sources |
 | Direction mapping | `SD 0002` | `MapНаправленияПокупателейДоговора` (contract → direction), `MapНаправлениеДокумента` (document → contract → direction) |
+| Org-level override | `SD 0002` | `MapПереопределениеНаправленияОрганизации` (org → forced direction) — see below |
+
+## Org-level override (2026-08-06)
+
+**electric sells corporate only.** Every electric row — sales and debitors alike — is forced to
+`კორპორატიული`, whatever its contract says. The rule is keyed on the ORGANISATION, so it cannot
+live in the two maps above (theirs is keyed on contract/document); it is applied where the fact
+load has `[ორგანიზაცია]` in hand, by wrapping the old expression as the ApplyMap default:
+
+```qlik
+ApplyMap('MapПереопределениеНаправленияОрганизации', [ორგანიზაცია],
+    ApplyMap('MapНаправлениеДокумента', [დოკუმენტი], Null()))   // …ПокупателейДоговора on debitors
+```
+
+Six write sites, all mandatory: `SD 0201` sales fact (display field + key), `SD 0202` debitors
+(display field + key, **in both blocks**). The plan rows in `SD 0201`'s tail are untouched —
+their org is the dummy `'გეგმა'`, never an org GUID.
+
+- The bridge (`SD 0301`) rebuilds its three keys from those already-overridden fact fields, so it
+  needs no change — but that is exactly why the display field and the key segment must be
+  overridden **together** at each site. Override one and the bridge stops matching.
+- P&L (`SD 0206`) reads `[მიმართულება (გაყიდვები)]` off the sales fact, so it inherits the
+  override for free. Two knock-on effects there, both intended: the internal-contractor /
+  non-main-nomenclature rows still fall through to `ლოგისტიკა` (that guard runs on top of the
+  override, unchanged), and electric's COGS now lands in the `კორპორატიული` basket of the
+  monthly share basis → **direction totals move** after the first full reload.
+- `[მიმართულება (P&L, საწყისი)]`, the "raw" pre-rule direction, shows the OVERRIDDEN value —
+  the override sits upstream of the P&L rule. It is raw relative to the P&L rule, not to 1C.
+- To add another org: one more line in the inline table. Deliberately a mapping table and not a
+  `SET` list — Qlik's `SET` strips the quotes from a single `'literal'` but keeps them on a
+  comma list, so a one-element list would expand unquoted inside `match()` and be read as a
+  field name.
 
 ## The plan-row shape (concatenated into the sales fact)
 

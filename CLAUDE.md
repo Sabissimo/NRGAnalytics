@@ -60,6 +60,16 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   მიმართულების გარეშე 6; unknown 9) via `MapНаправлениеСорт` inline in `SD 0301` — charts on
   Auto sort follow that order. ALL THREE bridge write sites must go through the map (first load
   wins the dual); set-analysis/selections still match the text.
+- **Org-level direction override** (2026-08-06): electric sells corporate only, so every electric
+  row is forced to `კორპორატიული` regardless of contract — `MapПереопределениеНаправленияОрганизации`
+  (inline, `SD 0002`) wrapped around the old expression as the ApplyMap default, at six sites:
+  `SD 0201` sales (display field + key) and `SD 0202` debitors (display field + key, both blocks).
+  Display field and key segment must move TOGETHER or the bridge stops matching. Plan rows are
+  exempt (org = `'გეგმა'`); `SD 0301` and `SD 0206` inherit it from the fact fields. Knock-on in
+  P&L: the internal/non-main → `ლოგისტიკა` guard still applies on top, and electric's COGS moves
+  into the `კორპორატიული` share basket → direction totals shift. A mapping table, not a `SET`
+  list: `SET` strips quotes from a single `'literal'` but not from a comma list, so a one-element
+  list expands unquoted inside `match()` and reads as a field name. See `docs/direction-plans.md`.
 - P&L fact (`SD 0206. Reg. PL Directions 24.qvs`, daily/24): standalone fact keyed
   `orgGUID|'PL'|date|0|direction`; adds directions ლოგისტიკა/ადმინისტრაცია. Its bridge block in
   `SD 0301` is deliberately UNguarded (must re-scan the persisted fact on every partial reload).
