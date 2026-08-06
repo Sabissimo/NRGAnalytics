@@ -15,8 +15,8 @@ Qlik Sense (Qlik Cloud) load scripts for Electro Market / NRG analytics apps.
   diff kept as [docs/pl-budget-v1.patch](docs/pl-budget-v1.patch)
 - **P&L source query (1C):** see [docs/pl.txt](docs/pl.txt) — the original analyst query whose
   register+journal logic the SD 0206 script reimplements (its header comment refers to it as
-  pl.txt). Reference only, never executed. Full 1C config dump: `D:\NRG` (clone of
-  [Sabissimo/NRG1C](https://github.com/Sabissimo/NRG1C)).
+  pl.txt). Reference only, never executed. Full 1C config dump: `D:\Claude\nrg1c\src` (clone of
+  [Sabissimo/nrg1c](https://github.com/Sabissimo/nrg1c)).
 
 Scripts are grouped by app prefix (`SD`, `Sales`, `Stock`, `Debitors`, `Cashflow`, `Credits`,
 `Accounting`, `Statement`); each app's master `.qvs` includes the numbered files from
