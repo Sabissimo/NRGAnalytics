@@ -52,8 +52,9 @@ on the management chart of accounts).
 
 `РегистрНакопленияДоходыИРасходы` — standalone fact keyed
 `orgGUID | 'PL' | date | 0 | direction` (`[ორგანიზაცია_კონტრაგენტი_პერიოდი_ნაშთია]`,
-contractor segment is the literal `'PL'`). Grain: org × day × bucket (direction + department:
-store name inside საცალო, empty elsewhere) × article × account.
+contractor segment is the literal `'PL'`). Grain: org × day × bucket (direction + location —
+the sheet column's dept part; hyphen-free columns give an empty bucket department) × article
+× account.
 Measures: `[შემოსავალი (P&L)]`, `[ხარჯი (P&L)]`, `[თანხა (P&L)]` (= revenue − expense).
 Audit attributes: `[ანგარიშის დასახელება (P&L)]` + `[ანგარიშის კოდი (P&L)]` (empty code = GUID
 not in the chart of accounts), `[მუხლი (P&L)]` (**`Null`** = account has no ВидСчетаPL — test with
@@ -135,18 +136,17 @@ sum to 1:
    (income/expense types on Операция; account-group codes 6–9 on ВводНачальныхОстатков;
    loan-interest codes 6–9 on ПриходнаяНакладная); credit side enters with flipped sign.
 
-**Department on allocated rows: store buckets keep the store (location) name; every other
-bucket — and `'მიმართულების გარეშე'` — shows the incurring department since 2026-08-07**,
-through the same chain as everything displayed (normalised + location-mapped, gated by
-`vPLDeptFrom`; was empty 2026-07-31…08-07). In the script the fallback is simply the staging
-display field, so there is exactly ONE display recipe.
-⚠ This is a **label, not an allocation**: every piece of a source row split across
-დისტრიბუცია/კორპორატიული/… carries the SAME department, so per-department totals outside
-retail mix directions ("who spent it", not "distribution's own departments") — per-direction
-totals are unchanged. There is still no department fan-out inside a direction. Note the
-location rollup applies here too — e.g. a cost incurred by `ELV_თბილისის დისტრიბუცია` is
-labelled `ELV_ალექსეევკის ფილიალი`; the pre-location name lives in
-`[სტრუქტურული ერთეული (P&L, საწყისი)]` (normalised since 2026-08-03).
+**Department on allocated rows = the bucket's location** (the sheet column's dept part), on
+every direction. Rows with no bucket department — hyphen-free columns,
+`'მიმართულების გარეშე'`, no-basis months — show the **incurring** department instead,
+through the same display chain (normalised + location-mapped, gated by `vPLDeptFrom`); in the
+script that fallback is simply the staging display field, so there is exactly ONE display
+recipe.
+⚠ The incurring-department fallback is a **label, not an allocation**: every piece of such a
+source row carries the same department. Per-direction totals are unaffected by display
+either way. The pre-location `ELV_…` unit names survive only in
+`[სტრუქტურული ერთეული (P&L, საწყისი)]` (normalised since 2026-08-03) — the display shows
+short location names.
 
 **COGS basis** (`ДолиСебестоимости`): month × (direction, location) share of
 `[თვითღირებულება (გაყიდვები)]`, same exclusions as `შიდა_და_არაძითადები_ფილტრი`.
@@ -300,8 +300,8 @@ Applied **on top of** the normalisation map, but only at:
   next to `[_ერთეული სახელი (P&L)]`; the allocation branches fall back to the staging display
   field; sales injections apply the chain inline; budget rows use
   `[_ერთეული ლოკაცია (ბიუჯეტი)]`);
-- the retail COGS-share baskets, fact (`ДолиСебестоимости`) and budget
-  (`ДолиСебестоимостиБюджет`) alike — see *COGS basis*.
+- the COGS-share baskets — fact (`ДолиСебестоимости`) and budget
+  (`ДолиСебестоимостиБюджет`), all commercial directions — see *COGS basis*.
 
 **NOT applied** to `[_MatchKey (P&L)]` (fact or budget) or to
 `[სტრუქტურული ერთეული (P&L, საწყისი)]` — both keep the pre-location normalised name, so the PL
@@ -348,12 +348,13 @@ are ungated (see *Department on allocated rows*).
 | `[სტრუქტურული ერთეული (P&L, საწყისი)]` | **yes — since 2026-08-03** | **no** | **no** | what the Google Sheet needs |
 
 Since 2026-08-03 both fields are normalised. Since 2026-08-07 the display field always carries
-the **location-level** name — store buckets show the store, every other row shows its incurring
-department through the same normalisation + location chain (see *Location rollup* and
-*Department on allocated rows*) — while `საწყისი` stays pre-location, ungated, and is never
-overwritten by the allocation bucket (the name is historical — it meant "raw" while the key was
-raw). Pair `საწყისი` with `[მუხლი (P&L)]` and you have exactly the `article|unit` the sheet
-expects — which is what an "unmatched departments and articles" sheet should show.
+the **location-level** name — bucket rows show the bucket's location, bucket-less rows show
+the incurring department through the same normalisation + location chain (see *Location
+rollup* and *Department on allocated rows*) — while `საწყისი` stays pre-location, ungated,
+and is never overwritten by the allocation bucket (the name is historical — it meant "raw"
+while the key was raw). Pair `საწყისი` with `[მუხლი (P&L)]` and you have exactly the
+`article|unit` the sheet expects — which is what an "unmatched departments and articles"
+sheet should show.
 
 ⚠ `'ELV_საპროექტო გაყიდვები'` is a name literal — renaming that unit in 1C silently disables the
 branch.
@@ -482,21 +483,14 @@ real fix for duplicates.
 
 The 2026-07-30 scheme ("direction first, then departments within it by COGS", two share
 flavours, `ДолиДепСтатичноПЛ`/`ДолиДепПоНаправлениюПЛ`) lived for one day and is **gone**.
-Departments outside retail are not tracked at all, so allocation lands directly in the final
-buckets and the department is simply the bucket's:
+Allocation lands directly in the final buckets and the department is simply the bucket's:
 
-- store buckets → the store name (which equals the sheet column header, normalised);
-- every other direction and `'მიმართულების გარეშე'` → **empty** (`''`);
-- sales-injected rows show their real department **only when their direction is საცალო**
-  (user decision 2026-07-31: outside retail the display department is empty on every row,
-  injected sales included) — so non-store retail departments still appear inside საცალო,
-  carrying their own sales/COGS and nothing else, while ლოგისტიკა-routed internal/non-core
-  sales display no department;
-- allocation-variant copies take the bucket's department too (empty on
-  დისტრიბუცია/კორპორატიული); the guard there is on the **direction** being joined, not on the
-  department being non-empty — otherwise the empty დისტრ/კორპ bucket department would be
-  "corrected" back to the source row's department. A no-share month keeps the source direction
-  and department (share 1), so totals hold.
+- every sheet bucket → its column's location (`საცალო - ბათუმი` → ბათუმი, etc.);
+- hyphen-free columns and `'მიმართულების გარეშე'` → the incurring-department label (see
+  *Department on allocated rows*);
+- sales-injected rows show their real department's location on every direction;
+- allocation-variant copies take the bucket's location too; a no-share month keeps the
+  source direction and department (share 1), so totals hold.
 
 The basis is derived from `ПродажиДляПЛ` rather than the sales fact directly, so the department
 is defined exactly once and cannot disagree with what the injected sales rows carry.
@@ -547,7 +541,8 @@ Implementation — row groups + link table, all inside SD 0206:
 - Allocated copies of overhead rows (everything sitting on ლოგისტიკა/ადმინისტრაცია, incl.
   sales-injection fallback rows) are concatenated into the fact: amounts × monthly COGS
   share, direction + composite key rebuilt to the target bucket's direction, the department
-  set to the bucket's (store name / empty — see *Department on allocated rows*), original
+  set to the bucket's location (incurring label on bucket-less rows — see *Department on
+  allocated rows*), original
   article and attributes preserved, marker `[გადანაწილების წყარო (P&L)]` =
   'ლოგისტიკიდან'/'ადმინისტრაციიდან' ('საკუთარი' on originals). Months with no positive
   shares: one copy stays on the source direction at share 1 — **totals are preserved in
@@ -718,13 +713,14 @@ pivot object).
    money between buckets, never creates or destroys it.
 4. Per-key invariant: `Sum([თანხა (P&L)])` per `[_MatchKey (P&L)]` unchanged vs the previous
    reload; the `[დამატჩებულია (P&L)]='არა'` key list unchanged (unless sheet rows were
-   added/removed). Direction totals MOVE by design (stores-only retail basis + re-authored
-   sheet) — reconcile deliberately, don't treat as regression.
-5. Store-name guard: each of the 3 store columns shows non-zero allocated amounts in months
-   with sales. A store at 0 everywhere = header/name byte-mismatch (silent failure).
-6. Purity: zero rows with `[მიმართულება (P&L)]='საცალო'`, `[წყარო (P&L)]<>'გაყიდვები'` and
-   `[სტრუქტურული ერთეული (P&L)]` outside the 3 store names (check both 'საკუთარი' rows and
-   the ALLOC variant copies). Non-store retail departments must carry only injected sales/COGS.
+   added/removed). Direction totals MOVE by design when the basis or sheet changes —
+   reconcile deliberately, don't treat as regression.
+5. Bucket guard: every sheet bucket shows non-zero allocated amounts in months where it has
+   COGS or fixed weights. A bucket at 0 everywhere = its header's dept part doesn't
+   byte-match a Location-tab `ლოკაცია` value (silent failure).
+6. Display purity: `[სტრუქტურული ერთეული (P&L)]` holds short location names; a long `ELV_…`
+   name there = a unit missing from the Location tab (pass-through incurring label) — extend
+   the tab if it matters.
 7. Mixed rows: per-key total = the full amount; each numeric column receives exactly its
    percentage; the remainder splits across the marked columns only.
 8. Variant 2 → ლოგისტიკა ≈ 0 (residue only in no-COGS months); variant 3 → ადმინისტრაცია 0;

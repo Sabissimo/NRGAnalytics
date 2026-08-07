@@ -127,15 +127,15 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   normalisation — but ONLY on the displayed unit and the retail COGS baskets (fact + budget);
   the match key and the `საწყისი` field stay on the PRE-location normalised name, so the
   matching sheet keys did not change.
-  **Buckets are unchanged (7 targets; no department fan-out inside a direction)** — the
-  2026-07-30 "departments within the direction by COGS" layer is gone. DISPLAY department
-  (since 2026-08-07): store buckets show the store name; every other bucket,
-  `'მიმართულების გარეშე'` and sales rows show the **incurring** department as a LABEL,
-  through the SAME chain everywhere (normalisation + location rollup, year-gated) — one
-  source row's pieces all carry the same department, so per-department totals outside
-  retail mix directions; per-direction totals don't move. (2026-07-31…08-07 the display
-  was blank outside საცალო.) The `საწყისი` field keeps the incurring department always
-  (normalised since 2026-08-03, never location-mapped).
+  **Buckets = (direction, location); no second fan-out layer inside a direction** (the
+  2026-07-30 "departments within the direction by COGS" scheme is gone). DISPLAY department:
+  bucket rows show the bucket's location (the column's dept part); bucket-less rows
+  (hyphen-free columns, 'მიმართულების გარეშე', no-basis months) and sales rows show the
+  incurring department through the same chain (normalisation + location rollup, year-gated)
+  — a LABEL: such a source row's pieces all carry the same department; per-direction totals
+  don't move either way. The `საწყისი` field keeps the incurring department always
+  (normalised, never location-mapped) — it is the only place pre-location `ELV_…` names
+  survive.
   Dynamic months with no basis in the marked buckets stay whole on 'მიმართულების გარეშე'
   (NOT re-routed to ლოგისტიკა — that fallback is sales-injection-only); variant copies in
   no-share months keep the source direction and department at share 1.
