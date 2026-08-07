@@ -115,7 +115,11 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   2026 cut-off (`vPLDeptFrom`) applies ONLY to the displayed field, for every source — the
   match key carries the (normalised) department regardless of year, because gating it would move
   money between directions. Sales rows never touch the match key at all, so their department is
-  display-only.
+  display-only. Since 2026-08-07 a SECOND layer, `MapЛокацияПодразделенияПЛ` (Qlik Matching /
+  Location tab, unit → branch location, pass-through for unknown names), sits on top of
+  normalisation — but ONLY on the displayed unit and the retail COGS baskets (fact + budget);
+  the match key and the `საწყისი` field stay on the PRE-location normalised name, so the
+  matching sheet keys did not change.
   **The department on every allocated row IS the bucket's** (store name / empty) — the
   2026-07-30 "departments within the direction by COGS" layer is gone. The DISPLAY department
   exists only inside საცალო: sales-injected rows show theirs only when their direction is

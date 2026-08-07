@@ -16,6 +16,10 @@ now resolves to that group node instead of landing unmatched (see *Budget*).
 `Date#` text-dual dates poisoned the composite key/`DateForConnect` for future months, which
 vanished on every partial reload; same commit `Add`-prefixed `SD 0401`'s non-bridge
 `AllDatesSD` blocks (plain LOADs are skipped on partials).
+**Department → location rollup 2026-08-07** — new `MapЛокацияПодразделенияПЛ` (Qlik Matching,
+Location tab) applied ON TOP of name normalisation, but ONLY on the displayed unit and the
+retail COGS baskets (fact and budget); the match key and the `საწყისი` field stay on the
+pre-location normalised name, so sheet matching is untouched. See *Location rollup*.
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -111,10 +115,13 @@ under its normalised name).
 
 **COGS basis** (`ДолиСебестоимости`): month × bucket share of `[თვითღირებულება (გაყიდვები)]`,
 same exclusions as `შიდა_და_არაძითადები_ფილტრი`. დისტრიბუცია/კორპორატიული are aggregated to
-the direction level (department ''); საცალო is restricted to the 3 stores by **normalised**
-department name. ⚠ Retail COGS on non-store departments is **excluded from the basis
-entirely** — direction totals shift vs the pre-2026-07-31 scheme by design (retail's dynamic
-weight now comes from the stores only).
+the direction level (department ''); საცალო is restricted to the 3 stores by **normalised,
+location-mapped** department name (since 2026-08-07 the basket unit runs through
+`MapЛокацияПодразделенияПЛ` too, so a department whose location is a store — e.g.
+`ELV_ქსელური მაღაზიები` → `ELV_ალექსეევკის ფილიალი` — contributes its retail COGS to that
+store's basket). ⚠ Retail COGS on departments whose (location-mapped) name is not one of the
+3 stores is **excluded from the basis entirely** — direction totals shift vs the
+pre-2026-07-31 scheme by design (retail's dynamic weight comes from the store baskets only).
 
 ## Internal / non-core filtering (2026-07-28)
 
@@ -244,6 +251,28 @@ One-time invariant break at this deploy: `Sum([თანხა (P&L)])` per `[_M
 not remap**; remapped keys rename/merge once, and their rows — which had been falling through as
 unmatched since the sheet was re-authored — match their sheet rows again.
 
+### Location rollup (2026-08-07)
+
+`MapЛокацияПодразделенияПЛ` — a second NAME→NAME layer from the **Qlik Matching / Location tab**
+(`განყოფილება` → `ლოკაცია`, worksheetKey gid `2024957535`, loaded in `SD 0206` next to the
+override maps): distribution/project-sales/chain-store units collapse into the three ELV branch
+locations, ELE branches map to themselves, any name absent from the tab passes through unchanged
+(two-argument `ApplyMap`, no default needed).
+
+Applied **on top of** the normalisation map, but only at:
+
+- the displayed unit — `[სტრუქტურული ერთეული (P&L)]` on all sources (register/journal via the
+  helper `[_ერთეული ლოკაცია (P&L)]` next to `[_ერთეული სახელი (P&L)]`, both sales-injection
+  blocks, budget sales rows via `[_ერთეული ლოკაცია (ბიუჯეტი)]`);
+- the retail COGS-share baskets, fact (`ДолиСебестоимости`) and budget
+  (`ДолиСебестоимостиБюджет`) alike — see *COGS basis*.
+
+**NOT applied** to `[_MatchKey (P&L)]` (fact or budget) or to
+`[სტრუქტურული ერთეული (P&L, საწყისი)]` — both keep the pre-location normalised name, so the PL
+Directions tab keeps matching by the `საწყისი`-level name and needed no re-authoring. Reverse
+implication: a unit's sheet row still keys on the original normalised name even though the
+pivot now displays its location.
+
 ### Sales-sourced rows
 
 Previously `Null()`. Now resolved in the `ПродажиДляПЛ` staging by the same rule 1C uses in
@@ -277,15 +306,16 @@ are ungated (see *Department on allocated rows*).
 
 ### Two department fields on the fact
 
-| Field | Normalised? | Year-gated? | Use |
-|---|---|---|---|
-| `[სტრუქტურული ერთეული (P&L)]` | yes | yes — blank before 2026 | display; agrees with Statement |
-| `[სტრუქტურული ერთეული (P&L, საწყისი)]` | **yes — since 2026-08-03** | **no** | what the Google Sheet needs |
+| Field | Normalised? | Location-mapped? | Year-gated? | Use |
+|---|---|---|---|---|
+| `[სტრუქტურული ერთეული (P&L)]` | yes | **yes — since 2026-08-07** | yes — blank before 2026 | display; agrees with Statement |
+| `[სტრუქტურული ერთეული (P&L, საწყისი)]` | **yes — since 2026-08-03** | **no** | **no** | what the Google Sheet needs |
 
-Since 2026-08-03 both fields are normalised; `საწყისი` differs only in being ungated and in not
-being overwritten by the allocation bucket (the name is historical — it meant "raw" while the key
-was raw). Pair it with `[მუხლი (P&L)]` and you have exactly the `article|unit` the sheet expects —
-which is what an "unmatched departments and articles" sheet should show.
+Since 2026-08-03 both fields are normalised; since 2026-08-07 the display field additionally
+rolls up to the location (see *Location rollup*), while `საწყისი` stays pre-location, ungated,
+and is not overwritten by the allocation bucket (the name is historical — it meant "raw" while
+the key was raw). Pair `საწყისი` with `[მუხლი (P&L)]` and you have exactly the `article|unit`
+the sheet expects — which is what an "unmatched departments and articles" sheet should show.
 
 ⚠ `'ELV_საპროექტო გაყიდვები'` is a name literal — renaming that unit in 1C silently disables the
 branch.
@@ -562,9 +592,10 @@ references it by name and the full reload fails without it.
   empty.) There is no `ლოგისტიკა` fallback in the plan's sales stream.
 - **Basis** `ДолиСебестоимостиБюджет`: month × 5 commercial buckets from the COGS article
   (`SET vPLBudgetCogsArticle`) via `Fabs()` (sign-agnostic). Same bucket rules as actuals:
-  დისტრიბუცია/კორპორატიული at direction level, საცალო restricted to `vPLRetailStores` —
-  non-ELV-store retail COGS (e.g. ELE stores) is excluded from the basis while its amounts
-  still land in საცალო. Feeds `ДинамДолиНормБюджет` (renormalized over marked columns, from
+  დისტრიბუცია/კორპორატიული at direction level, საცალო restricted to `vPLRetailStores` by the
+  **location-mapped** unit (`[_ერთეული ლოკაცია (ბიუჯეტი)]`, 2026-08-07; the budget match key
+  and `საწყისი` stay on the pre-location name) — retail COGS whose location is not an ELV
+  store (e.g. ELE stores) is excluded from the basis while its amounts still land in საცალო. Feeds `ДинамДолиНормБюджет` (renormalized over marked columns, from
   the still-alive `ДинамНаправленияПЛ`) and `ДолиДляАллокацииБюджет` (the budget's own LOG/ADM
   variant wave). No-basis months: dynamic/unmatched amounts stay on `მიმართულების გარეშე`,
   variant copies stay on the source direction at share 1 — totals conserved in every variant.
