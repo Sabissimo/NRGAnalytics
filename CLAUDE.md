@@ -92,13 +92,16 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   Renaming/adding a საცალო location is sheet-only — no script edit.
   Three parts guarded by key-marker maps: numeric cells → fixed part (joined on the match key,
   month-independent); `დინამიურად` marks → dynamic part over the MARKED buckets only,
-  renormalized (a real marks table remembers which column held the mark); key absent → the
-  month's full COGS basis, flagged. Mixed rows are supported: numbers are absolute,
-  the remainder splits dynamically — a mixed key flows through BOTH the fixed and dynamic
-  parts by design (complementary shares); everything else must stay mutually exclusive, and
-  widening a guard double counts silently. Fractions need joined weight tables, not a map:
-  `ApplyMap` returns one value per key. The COGS basis: დისტრიბუცია/კორპორატიული at direction
-  level + საცალო per location — EVERY retail location with COGS (empty location dropped).
+  renormalized (a real marks table remembers which column held the mark); a month where no
+  marked bucket has COGS splits EVENLY (1/N) over the marked buckets (the `…Ровно` fan
+  blocks — also the only way ლოგ/ადმ buckets, which have no basis, receive dynamic money;
+  such rows take the AS_IS variant groups); key absent → the month's full COGS basis,
+  flagged. Mixed rows are supported: numbers are absolute, the remainder splits dynamically —
+  a mixed key flows through BOTH the fixed and dynamic parts by design (complementary
+  shares); everything else must stay mutually exclusive, and widening a guard double counts
+  silently. Fractions need joined weight tables, not a map: `ApplyMap` returns one value per
+  key. The COGS basis is (direction, location) for დისტრიბუცია/კორპორატიული/საცალო alike
+  (empty location dropped); ლოგისტიკა/ადმინისტრაცია have no basis.
   P&L carries its own `[Internal (P&L)]` / `[არ არის ძირითადი (P&L)]` (real values on
   sales-injected rows, `'არა'` on register/journal rows) — **the sales-side names could not be
   reused**: they live on `BridgeTableOrgDate` / the items dimension, so putting them on the fact

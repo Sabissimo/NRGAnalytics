@@ -34,6 +34,14 @@ retail location (was: 3 ELV stores only; ELE etc. retail COGS re-enters the basi
 direction totals shift). Renaming or adding a საცალო location is now sheet-only: Location tab
 value + matching column header, no script edit. See *Assembly* / *Matching sheet semantics* /
 *COGS basis*.
+**All-bucket sheet + even dynamic fallback, same day (2026-08-07, last push)** — the live
+sheet now names a location in EVERY column (ლოგისტიკა/ადმინისტრაცია included) and locations
+were renamed to short names (ბათუმი, აგლაძე, ალექსეევკა, ლილო, ელიავა, ალექსეევკა
+(ადმინისტრაცია); Location tab gained an `ELV_ადმინისტრაცია` row). The COGS basis is
+(direction, location) for დისტრიბუცია/კორპორატიული/საცალო alike; a dynamic month where no
+marked bucket has COGS splits **evenly (1/N)** across the marked buckets instead of falling
+to `'მიმართულების გარეშე'`; dynamic money on ლოგ/ადმ buckets takes the AS_IS variant groups.
+See *Assembly* / *COGS basis*.
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -87,10 +95,11 @@ exist for exactly the months the fact can reference.
 Allocation targets are **buckets** = (direction, department). A sheet column header is parsed
 at its **first hyphen**: `მიმართულება - განყოფილება` → bucket (direction, department);
 a hyphen-free header → bucket (direction, ''). The direction part must be in
-`SET vPLMatchingDirections` (საცალო + the 4 others) — any other column is ignored. In
-practice საცალო columns carry a location (`საცალო - ELV_ბათუმის ფილიალი`), direction columns
-carry nothing; there is no privileged store list. The two-layer "direction first, then
-departments within it by COGS" composition is **gone**.
+`SET vPLMatchingDirections` (საცალო + the 4 others) — any other column is ignored. In the
+live sheet EVERY column carries a location — `საცალო - ბათუმი`, `დისტრიბუცია - ალექსეევკა`,
+`ლოგისტიკა - ალექსეევკა (ადმინისტრაცია)` etc. — so a bucket is always (direction, location);
+there is no privileged store list. The two-layer "direction first, then departments within it
+by COGS" composition is **gone**.
 
 The three sheet-driven parts read the same staging (`ПЛСтейджинг2`), guarded by key-marker maps
 (`MapКлючФиксПЛ` / `MapКлючДинамПЛ` / `MapКлючМатчПЛ`). A **mixed row** (numbers +
@@ -105,10 +114,14 @@ sum to 1:
    column held the mark — the old marker map discarded that): amount × remainder
    (`MapДинамОстатокПЛ`: 1 − numeric sum; 1 on number-free rows) × the bucket's monthly COGS
    share renormalized over the marked subset (`ДинамДолиНормПЛ`, joined on key + month).
-   A month where no marked bucket has a share stays whole on `'მიმართულების გარეშე'`.
-3. **(c) Unmatched key** — no sheet row at all: exploded over the month's FULL 5-bucket basis
-   (`ДолиСебестоимости`), flagged `[დამატჩებულია (P&L)] = 'არა'`; a month with no basis stays
-   whole on `'მიმართულების გარეშე'`.
+   A month where no marked bucket has a share splits **EVENLY (1/N)** across the marked
+   buckets (the `…Ровно` fan blocks) — this is also the only way ლოგისტიკა/ადმინისტრაცია
+   buckets, which never have a COGS basis, receive dynamic money. Dynamic rows landing on
+   ლოგ/ადმ buckets take the `LOG_AS_IS`/`ADM_AS_IS` variant group like fixed allocations, so
+   the redistribution variants re-spread them too.
+3. **(c) Unmatched key** — no sheet row at all: exploded over the month's FULL basis —
+   (direction, location) cells (`ДолиСебестоимости`) — flagged `[დამატჩებულია (P&L)] = 'არა'`;
+   a month with no basis stays whole on `'მიმართულების გარეშე'`.
 4. **Sales injection (revenue + COGS)** — unchanged mechanics: register/journal rows on the
    directions' revenue/COGS accounts are excluded (per account|registrar pairs that actually
    occur in the sales fact) and replaced by rows built from the sales fact, direction per
@@ -135,13 +148,14 @@ location rollup applies here too — e.g. a cost incurred by `ELV_თბილ�
 labelled `ELV_ალექსეევკის ფილიალი`; the pre-location name lives in
 `[სტრუქტურული ერთეული (P&L, საწყისი)]` (normalised since 2026-08-03).
 
-**COGS basis** (`ДолиСебестоимости`): month × bucket share of `[თვითღირებულება (გაყიდვები)]`,
-same exclusions as `შიდა_და_არაძითადები_ფილტრი`. დისტრიბუცია/კორპორატიული are aggregated to
-the direction level (department ''); საცალო is bucketed by the **location-mapped** department
-name — **every** location with retail COGS gets a basket (e.g. `ELV_ქსელური მაღაზიები` →
-`ELV_ალექსეევკის ფილიალი` feeds that branch's basket; ELE branches get their own). Only rows
-whose location resolves empty are dropped. A retail location can therefore receive
-unmatched-key spread even without a sheet column of its own.
+**COGS basis** (`ДолиСебестоимости`): month × (direction, location) share of
+`[თვითღირებულება (გაყიდვები)]`, same exclusions as `შიდა_და_არაძითადები_ფილტრი`.
+დისტრიბუცია, კორპორატიული and საცალო are ALL bucketed by the location-mapped department name
+— every (direction, location) cell with COGS gets a basket; rows whose location resolves
+empty are dropped. ლოგისტიკა/ადმინისტრაცია have no basis (the sales-fact 'ლოგისტიკა'
+direction is an internal/non-core fallback, deliberately excluded) — their buckets receive
+dynamic money only via the even split. A (direction, location) cell can receive unmatched-key
+spread even without a sheet column of its own.
 
 ## Internal / non-core filtering (2026-07-28)
 
@@ -420,17 +434,17 @@ Cell semantics per row (key = `მუხლი|ერთეული`):
 | Row content | Result |
 |---|---|
 | numbers only | each cell's bucket gets weight ÷ row sum (60/40 works; a lone `50%` gets 100%); sum ≠ 100% flagged `[წილები დაბალანსებულია (P&L)] = 'არა'` |
-| `დინამიურად` only | whole amount split by monthly COGS shares **among the marked columns only** (renormalized over the marked subset) |
-| numbers + `დინამიურად` (mixed) | numbers are **absolute** percentages; the remainder (1 − sum) is split by COGS among the marked columns. Sum ≥ 100% → numbers normalized, dynamic part 0, flagged `'არა'` |
-| no row for the key | split over the month's full basis (2 direction buckets + every retail location with COGS), flagged `[დამატჩებულია (P&L)] = 'არა'` |
+| `დინამიურად` only | whole amount split by monthly COGS shares **among the marked columns only** (renormalized over the marked subset); a month with no COGS in any marked bucket splits **evenly (1/N)** among them |
+| numbers + `დინამიურად` (mixed) | numbers are **absolute** percentages; the remainder (1 − sum) is split by COGS among the marked columns (even split on no-COGS months). Sum ≥ 100% → numbers normalized, dynamic part 0, flagged `'არა'` |
+| no row for the key | split over the month's full basis ((direction, location) cells with COGS), flagged `[დამატჩებულია (P&L)] = 'არა'` |
 
 - Percent-formatted cells arrive as numbers (`100%` → 1) — confirmed in production.
-- A month where the marked (or, for unmatched keys, any) buckets have no COGS stays whole on
-  `'მიმართულების გარეშე'` — it is **not** re-routed to ლოგისტიკა; that fallback exists only in
-  the sales-injection direction rule.
-- `დინამიურად` under ლოგისტიკა/ადმინისტრაცია marks nothing: those buckets never exist in the
-  COGS basis, so the mark contributes no split (if it is the row's only mark, the whole dynamic
-  part lands on `'მიმართულების გარეშე'`).
+- For **unmatched keys** a month with no basis at all stays whole on `'მიმართულების გარეშე'`
+  — it is **not** re-routed to ლოგისტიკა; that fallback exists only in the sales-injection
+  direction rule. (For `დინამიურად` rows the even split means `'მიმართულების გარეშე'` no
+  longer occurs.)
+- `დინამიურად` under ლოგისტიკა/ადმინისტრაცია buckets: no COGS basis ever, so they receive
+  dynamic money only in even-split months; such rows join the AS_IS variant groups.
 - `[სულ]` is decorative — it is never loaded, so a row that reads 100% across in the spreadsheet
   is no guarantee Qlik honoured it. The flag field is the real check.
 
@@ -619,14 +633,16 @@ references it by name and the full reload fails without it.
   basis — the actuals parity being that such a posting arrives from the register/journal and
   gets matched, not injected. (A stray `მიმართულების გარეშე` in the column is treated as
   empty.) There is no `ლოგისტიკა` fallback in the plan's sales stream.
-- **Basis** `ДолиСебестоимостиБюджет`: month × commercial buckets from the COGS article
-  (`SET vPLBudgetCogsArticle`) via `Fabs()` (sign-agnostic). Same bucket rules as actuals:
-  დისტრიბუცია/კორპორატიული at direction level, საცალო bucketed by the **location-mapped**
-  unit (`[_ერთეული ლოკაცია (ბიუჯეტი)]`; every location, empty dropped; the budget match key
-  and `საწყისი` stay on the pre-location name). Feeds `ДинамДолиНормБюджет` (renormalized over marked columns, from
+- **Basis** `ДолиСебестоимостиБюджет`: month × (direction, location) buckets from the COGS
+  article (`SET vPLBudgetCogsArticle`) via `Fabs()` (sign-agnostic). Same bucket rules as
+  actuals: დისტრიბუცია/კორპორატიული/საცალო all bucketed by the **location-mapped** unit
+  (`[_ერთეული ლოკაცია (ბიუჯეტი)]`; empty dropped; the budget match key and `საწყისი` stay on
+  the pre-location name). Feeds `ДинамДолиНормБюджет` (renormalized over marked columns, from
   the still-alive `ДинамНаправленияПЛ`) and `ДолиДляАллокацииБюджет` (the budget's own LOG/ADM
-  variant wave). No-basis months: dynamic/unmatched amounts stay on `მიმართულების გარეშე`,
-  variant copies stay on the source direction at share 1 — totals conserved in every variant.
+  variant wave). No-basis months: dynamic amounts split **evenly (1/N)** over the marked
+  buckets (`БюджетДинамикаРовно` fan — the plan's usual case for future months); unmatched
+  amounts stay on `მიმართულების გარეშე`; variant copies stay on the source direction at
+  share 1 — totals conserved in every variant.
 - The ACTUALS variant wave now carries `and not [წყარო (P&L)] = 'ბიუჯეტი'` — belt-and-braces
   (the budget block also runs after it); without a separate wave the plan would silently be
   spread by actual shares (the parked doc's #1 failure mode).
