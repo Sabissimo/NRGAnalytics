@@ -26,6 +26,12 @@ pre-location normalised name, so sheet matching is untouched. See *Location roll
 department as a LABEL, through the SAME chain as retail (normalisation + location, year-gated);
 allocation, keys, baskets and the `საწყისი` field itself are untouched. See *Department on
 allocated rows* / *Departments*.
+**Store gate removed, same day (2026-08-07)** — `vPLRetailStores` is gone. Matching-sheet
+columns auto-load (`LOAD *`) and classify by name: direction (`SET vPLMatchingDirections`) /
+location (Location tab) / ignored. The COGS basis covers EVERY retail location (was: 3 ELV
+stores only; ELE etc. retail COGS re-enters the basis, so direction totals shift). Renaming or
+adding a საცალო location is now sheet-only: Location tab value + matching column header, no
+script edit. See *Assembly* / *Matching sheet semantics* / *COGS basis*.
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -77,12 +83,12 @@ exist for exactly the months the fact can reference.
 ## Assembly (single-wave allocation into final buckets, 2026-07-31)
 
 Allocation targets are **buckets** = (direction, department): (დისტრიბუცია, ''),
-(კორპორატიული, ''), (ლოგისტიკა, ''), (ადმინისტრაცია, ''), and the 3 retail stores
-(საცალო, store name) — the store list is `SET vPLRetailStores` at the top of the script.
-The sheet's 7 target columns map onto these buckets (a store column = საცალო + that store as
-department); the two-layer "direction first, then departments within it by COGS" composition is
-**gone**. Non-store retail departments receive no allocated costs at all — only their own
-injected sales/COGS.
+(კორპორატიული, ''), (ლოგისტიკა, ''), (ადმინისტრაცია, ''), and (საცალო, location) — one
+bucket per **location**, with no privileged store list. A sheet column is classified by name:
+one of the 4 directions (`SET vPLMatchingDirections`) → direction bucket with empty
+department; a **location from the Location tab** → საცალო bucket with that location as
+department; anything else (`[სულ]`…) → ignored. The two-layer "direction first, then
+departments within it by COGS" composition is **gone**.
 
 The three sheet-driven parts read the same staging (`ПЛСтейджинг2`), guarded by key-marker maps
 (`MapКлючФиксПЛ` / `MapКлючДинамПЛ` / `MapКлючМатчПЛ`). A **mixed row** (numbers +
@@ -129,13 +135,11 @@ labelled `ELV_ალექსეევკის ფილიალი`; the pre-
 
 **COGS basis** (`ДолиСебестоимости`): month × bucket share of `[თვითღირებულება (გაყიდვები)]`,
 same exclusions as `შიდა_და_არაძითადები_ფილტრი`. დისტრიბუცია/კორპორატიული are aggregated to
-the direction level (department ''); საცალო is restricted to the 3 stores by **normalised,
-location-mapped** department name (since 2026-08-07 the basket unit runs through
-`MapЛокацияПодразделенияПЛ` too, so a department whose location is a store — e.g.
-`ELV_ქსელური მაღაზიები` → `ELV_ალექსეევკის ფილიალი` — contributes its retail COGS to that
-store's basket). ⚠ Retail COGS on departments whose (location-mapped) name is not one of the
-3 stores is **excluded from the basis entirely** — direction totals shift vs the
-pre-2026-07-31 scheme by design (retail's dynamic weight comes from the store baskets only).
+the direction level (department ''); საცალო is bucketed by the **location-mapped** department
+name — **every** location with retail COGS gets a basket (e.g. `ELV_ქსელური მაღაზიები` →
+`ELV_ალექსეევკის ფილიალი` feeds that branch's basket; ELE branches get their own). Only rows
+whose location resolves empty are dropped. A retail location can therefore receive
+unmatched-key spread even without a sheet column of its own.
 
 ## Internal / non-core filtering (2026-07-28)
 
@@ -390,19 +394,22 @@ failure.
 
 ## Matching sheet semantics (2026-07-31)
 
-Google Sheet, PL Directions tab. Columns: `მუხლი` | `სტრუქტურული ერთეული` | `სულ` (control sum,
-**not loaded**) | `ELV_ბათუმის ფილიალი` | `ELV_აგლაძის ფილიალი` | `ELV_ალექსეევკის ფილიალი` |
-`დისტრიბუცია` | `კორპორატიული` | `ლოგისტიკა` | `ადმინისტრაცია`.
+Google Sheet, PL Directions tab. The first two columns MUST be `მუხლი` | `სტრუქტურული ერთეული`
+(Crosstable qualifiers — position matters); every further column loads automatically (`LOAD *`)
+and is classified by its header: one of the 4 directions → direction column; a **location**
+(any `ლოკაცია` value of the Location tab) → საცალო location column; anything else (`სულ`,
+stray columns) → ignored. Adding or renaming a location column needs NO script change — only
+the Location tab and the column header must agree.
 `[მუხლი]` is the account's **ВидСчетаPL name**, not the account name.
 `[სტრუქტურული ერთეული]` holds **normalised** department names since 2026-08-03 (the sheet was
 re-authored; the match key is normalised to agree) — a raw pre-mapping name in this column no
 longer matches anything.
 
-⚠ The 3 store column headers must byte-match the stores' **normalised** department names (they
-are matched against the COGS basis and written into `[სტრუქტურული ერთეული (P&L)]` verbatim).
-A mismatched header makes that store's COGS share silently 0 — the store column then never
-receives dynamic money and its static/fixed money carries a department name that exists nowhere
-else. The same three names live in `SET vPLRetailStores` in the script; change both together.
+⚠ A location column header must byte-match the Location tab's `ლოკაცია` value (it doubles as
+the COGS-basis join key and is written into `[სტრუქტურული ერთეული (P&L)]` verbatim). A
+mismatched header is silently IGNORED (classified as neither direction nor location) — its
+weights simply stop existing; a header that matches the Location tab but not the COGS basis
+gets dynamic share 0.
 
 Cell semantics per row (key = `მუხლი|ერთეული`):
 
@@ -411,7 +418,7 @@ Cell semantics per row (key = `მუხლი|ერთეული`):
 | numbers only | each cell's bucket gets weight ÷ row sum (60/40 works; a lone `50%` gets 100%); sum ≠ 100% flagged `[წილები დაბალანსებულია (P&L)] = 'არა'` |
 | `დინამიურად` only | whole amount split by monthly COGS shares **among the marked columns only** (renormalized over the marked subset) |
 | numbers + `დინამიურად` (mixed) | numbers are **absolute** percentages; the remainder (1 − sum) is split by COGS among the marked columns. Sum ≥ 100% → numbers normalized, dynamic part 0, flagged `'არა'` |
-| no row for the key | split over the month's full 5-bucket basis, flagged `[დამატჩებულია (P&L)] = 'არა'` |
+| no row for the key | split over the month's full basis (2 direction buckets + every retail location with COGS), flagged `[დამატჩებულია (P&L)] = 'არა'` |
 
 - Percent-formatted cells arrive as numbers (`100%` → 1) — confirmed in production.
 - A month where the marked (or, for unmatched keys, any) buckets have no COGS stays whole on
@@ -608,12 +615,11 @@ references it by name and the full reload fails without it.
   basis — the actuals parity being that such a posting arrives from the register/journal and
   gets matched, not injected. (A stray `მიმართულების გარეშე` in the column is treated as
   empty.) There is no `ლოგისტიკა` fallback in the plan's sales stream.
-- **Basis** `ДолиСебестоимостиБюджет`: month × 5 commercial buckets from the COGS article
+- **Basis** `ДолиСебестоимостиБюджет`: month × commercial buckets from the COGS article
   (`SET vPLBudgetCogsArticle`) via `Fabs()` (sign-agnostic). Same bucket rules as actuals:
-  დისტრიბუცია/კორპორატიული at direction level, საცალო restricted to `vPLRetailStores` by the
-  **location-mapped** unit (`[_ერთეული ლოკაცია (ბიუჯეტი)]`, 2026-08-07; the budget match key
-  and `საწყისი` stay on the pre-location name) — retail COGS whose location is not an ELV
-  store (e.g. ELE stores) is excluded from the basis while its amounts still land in საცალო. Feeds `ДинамДолиНормБюджет` (renormalized over marked columns, from
+  დისტრიბუცია/კორპორატიული at direction level, საცალო bucketed by the **location-mapped**
+  unit (`[_ერთეული ლოკაცია (ბიუჯეტი)]`; every location, empty dropped; the budget match key
+  and `საწყისი` stay on the pre-location name). Feeds `ДинамДолиНормБюджет` (renormalized over marked columns, from
   the still-alive `ДинамНаправленияПЛ`) and `ДолиДляАллокацииБюджет` (the budget's own LOG/ADM
   variant wave). No-basis months: dynamic/unmatched amounts stay on `მიმართულების გარეშე`,
   variant copies stay on the source direction at share 1 — totals conserved in every variant.

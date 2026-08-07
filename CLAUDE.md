@@ -83,19 +83,21 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
   1C `რიგითობა` order as the numeric part of `dual()` values → charts sort on plain Auto.
-  Allocation is a **single wave into final buckets** (2026-07-31): the sheet has 7 target
-  columns — 3 retail stores (`SET vPLRetailStores`; store column = direction 'საცალო' +
-  department = store name, headers must byte-match the NORMALISED department names) + the 4
-  other directions (department kept EMPTY on allocated rows — only stores are tracked).
+  Allocation is a **single wave into final buckets** (2026-07-31): the sheet's target columns
+  load automatically (`LOAD *`; the first 2 columns are Crosstable qualifiers — position fixed)
+  and classify by header: one of the 4 directions (`SET vPLMatchingDirections`) → direction
+  bucket, department EMPTY; a **location** (Location-tab `ლოკაცია` value; header must
+  byte-match) → bucket საცალო + that location as department; anything else (`[სულ]`…) is
+  ignored. Renaming/adding a საცალო location is sheet-only — no script edit.
   Three parts guarded by key-marker maps: numeric cells → fixed part (joined on the match key,
   month-independent); `დინამიურად` marks → dynamic part over the MARKED buckets only,
   renormalized (a real marks table remembers which column held the mark); key absent → the
-  month's full 5-bucket COGS basis, flagged. Mixed rows are supported: numbers are absolute,
+  month's full COGS basis, flagged. Mixed rows are supported: numbers are absolute,
   the remainder splits dynamically — a mixed key flows through BOTH the fixed and dynamic
   parts by design (complementary shares); everything else must stay mutually exclusive, and
   widening a guard double counts silently. Fractions need joined weight tables, not a map:
-  `ApplyMap` returns one value per key. The COGS basis excludes retail COGS on non-store
-  departments entirely.
+  `ApplyMap` returns one value per key. The COGS basis: დისტრიბუცია/კორპორატიული at direction
+  level + საცალო per location — EVERY retail location with COGS (empty location dropped).
   P&L carries its own `[Internal (P&L)]` / `[არ არის ძირითადი (P&L)]` (real values on
   sales-injected rows, `'არა'` on register/journal rows) — **the sales-side names could not be
   reused**: they live on `BridgeTableOrgDate` / the items dimension, so putting them on the fact
