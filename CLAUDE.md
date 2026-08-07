@@ -76,8 +76,9 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   Data window: starts at `vPLStart` = `RangeMax(YearStart(YearStart(vNow)-1), MakeDate(2026,1,1))`
   — rolling two years but never before 2026, same formula as the calendar's
   `[Year SD (ბოლო 2 წელი, 2026+)]` so filter and window agree. Upper bound `vPLEnd`
-  (2026-08-03): the previous month becomes visible only from the **6th** of the current month —
-  on days 1–5 the last month present is two months back; the current month is always excluded.
+  (2026-08-03; threshold 6→10 on 2026-08-07): the previous month becomes visible only from the
+  **10th** of the current month — on days 1–9 the last month present is two months back; the
+  current month is always excluded.
   Budget rows are exempt from the window (they cover future months). Allocation variants: group field + allocated overhead copies + 12-row link table
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
