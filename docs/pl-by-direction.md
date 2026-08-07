@@ -27,11 +27,13 @@ department as a LABEL, through the SAME chain as retail (normalisation + locatio
 allocation, keys, baskets and the `საწყისი` field itself are untouched. See *Department on
 allocated rows* / *Departments*.
 **Store gate removed, same day (2026-08-07)** — `vPLRetailStores` is gone. Matching-sheet
-columns auto-load (`LOAD *`) and classify by name: direction (`SET vPLMatchingDirections`) /
-location (Location tab) / ignored. The COGS basis covers EVERY retail location (was: 3 ELV
-stores only; ELE etc. retail COGS re-enters the basis, so direction totals shift). Renaming or
-adding a საცალო location is now sheet-only: Location tab value + matching column header, no
-script edit. See *Assembly* / *Matching sheet semantics* / *COGS basis*.
+columns auto-load (`LOAD *`) and the header is parsed at the first hyphen:
+`მიმართულება - განყოფილება` → that bucket; hyphen-free → direction only; direction part
+validated against `SET vPLMatchingDirections`, others ignored. The COGS basis covers EVERY
+retail location (was: 3 ELV stores only; ELE etc. retail COGS re-enters the basis, so
+direction totals shift). Renaming or adding a საცალო location is now sheet-only: Location tab
+value + matching column header, no script edit. See *Assembly* / *Matching sheet semantics* /
+*COGS basis*.
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -82,12 +84,12 @@ exist for exactly the months the fact can reference.
 
 ## Assembly (single-wave allocation into final buckets, 2026-07-31)
 
-Allocation targets are **buckets** = (direction, department): (დისტრიბუცია, ''),
-(კორპორატიული, ''), (ლოგისტიკა, ''), (ადმინისტრაცია, ''), and (საცალო, location) — one
-bucket per **location**, with no privileged store list. A sheet column is classified by name:
-one of the 4 directions (`SET vPLMatchingDirections`) → direction bucket with empty
-department; a **location from the Location tab** → საცალო bucket with that location as
-department; anything else (`[სულ]`…) → ignored. The two-layer "direction first, then
+Allocation targets are **buckets** = (direction, department). A sheet column header is parsed
+at its **first hyphen**: `მიმართულება - განყოფილება` → bucket (direction, department);
+a hyphen-free header → bucket (direction, ''). The direction part must be in
+`SET vPLMatchingDirections` (საცალო + the 4 others) — any other column is ignored. In
+practice საცალო columns carry a location (`საცალო - ELV_ბათუმის ფილიალი`), direction columns
+carry nothing; there is no privileged store list. The two-layer "direction first, then
 departments within it by COGS" composition is **gone**.
 
 The three sheet-driven parts read the same staging (`ПЛСтейджинг2`), guarded by key-marker maps
@@ -396,20 +398,22 @@ failure.
 
 Google Sheet, PL Directions tab. The first two columns MUST be `მუხლი` | `სტრუქტურული ერთეული`
 (Crosstable qualifiers — position matters); every further column loads automatically (`LOAD *`)
-and is classified by its header: one of the 4 directions → direction column; a **location**
-(any `ლოკაცია` value of the Location tab) → საცალო location column; anything else (`სულ`,
-stray columns) → ignored. Adding or renaming a location column needs NO script change — only
-the Location tab and the column header must agree.
+and its header is parsed at the **first hyphen**: `მიმართულება - განყოფილება` (e.g.
+`საცალო - ELV_ბათუმის ფილიალი`) → that direction + that department; hyphen-free →
+direction only. The direction part must be one of `vPLMatchingDirections` (საცალო + 4);
+anything else (`სულ`, strays) is ignored. Direction names contain no hyphen, so the first
+hyphen is always the separator; the department part may contain hyphens. Adding or renaming a
+column needs NO script change.
 `[მუხლი]` is the account's **ВидСчетаPL name**, not the account name.
 `[სტრუქტურული ერთეული]` holds **normalised** department names since 2026-08-03 (the sheet was
 re-authored; the match key is normalised to agree) — a raw pre-mapping name in this column no
 longer matches anything.
 
-⚠ A location column header must byte-match the Location tab's `ლოკაცია` value (it doubles as
-the COGS-basis join key and is written into `[სტრუქტურული ერთეული (P&L)]` verbatim). A
-mismatched header is silently IGNORED (classified as neither direction nor location) — its
-weights simply stop existing; a header that matches the Location tab but not the COGS basis
-gets dynamic share 0.
+⚠ The department part of a საცალო header must byte-match the location name (it doubles as the
+COGS-basis join key and is written into `[სტრუქტურული ერთეული (P&L)]` verbatim) — a mismatch
+makes that column's dynamic share silently 0 (fixed weights still work but land on a
+department name that exists nowhere else). A misspelled DIRECTION part makes the whole column
+silently ignored.
 
 Cell semantics per row (key = `მუხლი|ერთეული`):
 

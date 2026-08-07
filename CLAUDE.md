@@ -85,10 +85,11 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   1C `რიგითობა` order as the numeric part of `dual()` values → charts sort on plain Auto.
   Allocation is a **single wave into final buckets** (2026-07-31): the sheet's target columns
   load automatically (`LOAD *`; the first 2 columns are Crosstable qualifiers — position fixed)
-  and classify by header: one of the 4 directions (`SET vPLMatchingDirections`) → direction
-  bucket, department EMPTY; a **location** (Location-tab `ლოკაცია` value; header must
-  byte-match) → bucket საცალო + that location as department; anything else (`[სულ]`…) is
-  ignored. Renaming/adding a საცალო location is sheet-only — no script edit.
+  and the header parses at its FIRST hyphen: `მიმართულება - განყოფილება` (e.g.
+  `საცალო - ELV_ბათუმის ფილიალი`) → that bucket; hyphen-free → direction only. The direction
+  part must be in `SET vPLMatchingDirections` (საცალო + 4 others), else the column is ignored;
+  the department part must byte-match the location name or its dynamic share is silently 0.
+  Renaming/adding a საცალო location is sheet-only — no script edit.
   Three parts guarded by key-marker maps: numeric cells → fixed part (joined on the match key,
   month-independent); `დინამიურად` marks → dynamic part over the MARKED buckets only,
   renormalized (a real marks table remembers which column held the mark); key absent → the
