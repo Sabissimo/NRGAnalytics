@@ -21,6 +21,11 @@ vanished on every partial reload; same commit `Add`-prefixed `SD 0401`'s non-bri
 Location tab) applied ON TOP of name normalisation, but ONLY on the displayed unit and the
 retail COGS baskets (fact and budget); the match key and the `საწყისი` field stay on the
 pre-location normalised name, so sheet matching is untouched. See *Location rollup*.
+**Displayed departments un-killed outside საცალო, same day (2026-08-07)** — non-store buckets,
+`'მიმართულების გარეშე'` and non-retail sales-injected rows now show the **incurring**
+department as a LABEL, through the SAME chain as retail (normalisation + location, year-gated);
+allocation, keys, baskets and the `საწყისი` field itself are untouched. See *Department on
+allocated rows* / *Departments*.
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -100,20 +105,27 @@ sum to 1:
    directions' revenue/COGS accounts are excluded (per account|registrar pairs that actually
    occur in the sales fact) and replaced by rows built from the sales fact, direction per
    document; internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`. Their real
-   department is **displayed only inside საცალო** (user decision 2026-07-31) — on any other
-   direction the display department is empty like on allocated rows; the raw field keeps the
-   real department always, and the injection grain is unchanged (still grouped by the real
-   department GUID).
+   department is displayed on **every** direction since 2026-08-07, one chain for all
+   (normalised + location-mapped, year-gated; 2026-07-31…08-07 it was blank outside retail);
+   the raw field keeps the real department always, and the injection grain is unchanged
+   (still grouped by the real department GUID).
 5. **Journal side** (within a–c above): Управленческий ledger rows not covered by the
    register, via anti-join on registrar + the three filter branches from pl.txt
    (income/expense types on Операция; account-group codes 6–9 on ВводНачальныхОстатков;
    loan-interest codes 6–9 on ПриходнаяНакладная); credit side enters with flipped sign.
 
-**Department on allocated rows comes from the bucket**: the store name on store buckets,
-**empty** everywhere else (დისტრიბუცია/კორპორატიული/ლოგისტიკა/ადმინისტრაცია and
-`'მიმართულების გარეშე'`) — departments outside retail are deliberately not tracked.
-`[სტრუქტურული ერთეული (P&L, საწყისი)]` still holds where the cost was incurred (since 2026-08-03
-under its normalised name).
+**Department on allocated rows: store buckets keep the store (location) name; every other
+bucket — and `'მიმართულების გარეშე'` — shows the incurring department since 2026-08-07**,
+through the same chain as everything displayed (normalised + location-mapped, gated by
+`vPLDeptFrom`; was empty 2026-07-31…08-07). In the script the fallback is simply the staging
+display field, so there is exactly ONE display recipe.
+⚠ This is a **label, not an allocation**: every piece of a source row split across
+დისტრიბუცია/კორპორატიული/… carries the SAME department, so per-department totals outside
+retail mix directions ("who spent it", not "distribution's own departments") — per-direction
+totals are unchanged. There is still no department fan-out inside a direction. Note the
+location rollup applies here too — e.g. a cost incurred by `ELV_თბილისის დისტრიბუცია` is
+labelled `ELV_ალექსეევკის ფილიალი`; the pre-location name lives in
+`[სტრუქტურული ერთეული (P&L, საწყისი)]` (normalised since 2026-08-03).
 
 **COGS basis** (`ДолиСебестоимости`): month × bucket share of `[თვითღირებულება (გაყიდვები)]`,
 same exclusions as `შიდა_და_არაძითადები_ფილტრი`. დისტრიბუცია/კორპორატიული are aggregated to
@@ -263,9 +275,11 @@ locations, ELE branches map to themselves, any name absent from the tab passes t
 
 Applied **on top of** the normalisation map, but only at:
 
-- the displayed unit — `[სტრუქტურული ერთეული (P&L)]` on all sources (register/journal via the
-  helper `[_ერთეული ლოკაცია (P&L)]` next to `[_ერთეული სახელი (P&L)]`, both sales-injection
-  blocks, budget sales rows via `[_ერთეული ლოკაცია (ბიუჯეტი)]`);
+- the displayed unit `[სტრუქტურული ერთეული (P&L)]` — everywhere, one chain for retail and
+  non-retail alike (register/journal staging carries the helper `[_ერთეული ლოკაცია (P&L)]`
+  next to `[_ერთეული სახელი (P&L)]`; the allocation branches fall back to the staging display
+  field; sales injections apply the chain inline; budget rows use
+  `[_ერთეული ლოკაცია (ბიუჯეტი)]`);
 - the retail COGS-share baskets, fact (`ДолиСебестоимости`) and budget
   (`ДолиСебестоимостиБюджет`) alike — see *COGS basis*.
 
@@ -293,8 +307,8 @@ Cut-off and literal live in `vPLDeptFrom` / `vPLProjectSalesUnit` at the top of 
 ### The 2026 cut-off applies to every source, but only to the displayed field
 
 `[სტრუქტურული ერთეული (P&L)]` is empty before 2026-01-01 for **all** sources — register, journal
-and sales alike. Since 2026-07-31 sales-injected rows additionally blank it outside საცალო
-(the direction condition sits in the same `if()` as the year gate, in both injection blocks).
+and sales alike. (2026-07-31…08-07 sales-injected rows additionally blanked it outside საცალო;
+since 2026-08-07 it shows on every direction, location-level everywhere.)
 
 `[_MatchKey (P&L)]` is **not** gated: it carries the (since 2026-08-03 normalised) department
 regardless of year. That is deliberate — gating the key would change which sheet row a pre-2026
@@ -310,14 +324,16 @@ are ungated (see *Department on allocated rows*).
 
 | Field | Normalised? | Location-mapped? | Year-gated? | Use |
 |---|---|---|---|---|
-| `[სტრუქტურული ერთეული (P&L)]` | yes | **yes — since 2026-08-07** | yes — blank before 2026 | display; agrees with Statement |
+| `[სტრუქტურული ერთეული (P&L)]` | yes | **yes — since 2026-08-07** | yes — blank before 2026 | display |
 | `[სტრუქტურული ერთეული (P&L, საწყისი)]` | **yes — since 2026-08-03** | **no** | **no** | what the Google Sheet needs |
 
-Since 2026-08-03 both fields are normalised; since 2026-08-07 the display field additionally
-rolls up to the location (see *Location rollup*), while `საწყისი` stays pre-location, ungated,
-and is not overwritten by the allocation bucket (the name is historical — it meant "raw" while
-the key was raw). Pair `საწყისი` with `[მუხლი (P&L)]` and you have exactly the `article|unit`
-the sheet expects — which is what an "unmatched departments and articles" sheet should show.
+Since 2026-08-03 both fields are normalised. Since 2026-08-07 the display field always carries
+the **location-level** name — store buckets show the store, every other row shows its incurring
+department through the same normalisation + location chain (see *Location rollup* and
+*Department on allocated rows*) — while `საწყისი` stays pre-location, ungated, and is never
+overwritten by the allocation bucket (the name is historical — it meant "raw" while the key was
+raw). Pair `საწყისი` with `[მუხლი (P&L)]` and you have exactly the `article|unit` the sheet
+expects — which is what an "unmatched departments and articles" sheet should show.
 
 ⚠ `'ELV_საპროექტო გაყიდვები'` is a name literal — renaming that unit in 1C silently disables the
 branch.

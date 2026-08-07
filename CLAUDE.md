@@ -121,12 +121,15 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   normalisation — but ONLY on the displayed unit and the retail COGS baskets (fact + budget);
   the match key and the `საწყისი` field stay on the PRE-location normalised name, so the
   matching sheet keys did not change.
-  **The department on every allocated row IS the bucket's** (store name / empty) — the
-  2026-07-30 "departments within the direction by COGS" layer is gone. The DISPLAY department
-  exists only inside საცალო: sales-injected rows show theirs only when their direction is
-  საცალო (non-store retail departments carry ONLY their own sales/COGS there), every other
-  direction shows empty on every row; the `საწყისი` field keeps the incurring department always
-  (normalised since 2026-08-03).
+  **Buckets are unchanged (7 targets; no department fan-out inside a direction)** — the
+  2026-07-30 "departments within the direction by COGS" layer is gone. DISPLAY department
+  (since 2026-08-07): store buckets show the store name; every other bucket,
+  `'მიმართულების გარეშე'` and sales rows show the **incurring** department as a LABEL,
+  through the SAME chain everywhere (normalisation + location rollup, year-gated) — one
+  source row's pieces all carry the same department, so per-department totals outside
+  retail mix directions; per-direction totals don't move. (2026-07-31…08-07 the display
+  was blank outside საცალო.) The `საწყისი` field keeps the incurring department always
+  (normalised since 2026-08-03, never location-mapped).
   Dynamic months with no basis in the marked buckets stay whole on 'მიმართულების გარეშე'
   (NOT re-routed to ლოგისტიკა — that fallback is sales-injection-only); variant copies in
   no-share months keep the source direction and department at share 1.
@@ -209,6 +212,10 @@ granted in the **ADMIN block only**; to expose P&L to USERs, add the same one-li
   silently rejects text like 'საცალო'. For text fallbacks use `if(Len(Trim(x))>0, x, y)`.
 - **Never put code literals (table names, statements) verbatim in instruction comments** —
   search/replace-based edits and greps match the comment instead of the code.
+- **Script comments describe CURRENT behavior only — no change history.** No date stamps
+  ("2026-08-07"), no "was X until Y / moved from Z" narration; when a rule changes, REWRITE the
+  comment as if it had always been that way. History lives in git and the `docs/*.md` files.
+  Keep the *why* (bug explanations, invariants) — drop the *when* and the evolution.
 - A field can hold the literal STRING 'მიმართულების გარეშე' (ApplyMap defaults), not null —
   emptiness checks alone don't catch "no direction".
 - Partial-reload prefixes (`Replace LOAD` / `Add LOAD`) are used everywhere; keep new
