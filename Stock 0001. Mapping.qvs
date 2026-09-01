@@ -135,3 +135,12 @@ LOAD
     *
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникСправочники_ЕЛВАРЕ.qvd]
 (qvd);
+
+MapПеречислениеТипАссортимента:
+Mapping LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипАссортимента.qvd]
+(qvd);
