@@ -76,25 +76,32 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   Data window: starts at `vPLStart` = `RangeMax(YearStart(YearStart(vNow)-1), MakeDate(2026,1,1))`
   — rolling two years but never before 2026, same formula as the calendar's
   `[Year SD (ბოლო 2 წელი, 2026+)]` so filter and window agree. Upper bound `vPLEnd`
-  (2026-08-03): the previous month becomes visible only from the **6th** of the current month —
-  on days 1–5 the last month present is two months back; the current month is always excluded.
+  (2026-08-03; threshold 6→10 on 2026-08-07): the previous month becomes visible only from the
+  **10th** of the current month — on days 1–9 the last month present is two months back; the
+  current month is always excluded.
   Budget rows are exempt from the window (they cover future months). Allocation variants: group field + allocated overhead copies + 12-row link table
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
   1C `რიგითობა` order as the numeric part of `dual()` values → charts sort on plain Auto.
-  Allocation is a **single wave into final buckets** (2026-07-31): the sheet has 7 target
-  columns — 3 retail stores (`SET vPLRetailStores`; store column = direction 'საცალო' +
-  department = store name, headers must byte-match the NORMALISED department names) + the 4
-  other directions (department kept EMPTY on allocated rows — only stores are tracked).
+  Allocation is a **single wave into final buckets** (2026-07-31): the sheet's target columns
+  load automatically (`LOAD *`; the first 2 columns are Crosstable qualifiers — position fixed)
+  and the header parses at its FIRST hyphen: `მიმართულება - განყოფილება` (e.g.
+  `საცალო - ELV_ბათუმის ფილიალი`) → that bucket; hyphen-free → direction only. The direction
+  part must be in `SET vPLMatchingDirections` (საცალო + 4 others), else the column is ignored;
+  the department part must byte-match the location name or its dynamic share is silently 0.
+  Renaming/adding a საცალო location is sheet-only — no script edit.
   Three parts guarded by key-marker maps: numeric cells → fixed part (joined on the match key,
   month-independent); `დინამიურად` marks → dynamic part over the MARKED buckets only,
-  renormalized (a real marks table remembers which column held the mark); key absent → the
-  month's full 5-bucket COGS basis, flagged. Mixed rows are supported: numbers are absolute,
-  the remainder splits dynamically — a mixed key flows through BOTH the fixed and dynamic
-  parts by design (complementary shares); everything else must stay mutually exclusive, and
-  widening a guard double counts silently. Fractions need joined weight tables, not a map:
-  `ApplyMap` returns one value per key. The COGS basis excludes retail COGS on non-store
-  departments entirely.
+  renormalized (a real marks table remembers which column held the mark); a month where no
+  marked bucket has COGS splits EVENLY (1/N) over the marked buckets (the `…Ровно` fan
+  blocks — also the only way ლოგ/ადმ buckets, which have no basis, receive dynamic money;
+  such rows take the AS_IS variant groups); key absent → the month's full COGS basis,
+  flagged. Mixed rows are supported: numbers are absolute, the remainder splits dynamically —
+  a mixed key flows through BOTH the fixed and dynamic parts by design (complementary
+  shares); everything else must stay mutually exclusive, and widening a guard double counts
+  silently. Fractions need joined weight tables, not a map: `ApplyMap` returns one value per
+  key. The COGS basis is (direction, location) for დისტრიბუცია/კორპორატიული/საცალო alike
+  (empty location dropped); ლოგისტიკა/ადმინისტრაცია have no basis.
   P&L carries its own `[Internal (P&L)]` / `[არ არის ძირითადი (P&L)]` (real values on
   sales-injected rows, `'არა'` on register/journal rows) — **the sales-side names could not be
   reused**: they live on `BridgeTableOrgDate` / the items dimension, so putting them on the fact
@@ -115,13 +122,20 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   2026 cut-off (`vPLDeptFrom`) applies ONLY to the displayed field, for every source — the
   match key carries the (normalised) department regardless of year, because gating it would move
   money between directions. Sales rows never touch the match key at all, so their department is
-  display-only.
-  **The department on every allocated row IS the bucket's** (store name / empty) — the
-  2026-07-30 "departments within the direction by COGS" layer is gone. The DISPLAY department
-  exists only inside საცალო: sales-injected rows show theirs only when their direction is
-  საცალო (non-store retail departments carry ONLY their own sales/COGS there), every other
-  direction shows empty on every row; the `საწყისი` field keeps the incurring department always
-  (normalised since 2026-08-03).
+  display-only. Since 2026-08-07 a SECOND layer, `MapЛокацияПодразделенияПЛ` (Qlik Matching /
+  Location tab, unit → branch location, pass-through for unknown names), sits on top of
+  normalisation — but ONLY on the displayed unit and the retail COGS baskets (fact + budget);
+  the match key and the `საწყისი` field stay on the PRE-location normalised name, so the
+  matching sheet keys did not change.
+  **Buckets = (direction, location); no second fan-out layer inside a direction** (the
+  2026-07-30 "departments within the direction by COGS" scheme is gone). DISPLAY department:
+  bucket rows show the bucket's location (the column's dept part); bucket-less rows
+  (hyphen-free columns, 'მიმართულების გარეშე', no-basis months) and sales rows show the
+  incurring department through the same chain (normalisation + location rollup, year-gated)
+  — a LABEL: such a source row's pieces all carry the same department; per-direction totals
+  don't move either way. The `საწყისი` field keeps the incurring department always
+  (normalised, never location-mapped) — it is the only place pre-location `ELV_…` names
+  survive.
   Dynamic months with no basis in the marked buckets stay whole on 'მიმართულების გარეშე'
   (NOT re-routed to ლოგისტიკა — that fallback is sales-injection-only); variant copies in
   no-share months keep the source direction and department at share 1.
@@ -204,6 +218,10 @@ granted in the **ADMIN block only**; to expose P&L to USERs, add the same one-li
   silently rejects text like 'საცალო'. For text fallbacks use `if(Len(Trim(x))>0, x, y)`.
 - **Never put code literals (table names, statements) verbatim in instruction comments** —
   search/replace-based edits and greps match the comment instead of the code.
+- **Script comments describe CURRENT behavior only — no change history.** No date stamps
+  ("2026-08-07"), no "was X until Y / moved from Z" narration; when a rule changes, REWRITE the
+  comment as if it had always been that way. History lives in git and the `docs/*.md` files.
+  Keep the *why* (bug explanations, invariants) — drop the *when* and the evolution.
 - A field can hold the literal STRING 'მიმართულების გარეშე' (ApplyMap defaults), not null —
   emptiness checks alone don't catch "no direction".
 - Partial-reload prefixes (`Replace LOAD` / `Add LOAD`) are used everywhere; keep new
