@@ -25,6 +25,9 @@ $(include=[lib://Holding:DataFiles/SD 0104. Cat. Items 24.qvs]);
 //Cat. Categories 24
 $(include=[lib://Holding:DataFiles/SD 0105. Cat. Categories 24.qvs]);
 
+//Cat. PL Form 24
+$(include=[lib://Holding:DataFiles/SD 0106. Cat. PL Form 24.qvs]);
+
 //Reg. Sales
 $(include=[lib://Holding:DataFiles/SD 0201. Reg. Sales.qvs]);
 

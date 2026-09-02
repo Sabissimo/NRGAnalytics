@@ -1,0 +1,433 @@
+// P&L ფორმა: საჩვენებელი სტრიქონები Google-ცხრილიდან (Test Matching — Lines და Membership
+// ფურცლები: სია მუხლი → სტრიქონი) და ბმულის ცხრილი მუხლი → სტრიქონი. ერთი მუხლი რამდენიმე სტრიქონში შედის
+// (საკუთარი ჯგუფის ჯამი, საოპერაციო მოგება, EBITDA, EBIT…) — ბმულის ცხრილში თითო
+// (მუხლი, სტრიქონი) წყვილზე თითო სტრიქონია. მარჟები (ratio) ორი სხვა სტრიქონის ბმულებს
+// იმეორებენ N (მრიცხველი) / D (მნიშვნელი) როლით, ჯამური სტრიქონები — S როლით.
+// ფაქტი არ იცვლება: ბმულის ცხრილი ფაქტს [%lnk_მუხლი (P&L)]-ით ებმის (იმავე ველით, რითიც
+// მუხლების იერარქია), ფორმის სტრიქონებს — [%lnk_სტრიქონი (P&L ფორმა)]-ით.
+// მხოლოდ სრულ გადატვირთვაზე (24); ცხრილის რედაქტირება აპში მხოლოდ სრული გადატვირთვით ჩნდება.
+// აპის მხარის კონტრაქტი (საზომები როლის მოდიფიკატორით): docs/pl-form.md.
+if(not IsPartialReload()) then
+
+// ----- Lines: ფორმის სტრიქონები -----
+// სვეტები: რიგი (უნიკალური რიცხვი — გასაღები და სორტირება) | სტრიქონი (სახელი; Membership-ის
+// [ახალი მუხლი] და ratio-ს მითითებები ამ სახელით მუშაობს, ბაიტ-ბაიტ) | ტიპი: sum / ratio /
+// spacer / unmatched (მხოლოდ დაუმატჩებელი მუხლები) | მრიცხველი, მნიშვნელი (ratio-სთვის: სხვა
+// სტრიქონების სახელები) | ფორმატი (Num-ის ფორმატი) | შეწევა (0/1/2…) | მუქი (0/1) |
+// დახრილი (0/1) | ფონის ფერი | დადებითი ტექსტის ფერი | უარყოფითი ტექსტის ფერი (აპი
+// მნიშვნელობის ნიშნით ირჩევს).
+// უცნობი ტიპის ან ურიგო სტრიქონი იგნორირდება.
+PLFormLinesPre:
+LOAD
+    Num(Trim([რიგი])) as [_რიგი (P&L ფორმა)],
+    Trim([სტრიქონი]) as [_სახელი (P&L ფორმა)],
+    Lower(Trim([ტიპი])) as [_ტიპი (P&L ფორმა)],
+    Trim([მრიცხველი]) as [_მრიცხველი (P&L ფორმა)],
+    Trim([მნიშვნელი]) as [_მნიშვნელი (P&L ფორმა)],
+    Trim([ფორმატი]) as [_ფორმატი (P&L ფორმა)],
+    Alt(Num(Trim([შეწევა])), 0) as [_შეწევა (P&L ფორმა)],
+    Alt(Num(Trim([მუქი])), 0) as [_მუქი (P&L ფორმა)],
+    Alt(Num(Trim([დახრილი])), 0) as [_დახრილი (P&L ფორმა)],
+    Trim([ფონის ფერი]) as [_ფონის ფერი (P&L ფორმა)],
+    Trim([დადებითი ტექსტის ფერი]) as [_დადებითი ტექსტის ფერი (P&L ფორმა)],
+    Trim([უარყოფითი ტექსტის ფერი]) as [_უარყოფითი ტექსტის ფერი (P&L ფორმა)]
+Where IsNum(Trim([რიგი]))
+    and match(Lower(Trim([ტიპი])), 'sum', 'ratio', 'spacer', 'unmatched') > 0;
+SELECT *
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1oqMuHJi-e8aATRFdN2bNXOD--44Efw35O_S2wWyjCII:_0', //Test Matching, Lines Sheet
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+// სახელი → რიგი: Membership-ის [ახალი მუხლი]-სა და ratio-ს მითითებების გასახსნელად.
+// spacer-ს სახელი არ აქვს და რუკაში არ შედის.
+MapPLFormLineId:
+Mapping Load
+    [_სახელი (P&L ფორმა)],
+    [_რიგი (P&L ფორმა)]
+Resident PLFormLinesPre
+Where Len([_სახელი (P&L ფორმა)]) > 0;
+
+// განზომილება: dual — ტექსტი შეწევით (უწყვეტი ჰარებით, რომ ცხრილში არ ჩამოიჭრას), რიცხვი —
+// რიგი. ერთნაირი სახელები (მაგ. ორი spacer) სხვადასხვა რიცხვით ცალ-ცალკე მნიშვნელობებია.
+PLFormLines:
+NoConcatenate Load
+    [_რიგი (P&L ფორმა)] as [%lnk_სტრიქონი (P&L ფორმა)],
+    Dual(Repeat(Chr(160), 4 * [_შეწევა (P&L ფორმა)]) & [_სახელი (P&L ფორმა)], [_რიგი (P&L ფორმა)]) as [სტრიქონი (P&L ფორმა)],
+    [_სახელი (P&L ფორმა)] as [სტრიქონის სახელი (P&L ფორმა)],
+    [_რიგი (P&L ფორმა)] as [რიგი (P&L ფორმა)],
+    [_ტიპი (P&L ფორმა)] as [ტიპი (P&L ფორმა)],
+    [_ფორმატი (P&L ფორმა)] as [ფორმატი (P&L ფორმა)],
+    [_შეწევა (P&L ფორმა)] as [შეწევა (P&L ფორმა)],
+    [_მუქი (P&L ფორმა)] as [მუქი (P&L ფორმა)],
+    [_დახრილი (P&L ფორმა)] as [დახრილი (P&L ფორმა)],
+    [_ფონის ფერი (P&L ფორმა)] as [ფონის ფერი (P&L ფორმა)],
+    [_დადებითი ტექსტის ფერი (P&L ფორმა)] as [დადებითი ტექსტის ფერი (P&L ფორმა)],
+    [_უარყოფითი ტექსტის ფერი (P&L ფორმა)] as [უარყოფითი ტექსტის ფერი (P&L ფორმა)]
+Resident PLFormLinesPre;
+
+// ratio-ს მითითებები: თითო თანაფარდობის სტრიქონზე ორი წყარო-სტრიქონი (N/D). გაუხსნელი
+// სახელი Null-ია — შემოწმების ცხრილში ჩანს, ბმული არ იქმნება. ორი ჩატვირთვა ავტომატურად
+// ერთიანდება (ერთი და იგივე ველები) — ratio-ს გარეშე ცხრილი უბრალოდ არ იქმნება.
+PLFormRatioRefs:
+Load
+    [_რიგი (P&L ფორმა)] as [_თანაფარდობის სტრიქონი (P&L ფორმა)],
+    ApplyMap('MapPLFormLineId', [_მრიცხველი (P&L ფორმა)], Null()) as [_წყარო სტრიქონი (P&L ფორმა)],
+    [_მრიცხველი (P&L ფორმა)] as [_წყარო სახელი (P&L ფორმა)],
+    'N' as [_როლი (P&L ფორმა)]
+Resident PLFormLinesPre
+Where [_ტიპი (P&L ფორმა)] = 'ratio';
+
+PLFormRatioRefs:
+Load
+    [_რიგი (P&L ფორმა)] as [_თანაფარდობის სტრიქონი (P&L ფორმა)],
+    ApplyMap('MapPLFormLineId', [_მნიშვნელი (P&L ფორმა)], Null()) as [_წყარო სტრიქონი (P&L ფორმა)],
+    [_მნიშვნელი (P&L ფორმა)] as [_წყარო სახელი (P&L ფორმა)],
+    'D' as [_როლი (P&L ფორმა)]
+Resident PLFormLinesPre
+Where [_ტიპი (P&L ფორმა)] = 'ratio';
+
+// ----- Membership: სია მუხლი → სტრიქონი -----
+// სვეტები: [მუხლი] — 1C-ის მუხლების ცნობარის (ВидыСчетовPL) კვანძის სახელი, ჯგუფი ან ფოთოლი
+// (ჯგუფი ყველა შთამომავალს ნიშნავს — გზით მატჩინგი, ქვემოთ); [ახალი მუხლი] — ფორმის
+// სტრიქონის სახელი (Lines-ის [სტრიქონი], ბაიტ-ბაიტ). ერთი მუხლი რამდენ სტრიქონშიც შედის,
+// იმდენი სტრიქონია სიაში. არასავალდებულო სვეტი [წონა]: ცარიელი = 1, −1 ნიშნის შესაცვლელად,
+// 0 = არ შედის; სვეტის არარსებობა = ყველგან 1.
+PLFormMembershipPre:
+LOAD *;
+SELECT *
+FROM GetWorksheetV2
+WITH PROPERTIES (
+worksheetKey='1oqMuHJi-e8aATRFdN2bNXOD--44Efw35O_S2wWyjCII:_725195481', //Test Matching, Membership Sheet
+gidOverride='',
+generatedNumberedColumns='false',
+skipRows=''
+);
+
+// წონის გამოსახულება: სვეტი არსებობს → რიცხვი (ცარიელი/არარიცხვითი = 1); არ არსებობს → 1
+Let vPLFormWeightExpr = if(FieldNumber('წონა', 'PLFormMembershipPre') > 0, 'Alt(Num(Trim([წონა])), 1)', '1');
+
+PLFormMembership:
+NoConcatenate Load
+    Trim([მუხლი]) as [_წევრი სახელი (P&L ფორმა)],
+    Trim([ახალი მუხლი]) as [_სამიზნე სახელი (P&L ფორმა)],
+    ApplyMap('MapPLFormLineId', Trim([ახალი მუხლი]), Null()) as [%lnk_სტრიქონი (P&L ფორმა)],
+    $(vPLFormWeightExpr) as [_წონა (P&L ფორმა)]
+Resident PLFormMembershipPre
+Where Len(Trim([მუხლი])) > 0
+    and Len(Trim([ახალი მუხლი])) > 0
+    and $(vPLFormWeightExpr) <> 0;
+
+Drop Table PLFormMembershipPre;
+Let vPLFormWeightExpr = Null();
+
+// ----- მუხლების ცნობარი: ყოველი კვანძის გზა სახელებით (ფესვიდან კვანძამდე) -----
+// ᲣᲤᲘᲚᲢᲠᲝᲓ — წაშლის ნიშნიანი ელემენტებიც შედის, რომ ისტორიულმა გატარებამ წაშლილ (დუბლიკატ)
+// მუხლზე თავისი სტრიქონი არ დაკარგოს. ერთი სახელით რამდენიმე GUID → ყველა ებმის.
+PLFormCatalogPre:
+Hierarchy([_მუხლი ID (P&L ფორმა)], [_მუხლი მშობელი (P&L ფორმა)], [_მუხლი სახელი (P&L ფორმა)], ,
+    [_მუხლი სახელი (P&L ფორმა)], [_მუხლი გზა (P&L ფორმა)], '|')
+LOAD
+    [Ссылка] as [_მუხლი ID (P&L ფორმა)],
+    if([Родитель] = '00000000000000000000000000000000', Null(), [Родитель]) as [_მუხლი მშობელი (P&L ფორმა)],
+    Trim([Наименование]) as [_მუხლი სახელი (P&L ფორმა)],
+    ApplyMap('MapБулево', [ПометкаУдаления], 'არა') as [_წაშლილია (P&L ფორმა)]
+FROM [lib://$(vSpace24):DataFiles/$(vSpacePrefix24)_$(vPrefix24)_СправочникВидыСчетовPL.qvd]
+(qvd);
+
+// ჯგუფების სია (ვინც ვინმეს მშობელია) — შემოწმებისთვის: ფოთლები ბმულის გარეშე
+PLFormParents:
+Load Distinct
+    [_მუხლი მშობელი (P&L ფორმა)] as [%exists_მუხლი მშობელი (P&L ფორმა)]
+Resident PLFormCatalogPre
+Where Len([_მუხლი მშობელი (P&L ფორმა)]) > 0;
+
+// ყველა GUID-ის სია X-ბმულებისთვის (ქვემოთ)
+PLFormAllArticles:
+NoConcatenate Load Distinct
+    [_მუხლი ID (P&L ფორმა)] as [_ყველა მუხლი (P&L ფორმა)]
+Resident PLFormCatalogPre;
+
+// გზა იშლება: თითო წინაპრის (და თვით კვანძის) სახელი ცალკე სტრიქონად. Membership-ის სახელი
+// ამ სტრიქონებს ემთხვევა → კვანძი და მისი ყველა შთამომავალი ერთად ხვდება სტრიქონში.
+PLFormPaths:
+NoConcatenate Load
+    [_მუხლი ID (P&L ფორმა)],
+    Trim(SubField([_მუხლი გზა (P&L ფორმა)], '|')) as [_წევრი სახელი (P&L ფორმა)]
+Resident PLFormCatalogPre;
+
+// ----- შემოწმების ცხრილი (კუნძული — არაფერს არ ებმის) -----
+// ყოველი ბლოკი ავტომატურად ერთიანდება (ერთი და იგივე ორი ველი); პირველი სტრიქონი
+// გარანტირებულია, რომ ცხრილი ყოველთვის არსებობდეს.
+PLFormAudit:
+Load
+    'ინფო' as [შემოწმება (P&L ფორმა)],
+    'ფორმა ჩატვირთულია ' & Date(Now(), 'DD/MM/YYYY hh:mm') as [შემოწმების მნიშვნელობა (P&L ფორმა)]
+AutoGenerate 1;
+
+// Lines: რიგი მეორდება (გასაღები არაუნიკალურია — ორივე სტრიქონი ერთ მნიშვნელობად ჩანს)
+PLFormAudit:
+Load
+    'Lines: რიგი მეორდება' as [შემოწმება (P&L ფორმა)],
+    Text([_რიგი დუბლი (P&L ფორმა)]) as [შემოწმების მნიშვნელობა (P&L ფორმა)]
+Where [_რიგი რაოდენობა (P&L ფორმა)] > 1;
+Load
+    [_რიგი (P&L ფორმა)] as [_რიგი დუბლი (P&L ფორმა)],
+    Count([_რიგი (P&L ფორმა)]) as [_რიგი რაოდენობა (P&L ფორმა)]
+Resident PLFormLinesPre
+Group By [_რიგი (P&L ფორმა)];
+
+Drop Table PLFormLinesPre;
+
+If not IsNull(TableNumber('PLFormRatioRefs')) then
+// Lines: ratio-ს მრიცხველი/მნიშვნელი Lines-ში არ არის (ბმული არ იქმნება — სტრიქონი ცარიელია)
+PLFormAudit:
+Load Distinct
+    'Lines: ratio-ს მითითება Lines-ში არ არის' as [შემოწმება (P&L ფორმა)],
+    [_წყარო სახელი (P&L ფორმა)] as [შემოწმების მნიშვნელობა (P&L ფორმა)]
+Resident PLFormRatioRefs
+Where IsNull([_წყარო სტრიქონი (P&L ფორმა)]);
+End If
+
+// ----- ბმულის ცხრილი: როლები X / S / N / D -----
+// X — "დამჭერი" ბმული ᲧᲝᲕᲔᲚᲘ სტრიქონიდან ცნობარის ᲧᲝᲕᲔᲚ მუხლზე, წონით 0. X-ის გარეშე SECTION
+// ACCESS-ის რედუქცია აპის გახსნისას წაშლიდა ყველა სტრიქონს, რომლის წევრებსაც ფაქტში სტრიქონი
+// არ აქვთ (spacer-ები, უგატარებო მუხლების სტრიქონები): რედუქცია ტოვებს მხოლოდ დაშვებულ
+// მნიშვნელობებთან ასოცირებულ სტრიქონებს. შედეგი: ფორმის სტრიქონზე დაწკაპუნება ყველა მუხლს
+// ირჩევს — ფორმაში სელექცია ისედაც გამორთული უნდა იყოს. X ჯერ იტვირთება, რომ ცხრილი
+// ყოველთვის არსებობდეს (ცარიელი Membership-ის დროსაც).
+// ᲐᲞᲘᲡ ᲛᲮᲐᲠᲔᲡ ᲧᲝᲕᲔᲚᲘ ᲡᲐᲖᲝᲛᲘ ᲠᲝᲚᲘᲡ ᲛᲝᲓᲘᲤᲘᲙᲐᲢᲝᲠᲘᲗ ᲣᲜᲓᲐ ᲘᲧᲝᲡ ({<[როლი (P&L ფორმა)]={'S'}>} ან
+// N/D) — უროლო Sum() ყოველ სტრიქონზე მთელ ფაქტს აჩვენებს.
+// [დამატჩებულია (P&L ფორმა)]: 'კი' — Membership-ით მიბმული; 'არა' — დაუმატჩებელი მუხლის
+// fallback-ბმული (ქვემოთ). აპში "მათ შორის დაუმატჩებელი" საზომი და მუხლების ჭრილში ძებნა ამ
+// ველით კეთდება.
+PLFormAnchor:
+NoConcatenate Load
+    [%lnk_სტრიქონი (P&L ფორმა)]
+Resident PLFormLines;
+
+// Join საერთო ველის გარეშე = დეკარტული ნამრავლი (სტრიქონები × მუხლები)
+Join(PLFormAnchor)
+Load
+    [_ყველა მუხლი (P&L ფორმა)]
+Resident PLFormAllArticles;
+
+PLFormLink:
+NoConcatenate Load
+    [_ყველა მუხლი (P&L ფორმა)] as [%lnk_მუხლი (P&L)],
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    'X' as [როლი (P&L ფორმა)],
+    0 as [წონა (P&L ფორმა)],
+    'კი' as [დამატჩებულია (P&L ფორმა)]
+Resident PLFormAnchor;
+
+Drop Table PLFormAnchor;
+
+If not IsNull(TableNumber('PLFormMembership')) then
+
+// Membership: მუხლის სახელი ცნობარში არ არის (ცნობარის სახელები ზემოთ უკვე ჩატვირთულია);
+// '*' — fallback-ის მარკერი, მუხლი არ არის
+PLFormAudit:
+Load Distinct
+    'Membership: მუხლი ცნობარში არ არის' as [შემოწმება (P&L ფორმა)],
+    [_წევრი სახელი (P&L ფორმა)] as [შემოწმების მნიშვნელობა (P&L ფორმა)]
+Resident PLFormMembership
+Where not [_წევრი სახელი (P&L ფორმა)] = '*'
+    and not Exists([_მუხლი სახელი (P&L ფორმა)], [_წევრი სახელი (P&L ფორმა)]);
+
+// Membership: [ახალი მუხლი] Lines-ის არცერთი სახელი არ არის
+PLFormAudit:
+Load Distinct
+    'Membership: ახალი მუხლი Lines-ში არ არის' as [შემოწმება (P&L ფორმა)],
+    [_სამიზნე სახელი (P&L ფორმა)] as [შემოწმების მნიშვნელობა (P&L ფორმა)]
+Resident PLFormMembership
+Where IsNull([%lnk_სტრიქონი (P&L ფორმა)]);
+
+// fallback-ის სამიზნეები Membership-იდან: [მუხლი] = '*' სტრიქონები — ყველა დაუმატჩებელი
+// მუხლი ამ სტრიქონებში ხვდება (წონით), რომ თანხა არ დაიკარგოს
+PLFormFallbackTargets:
+Load
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    [_წონა (P&L ფორმა)] as [_fallback წონა (P&L ფორმა)]
+Resident PLFormMembership
+Where [_წევრი სახელი (P&L ფორმა)] = '*'
+    and not IsNull([%lnk_სტრიქონი (P&L ფორმა)]);
+
+// S: (მუხლი GUID, სტრიქონი) → წონა. Left Join გზის სახელზე: ჯგუფის სახელი ყველა შთამომავალს
+// ებმის. ერთი GUID ერთ სტრიქონში ერთხელ — ჯგუფიც რომ იყოს ჩამოთვლილი და მისი ფოთოლიც,
+// ორმაგად არ ჩაითვლება; წონა — მაქსიმუმი (ჩვეულებრივ ყველგან 1).
+Left Join(PLFormPaths)
+Load
+    [_წევრი სახელი (P&L ფორმა)],
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    [_წონა (P&L ფორმა)]
+Resident PLFormMembership
+Where not IsNull([%lnk_სტრიქონი (P&L ფორმა)])
+    and not [_წევრი სახელი (P&L ფორმა)] = '*';
+
+PLFormLinkBase:
+NoConcatenate Load
+    [_მუხლი ID (P&L ფორმა)] as [_ბმული მუხლი (P&L ფორმა)],
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    Max([_წონა (P&L ფორმა)]) as [წონა (P&L ფორმა)],
+    'კი' as [დამატჩებულია (P&L ფორმა)]
+Resident PLFormPaths
+Where not IsNull([%lnk_სტრიქონი (P&L ფორმა)])
+Group By [_მუხლი ID (P&L ფორმა)], [%lnk_სტრიქონი (P&L ფორმა)];
+
+Drop Table PLFormMembership;
+
+End If
+
+// fallback-ის სამიზნეები Lines-იდან: unmatched ტიპის სტრიქონი — ფორმაში ᲛᲮᲝᲚᲝᲓ დაუმატჩებელ
+// მუხლებს აჩვენებს (მარკერი, რომ დაუმატჩებელი თვალში ხვდებოდეს). ავტომატურად ერთიანდება
+// '*' სამიზნეებთან (ერთი და იგივე ველები).
+PLFormFallbackTargets:
+Load
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    1 as [_fallback წონა (P&L ფორმა)]
+Resident PLFormLines
+Where [ტიპი (P&L ფორმა)] = 'unmatched';
+
+// დაუმატჩებელი მუხლები: ცნობარის GUID-ები S-ბმულის გარეშე (ჯგუფებიც — ჯგუფის კვანძზე მდგარი
+// გატარებაც არ უნდა დაიკარგოს). Membership-ის გარეშე — ყველა.
+If not IsNull(TableNumber('PLFormLinkBase')) then
+PLFormUnmatched:
+NoConcatenate Load
+    [_ყველა მუხლი (P&L ფორმა)] as [_დაუმატჩებელი მუხლი (P&L ფორმა)]
+Resident PLFormAllArticles
+Where not Exists([_ბმული მუხლი (P&L ფორმა)], [_ყველა მუხლი (P&L ფორმა)]);
+Else
+PLFormUnmatched:
+NoConcatenate Load
+    [_ყველა მუხლი (P&L ფორმა)] as [_დაუმატჩებელი მუხლი (P&L ფორმა)]
+Resident PLFormAllArticles;
+End If
+
+Drop Table PLFormAllArticles;
+
+If not IsNull(TableNumber('PLFormUnmatched')) then
+
+// ცნობარი: არაწაშლილი ფოთოლი Membership-ში არ არის — თანხა fallback-სტრიქონებში ზის,
+// [დამატჩებულია (P&L ფორმა)] = 'არა'
+PLFormAudit:
+Load Distinct
+    'ცნობარი: ფოთოლი Membership-ში არ არის (fallback)' as [შემოწმება (P&L ფორმა)],
+    [_მუხლი სახელი (P&L ფორმა)] as [შემოწმების მნიშვნელობა (P&L ფორმა)]
+Resident PLFormCatalogPre
+Where [_წაშლილია (P&L ფორმა)] = 'არა'
+    and not Exists([%exists_მუხლი მშობელი (P&L ფორმა)], [_მუხლი ID (P&L ფორმა)])
+    and Exists([_დაუმატჩებელი მუხლი (P&L ფორმა)], [_მუხლი ID (P&L ფორმა)]);
+
+If not IsNull(TableNumber('PLFormFallbackTargets')) then
+
+// ერთი სამიზნე ერთხელ ('*'-შიც რომ იყოს და unmatched ტიპისაც) — თორემ S-ბმული გაორმაგდება
+PLFormFallbackTargetsDistinct:
+NoConcatenate Load
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    Max([_fallback წონა (P&L ფორმა)]) as [_fallback წონა (P&L ფორმა)]
+Resident PLFormFallbackTargets
+Group By [%lnk_სტრიქონი (P&L ფორმა)];
+
+Drop Table PLFormFallbackTargets;
+
+// დეკარტული ნამრავლი: დაუმატჩებელი მუხლები × სამიზნე სტრიქონები
+Join(PLFormUnmatched)
+Load
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    [_fallback წონა (P&L ფორმა)]
+Resident PLFormFallbackTargetsDistinct;
+
+Drop Table PLFormFallbackTargetsDistinct;
+
+// ავტომატურად ერთიანდება PLFormLinkBase-თან (ერთი და იგივე ველები); Membership-ის გარეშე
+// ცხრილი აქ იქმნება
+PLFormLinkBase:
+Load
+    [_დაუმატჩებელი მუხლი (P&L ფორმა)] as [_ბმული მუხლი (P&L ფორმა)],
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    [_fallback წონა (P&L ფორმა)] as [წონა (P&L ფორმა)],
+    'არა' as [დამატჩებულია (P&L ფორმა)]
+Resident PLFormUnmatched;
+
+Else
+
+// სამიზნე არ არის — დაუმატჩებელი მუხლების თანხა ფორმაში ᲐᲠ ჩანს; შემოწმებაში ხმამაღლა
+PLFormAudit:
+Load
+    'Membership: * სტრიქონები არ არის — დაუმატჩებელი მუხლები ფორმაში არ ჩანს' as [შემოწმება (P&L ფორმა)],
+    '*' as [შემოწმების მნიშვნელობა (P&L ფორმა)]
+AutoGenerate 1;
+
+End If
+
+Drop Table PLFormUnmatched;
+
+End If
+
+If not IsNull(TableNumber('PLFormFallbackTargets')) then
+Drop Table PLFormFallbackTargets;
+End If
+
+// ----- S და N/D ბმულები PLFormLinkBase-დან (Membership + fallback ერთად) -----
+If not IsNull(TableNumber('PLFormLinkBase')) then
+
+Concatenate(PLFormLink)
+Load
+    [_ბმული მუხლი (P&L ფორმა)] as [%lnk_მუხლი (P&L)],
+    [%lnk_სტრიქონი (P&L ფორმა)],
+    'S' as [როლი (P&L ფორმა)],
+    [წონა (P&L ფორმა)],
+    [დამატჩებულია (P&L ფორმა)]
+Resident PLFormLinkBase;
+
+// N/D: წყარო-სტრიქონის ბმულები × თანაფარდობის სტრიქონები (Inner Join წყარო-სტრიქონზე) —
+// fallback-ბმულებიც შედის, რომ მარჟა იმავე თანხაზე ითვლებოდეს, რაც სტრიქონში ჩანს.
+// ნულსტრიქონიანი შედეგი ცხრილს შლის → ბლოკი პირობითია.
+If not IsNull(TableNumber('PLFormRatioRefs')) then
+
+PLFormRatioLink:
+NoConcatenate Load
+    [%lnk_სტრიქონი (P&L ფორმა)] as [_წყარო სტრიქონი (P&L ფორმა)],
+    [_ბმული მუხლი (P&L ფორმა)],
+    [წონა (P&L ფორმა)],
+    [დამატჩებულია (P&L ფორმა)]
+Resident PLFormLinkBase;
+
+Inner Join(PLFormRatioLink)
+Load
+    [_წყარო სტრიქონი (P&L ფორმა)],
+    [_თანაფარდობის სტრიქონი (P&L ფორმა)],
+    [_როლი (P&L ფორმა)]
+Resident PLFormRatioRefs
+Where not IsNull([_წყარო სტრიქონი (P&L ფორმა)]);
+
+If not IsNull(TableNumber('PLFormRatioLink')) then
+Concatenate(PLFormLink)
+Load
+    [_ბმული მუხლი (P&L ფორმა)] as [%lnk_მუხლი (P&L)],
+    [_თანაფარდობის სტრიქონი (P&L ფორმა)] as [%lnk_სტრიქონი (P&L ფორმა)],
+    [_როლი (P&L ფორმა)] as [როლი (P&L ფორმა)],
+    [წონა (P&L ფორმა)],
+    [დამატჩებულია (P&L ფორმა)]
+Resident PLFormRatioLink;
+
+Drop Table PLFormRatioLink;
+End If
+
+End If
+
+Drop Table PLFormLinkBase;
+
+End If
+
+If not IsNull(TableNumber('PLFormRatioRefs')) then
+Drop Table PLFormRatioRefs;
+End If
+
+Drop Tables PLFormPaths, PLFormCatalogPre, PLFormParents;
+
+End If

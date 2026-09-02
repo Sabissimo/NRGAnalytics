@@ -168,6 +168,20 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   New fact field `[მიმართულება (P&L, საწყისი)]`: raw pre-rule direction, sales rows only
   (actuals injection + budget sales; both injection `Group By` lists now include it).
   Full design: `docs/pl-by-direction.md`, *Budget* section.
+- **P&L presentation form** (`SD 0106. Cat. PL Form 24.qvs`, daily/24): a sheet-driven
+  layout (Test Matching: `Lines` + `Membership` tabs) rendered through a **link table**
+  `PLFormLink` (GUID, line, role, weight) on `[%lnk_მუხლი (P&L)]` — the fact is untouched.
+  One article feeds many lines (own group total, EBITDA, EBIT…); `ratio` lines copy the
+  referenced lines' rows with roles `N`/`D`; Membership names are 1C catalog NODE names
+  matched against every segment of the node's path (a group means all descendants). Role
+  `X` anchors EVERY line to EVERY article so section-access reduction cannot delete lines
+  whose members have no fact rows — therefore **every form measure needs
+  `{<[როლი (P&L ფორმა)]={'S'}>}` (or N/D)**; a bare `Sum()` shows the whole fact on each
+  line. Articles Membership does not cover are NOT dropped: Membership rows with
+  `მუხლი = *` route them into the named totals and a Lines row of type `unmatched` shows
+  them as their own line; such rows carry `[დამატჩებულია (P&L ფორმა)]='არა'` so they stay
+  identifiable. Audit island `PLFormAudit` lists unmatched names/targets/leaves. Design and
+  the app-side measure: `docs/pl-form.md`.
 - Sales plan tables load from Google Sheets via `GetWorksheetV2` (two spreadsheets concatenated).
   Sheet direction names must exactly match `MapПеречислениеНаправленияПокупателей` output.
 - Direction plans are **concatenated into the sales fact** as rows with pseudo-org `'გეგმა'` —
