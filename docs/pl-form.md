@@ -5,9 +5,9 @@ are filled (46 lines, Membership as a long list with five `*` fallback rows); th
 names are verified against the 1C catalog by the audit table on every full reload.
 
 Script: `SD 0106. Cat. PL Form 24.qvs` (daily/24 only, included right after `SD 0105`).
-Source sheet: Google spreadsheet **Test Matching**
-(`1oqMuHJi-e8aATRFdN2bNXOD--44Efw35O_S2wWyjCII`), tabs `Lines` (gid `0`) and `Membership`
-(gid `725195481`).
+Source sheet: the **Qlik Matching** workbook (`1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc`,
+the same one the PL Directions and Location tabs live in), tabs `Lines` (gid `356079956`) and
+`Membership` (gid `1873343848`).
 
 ## Why
 
@@ -78,7 +78,7 @@ a form line selects all articles — turn selection off on the form object.
 
 ## Sheet
 
-### Lines (gid 0)
+### Lines (gid 356079956)
 
 | column | meaning |
 |---|---|
@@ -90,7 +90,7 @@ a form line selects all articles — turn selection off on the form object.
 | `შეწევა` | indent level, baked into the dual label as non-breaking spaces |
 | `მუქი`, `დახრილი`, `ფონის ფერი`, `დადებითი ტექსტის ფერი`, `უარყოფითი ტექსტის ფერი` | style hints for the app; the text colour is picked by the sign of the value |
 
-### Membership (gid 725195481)
+### Membership (gid 1873343848)
 
 Long list, one row per (article, line) pair:
 
@@ -220,9 +220,10 @@ Notes:
 
 ## Deployment
 
-1. The two tabs in **Test Matching** must be filled with the column headers above BEFORE
+1. The two tabs in **Qlik Matching** must be filled with the column headers above BEFORE
    the push — the nightly full reload fails on an empty tab or a missing header column.
-   Never copy a tab into another spreadsheet: the gids the script points at would change.
+   Moving a tab to another spreadsheet changes its gid: update both `worksheetKey`s in
+   `SD 0106` in the same push.
 2. Push (the sync uploads `SD 0106` and the edited `SD.qvs`), full reload, close and reopen.
 3. Read `PLFormAudit`; fix the sheet; full reload again (sheet edits need a FULL reload).
 

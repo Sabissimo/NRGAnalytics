@@ -169,7 +169,7 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   (actuals injection + budget sales; both injection `Group By` lists now include it).
   Full design: `docs/pl-by-direction.md`, *Budget* section.
 - **P&L presentation form** (`SD 0106. Cat. PL Form 24.qvs`, daily/24): a sheet-driven
-  layout (Test Matching: `Lines` + `Membership` tabs) rendered through a **link table**
+  layout (Qlik Matching workbook: `Lines` + `Membership` tabs) rendered through a **link table**
   `PLFormLink` (GUID, line, role, weight) on `[%lnk_მუხლი (P&L)]` — the fact is untouched.
   One article feeds many lines (own group total, EBITDA, EBIT…); `ratio` lines copy the
   referenced lines' rows with roles `N`/`D`; Membership names are 1C catalog NODE names

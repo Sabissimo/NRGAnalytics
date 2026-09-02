@@ -1,4 +1,4 @@
-// P&L ფორმა: საჩვენებელი სტრიქონები Google-ცხრილიდან (Test Matching — Lines და Membership
+// P&L ფორმა: საჩვენებელი სტრიქონები Google-ცხრილიდან (Qlik Matching — Lines და Membership
 // ფურცლები: სია მუხლი → სტრიქონი) და ბმულის ცხრილი მუხლი → სტრიქონი. ერთი მუხლი რამდენიმე სტრიქონში შედის
 // (საკუთარი ჯგუფის ჯამი, საოპერაციო მოგება, EBITDA, EBIT…) — ბმულის ცხრილში თითო
 // (მუხლი, სტრიქონი) წყვილზე თითო სტრიქონია. მარჟები (ratio) ორი სხვა სტრიქონის ბმულებს
@@ -36,7 +36,7 @@ Where IsNum(Trim([რიგი]))
 SELECT *
 FROM GetWorksheetV2
 WITH PROPERTIES (
-worksheetKey='1oqMuHJi-e8aATRFdN2bNXOD--44Efw35O_S2wWyjCII:_0', //Test Matching, Lines Sheet
+worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_356079956', //Qlik Matching, PL Form Lines Sheet
 gidOverride='',
 generatedNumberedColumns='false',
 skipRows=''
@@ -101,7 +101,7 @@ LOAD *;
 SELECT *
 FROM GetWorksheetV2
 WITH PROPERTIES (
-worksheetKey='1oqMuHJi-e8aATRFdN2bNXOD--44Efw35O_S2wWyjCII:_725195481', //Test Matching, Membership Sheet
+worksheetKey='1khHxo_6tF2-fj0BWu77QLWC9ODRZOnw4DMteglpaYZc:_1873343848', //Qlik Matching, PL Form Membership Sheet
 gidOverride='',
 generatedNumberedColumns='false',
 skipRows=''
