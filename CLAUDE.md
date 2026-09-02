@@ -173,7 +173,7 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   `PLFormLink` (GUID, line, role, weight) on `[%lnk_მუხლი (P&L)]` — the fact is untouched.
   One article feeds many lines (own group total, EBITDA, EBIT…); `ratio` lines copy the
   referenced lines' rows with roles `N`/`D`; Membership names are 1C catalog NODE names
-  matched against every segment of the node's path (a group means all descendants). Role
+  matched EXACTLY (a group name binds the group node only, never its children). Role
   `X` anchors EVERY line to EVERY article so section-access reduction cannot delete lines
   whose members have no fact rows — therefore **every form measure needs
   `{<[როლი (P&L ფორმა)]={'S'}>}` (or N/D)**; a bare `Sum()` shows the whole fact on each

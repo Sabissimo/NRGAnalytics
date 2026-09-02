@@ -105,15 +105,17 @@ EBIT, წმინდა მოგება) is simply listed five times. The di
 spelling (e.g. 1C's `თვითირებულება` maps to the line `თვითღირებულება`) — the 1C name is the
 key, the line label is presentation.
 
-**Group semantics.** The script explodes every catalog node's root-to-node path of names and
-matches Membership names against every segment. Naming a group therefore includes all its
-descendants; naming a leaf includes just that leaf (and any other GUID with the same name —
-the catalog is loaded UNfiltered, deletion-marked duplicates included, so historical postings
-keep their line). Listing both a group and one of its leaves does not double count: the link
+**Exact-name semantics.** A Membership name matches ONLY the catalog node(s) that carry that
+exact name — it never includes the node's children. So `რეალიზებული პროდუქციის თვითირებულება`
+binds the COGS node itself, and its child `როიალტის გადასახადი (შიდა)` is a separate article
+that needs its own pairs (it has them: EBIT and წმინდა მოგება only). A group name binds the
+group node, i.e. postings sitting directly on the group. Every GUID with that name is bound
+(the catalog is loaded UNfiltered, deletion-marked duplicates included, so historical postings
+keep their line). The same name listed twice for one line does not double count: the link
 table is `Distinct` on (GUID, line), weight = `Max`.
 
-A new 1C article created under a group already in the sheet lands in the form automatically.
-An article outside every listed group is silently absent — the audit table is the guard.
+A new 1C article is therefore NOT in the form until a pair is added; until then it sits in
+the `*` fallback lines and in the audit list.
 
 ### Audit table `PLFormAudit`
 
