@@ -88,7 +88,8 @@ a form line selects all articles — turn selection off on the form object.
 | `მრიცხველი`, `მნიშვნელი` | ratio only: labels of two other lines |
 | `ფორმატი` | `Num()` format string, e.g. `#,##0;(#,##0)` or `0.0%;(0.0%)` |
 | `შეწევა` | indent level, baked into the dual label as non-breaking spaces |
-| `მუქი`, `დახრილი`, `ფონის ფერი`, `დადებითი ტექსტის ფერი`, `უარყოფითი ტექსტის ფერი` | style hints for the app; the text colour is picked by the sign of the value |
+| `მუქი`, `დახრილი`, `ფონის ფერი`, `დადებითი ტექსტის ფერი`, `უარყოფითი ტექსტის ფერი` | style hints for the app; the measure text colour is picked by the sign of the value |
+| `სათაურის ფერი` | text colour of the dimension cell (the line label) |
 
 ### Membership (gid 1873343848)
 
@@ -218,7 +219,8 @@ Notes:
   "include zero values" off (see the spacer note above).
 - Style columns feed the pivot's colour expressions: background `=Only([ფონის ფერი (P&L ფორმა)])`,
   text `=if($(vPLFormFact) < 0, Only([უარყოფითი ტექსტის ფერი (P&L ფორმა)]), Only([დადებითი ტექსტის ფერი (P&L ფორმა)]))`
-  (plan: `$(vPLFormBudget)`; variance: `$(vPLFormVar)`).
+  (plan: `$(vPLFormBudget)`; variance: `$(vPLFormVar)`). The dimension itself: background
+  `=Only([ფონის ფერი (P&L ფორმა)])`, text `=Only([სათაურის ფერი (P&L ფორმა)])`.
 
 ## Deployment
 
