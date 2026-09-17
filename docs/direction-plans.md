@@ -15,6 +15,7 @@ actuals by direction AND date, reacting to master-calendar selections including 
 | Section-access survival | `SD 0101` | `'PLAN'` pseudo-row in `СправочникКонтрагентыИерархия`; `'PLAN'` per user/admin in SA sources |
 | Direction mapping | `SD 0002` | `MapНаправленияПокупателейДоговора` (contract → direction), `MapНаправлениеДокумента` (document → contract → direction) |
 | Org-level override | `SD 0002` | `MapПереопределениеНаправленияОрганизации` (org → forced direction) — see below |
+| Document-level override | `SD 0002` | `MapПереопределениеНаправленияДокумента` (project-sales invoice → `კორპორატიული`) — see below |
 
 ## Org-level override (2026-08-06)
 
@@ -46,6 +47,40 @@ their org is the dummy `'გეგმა'`, never an org GUID.
   `SET` list — Qlik's `SET` strips the quotes from a single `'literal'` but keeps them on a
   comma list, so a one-element list would expand unquoted inside `match()` and be read as a
   field name.
+
+## Document-level override: project sales (2026-09-17)
+
+**Project sales are corporate.** A sales invoice whose department is `vProjectSalesUnit`
+(`'ELV_საპროექტო გაყიდვები'`) is forced to `კორპორატიული`, whatever its contract says. Department
+per the 1C rule: the order's `СтруктурнаяЕдиницаПродажи` if that is the project unit, otherwise
+the invoice's `Подразделение` — so an invoice is "project" when EITHER is the project unit.
+
+`SD 0002` builds `MapПереопределениеНаправленияДокумента` (invoice GUID → `'კორპორატიული'`, only
+project invoices present) from the 30-min `_SD.txt` extraction: `РасходнаяНакладная` with
+`Подразделение`/`Заказ` (QVD columns `[განყოფილება]`/`[შეკვეთა]`) and `ЗаказПокупателя` with
+`СтруктурнаяЕдиницаПродажи` (`[განყოფილება]`). It must be the 30-min batch, not the daily one:
+`SD 0201` runs on every partial reload and the maps must exist there. Applied **inside** the org
+override, at both `SD 0201` sites (display field + key):
+
+```qlik
+ApplyMap('MapПереопределениеНаправленияОрганизации', [ორგანიზაცია],
+    ApplyMap('MapПереопределениеНаправленияДокумента', [დოკუმენტი],
+        ApplyMap('MapНаправлениеДокумента', [დოკუმენტი], Null())))
+```
+
+- **Sales only — debitors are NOT overridden** (user decision): payment documents carry no
+  order/department, so a document-level rule would put a project's debt on კორპორატიული and its
+  payments on the contract direction, skewing balances per direction. Consequence: for project
+  customers the `[მიმართულება]` filter means different things on sales and on debitors.
+- Only `РасходнаяНакладная` documents are recognised; other sales document types keep the
+  contract direction.
+- Bridge and P&L inherit it the same way as the org override; P&L additionally excludes project
+  COGS from its share basis (`docs/pl-by-direction.md`, *Project-sales department*).
+- Direction plans vs actuals: project sales now count toward the კორპორატიული actuals.
+- ⚠ Deployment order: the `_SD.txt` columns/query must be live in 1C and the QVDs (including the
+  `ДокументРасходнаяНакладная-Empty` schema file) regenerated BEFORE the scripts are pushed —
+  otherwise `SD 0002` fails on the missing fields/files and every reload breaks.
+- ⚠ `vProjectSalesUnit` is a name literal: renaming the unit in 1C silently disables the rule.
 
 ## The plan-row shape (concatenated into the sales fact)
 

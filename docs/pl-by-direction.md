@@ -127,9 +127,8 @@ sum to 1:
 4. **Sales injection (revenue + COGS)** — unchanged mechanics: register/journal rows on the
    directions' revenue/COGS accounts are excluded (per account|registrar pairs that actually
    occur in the sales fact) and replaced by rows built from the sales fact, direction per
-   document; internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`; project-sales
-   department rows go to `'კორპორატიული'` regardless of contract (see *Project-sales
-   department*). Their real
+   document; internal/non-core/direction-less sales fall back to `'ლოგისტიკა'` (project-sales
+   rows arrive already `'კორპორატიული'` from the sales fact — see *Project-sales department*). Their real
    department is displayed on **every** direction since 2026-08-07, one chain for all
    (normalised + location-mapped, year-gated; 2026-07-31…08-07 it was blank outside retail);
    the raw field keeps the real department always, and the injection grain is unchanged
@@ -155,7 +154,7 @@ short location names.
 `[თვითღირებულება (გაყიდვები)]`, same exclusions as `შიდა_და_არაძითადები_ფილტრი`.
 დისტრიბუცია, კორპორატიული and საცალო are ALL bucketed by the location-mapped department name
 — every (direction, location) cell with COGS gets a basket; rows whose location resolves
-empty are dropped. The project-sales department (`vPLProjectSalesUnit`) is excluded from the
+empty are dropped. The project-sales department (`vProjectSalesUnit`) is excluded from the
 basis entirely. ლოგისტიკა/ადმინისტრაცია have no basis (the sales-fact 'ლოგისტიკა'
 direction is an internal/non-core fallback, deliberately excluded) — their buckets receive
 dynamic money only via the even split. A (direction, location) cell can receive unmatched-key
@@ -207,24 +206,31 @@ consequences:
 
 ### Project-sales department (2026-09-17)
 
-Rows whose resolved department (see *Sales-sourced rows*) is `vPLProjectSalesUnit`
-(`'ELV_საპროექტო გაყიდვები'`, compared by raw 1C name) get two rules, **P&L only** — the sales
-fact, debitors and the global `[მიმართულება]` keep the contract's direction, so direction
-totals on sales sheets and on P&L differ by the project sales:
+The **direction** part is not a P&L rule: it is a document-level override on the sales fact
+(`MapПереопределениеНаправленияДокумента`, `SD 0002`, applied in `SD 0201` — design record in
+`docs/direction-plans.md`). P&L reads `[მიმართულება (გაყიდვები)]` already overridden, exactly
+like electric, so:
 
-1. **Direction = `'კორპორატიული'`** regardless of the contract. Precedence in `ПродажиДляПЛ`
-   (preceding load over the staging fields): internal / non-core → `'ლოგისტიკა'` first;
-   then project → `'კორპორატიული'` (even with an empty contract direction); then the contract
-   direction, empty/`'მიმართულების გარეშე'` → `'ლოგისტიკა'`. `[მიმართულება (P&L, საწყისი)]`
-   still shows the contract direction.
-2. **Out of the COGS basis.** Excluded in `ДолиСебестоимостиPre`, so it drops out of all three
-   consumers at once: dynamic (`დინამიურად`) shares, unmatched-key spread and the LOG/ADM
-   allocation-variant wave. The project rows themselves stay in the P&L; they just no longer
-   pull allocated overhead toward their location's კორპორატიული bucket.
+- the internal / non-core / direction-less → `'ლოგისტიკა'` fallback still runs **on top**;
+- `[მიმართულება (P&L, საწყისი)]` already shows `კორპორატიული` for project sales;
+- sales sheets, the global `[მიმართულება]` and P&L agree. Debitors keep the contract direction.
 
-Budget mirrors both (see *Budget*): project-department sales-article rows get
-`'კორპორატიული'` and are excluded from `ДолиСебестоимостиБюджет`; there the unit is compared
-against the **normalised** form of the literal, since budget units are normalised names.
+What stays P&L-specific is the **COGS basis**: rows whose resolved department (see
+*Sales-sourced rows*) is `vProjectSalesUnit` (`'ELV_საპროექტო გაყიდვები'`, raw 1C name, SET in
+`SD 0002`) are excluded in `ДолиСебестоимостиPre`, so they drop out of all three consumers at
+once: dynamic (`დინამიურად`) shares, unmatched-key spread and the LOG/ADM allocation-variant
+wave. The project rows themselves stay in the P&L; they just do not pull allocated overhead
+toward their location's კორპორატიული bucket.
+
+Two department resolutions exist, by the same rule on different extractions: `SD 0002` (sales
+direction, 30-min `_SD.txt` batch, needed on partial reloads) and `SD 0206` (P&L department,
+daily `_ElvareAnalytics.txt` via `SD 0004`). The P&L is rebuilt only on the full reload, after
+the daily extraction, so both normally see the same documents.
+
+Budget has no sales fact upstream, so it applies both rules itself (see *Budget*):
+project-department sales-article rows get `'კორპორატიული'` and are excluded from
+`ДолиСебестоимостиБюджет`; there the unit is compared against the **normalised** form of the
+literal, since budget units are normalised names.
 Expect direction totals and dynamic shares to move on the first full reload.
 
 ### `[Internal EEE (P&L)]` (2026-07-29)
@@ -348,7 +354,8 @@ Previously `Null()`. Now resolved in the `ПродажиДляПЛ` staging by t
   : empty
 ```
 
-Cut-off and literal live in `vPLDeptFrom` / `vPLProjectSalesUnit` at the top of `SD 0206`.
+Cut-off: `vPLDeptFrom` at the top of `SD 0206`; the unit literal `vProjectSalesUnit` is SET in
+`SD 0002` (shared with the sales-fact direction override).
 
 ### The 2026 cut-off applies to every source, but only to the displayed field
 
