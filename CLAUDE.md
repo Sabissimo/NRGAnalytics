@@ -76,10 +76,16 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   Data window: starts at `vPLStart` = `RangeMax(YearStart(YearStart(vNow)-1), MakeDate(2026,1,1))`
   — rolling two years but never before 2026, same formula as the calendar's
   `[Year SD (ბოლო 2 წელი, 2026+)]` so filter and window agree. Upper bound `vPLEnd`
-  (2026-08-03; threshold 6→10 on 2026-08-07): the previous month becomes visible only from the
-  **10th** of the current month — on days 1–9 the last month present is two months back; the
+  (2026-08-03; threshold 6→10 on 2026-08-07, →5 on 2026-09-03): the previous month becomes visible
+  only from the **5th** of the current month — on days 1–4 the last month present is two months back; the
   current month is always excluded.
-  Budget rows are exempt from the window (they cover future months). Allocation variants: group field + allocated overhead copies + 12-row link table
+  Budget rows are exempt from the window (they cover future months).
+  **Project-sales department** (`vPLProjectSalesUnit`, 2026-09-17, P&L only — the sales fact
+  and global `[მიმართულება]` keep the contract direction): sales rows of that department →
+  `კორპორატიული` regardless of contract (internal/non-core → ლოგისტიკა still wins), and its
+  COGS is excluded from the basis (dynamic, unmatched and LOG/ADM variant shares alike —
+  one exclusion in `ДолиСебестоимостиPre`); budget mirrors both.
+  Allocation variants: group field + allocated overhead copies + 12-row link table
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
   1C `რიგითობა` order as the numeric part of `dual()` values → charts sort on plain Auto.

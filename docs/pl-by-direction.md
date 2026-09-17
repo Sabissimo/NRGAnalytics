@@ -8,7 +8,7 @@ verified 2026-07-31** (`31ef5f3`; same day: displayed departments blanked outsid
 **Match-key departments normalised 2026-08-03** — the sheet was re-authored with mapped
 (normalised) department names, so the key, the `საწყისი` field and the display now all carry the
 normalised name; see *Name matching*. **Same day, all deployed and user-verified working**:
-`vPLEnd` hides the previous month until the 6th (until the **10th** since 2026-08-07); the
+`vPLEnd` hides the previous month until the 6th (until the 10th 2026-08-07…09-02, until the **5th** since 2026-09-03); the
 **budget** went live (see *Budget*);
 deletion-marked articles excluded from rank/hierarchy/budget leaf map (extraction re-run done).
 **Budget article map made leaf-priority 2026-08-04** — a plan row on a group-only article name
@@ -71,10 +71,11 @@ as long as the key recipe is preserved.
 `vPLStart = RangeMax(YearStart(YearStart(vNow)-1), MakeDate(2026,1,1))` — current + previous year,
 but never earlier than 2026. Both conditions stay: 2026-01-01 in 2026, 2027-01-01 in 2028, so the
 window never exceeds two years. Upper bound `vPLEnd`, exclusive — since 2026-08-03, threshold
-moved from the 6th to the 10th on 2026-08-07: `MonthStart(reload date)` from the **10th** of
-the month onward, `MonthStart` of the *previous* month on days 1–9. The current month is still
+moved from the 6th to the 10th on 2026-08-07 and to the 5th on 2026-09-03 (`Day < 5`):
+`MonthStart(reload date)` from the **5th** of the month onward, `MonthStart` of the *previous*
+month on days 1–4. The current month is still
 being closed in 1C, and the previous month's closing itself runs into the first days of the new
-month, so the previous month appears in the fact only from the 10th; before that the last month
+month, so the previous month appears in the fact only from the 5th; before that the last month
 is two months back.
 All four entry points cut at both bounds: register pass, both journal passes, and the
 sales-injection staging (which previously had no lower bound at all).
@@ -126,7 +127,9 @@ sum to 1:
 4. **Sales injection (revenue + COGS)** — unchanged mechanics: register/journal rows on the
    directions' revenue/COGS accounts are excluded (per account|registrar pairs that actually
    occur in the sales fact) and replaced by rows built from the sales fact, direction per
-   document; internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`. Their real
+   document; internal/non-core/direction-less sales fall back to `'ლოგისტიკა'`; project-sales
+   department rows go to `'კორპორატიული'` regardless of contract (see *Project-sales
+   department*). Their real
    department is displayed on **every** direction since 2026-08-07, one chain for all
    (normalised + location-mapped, year-gated; 2026-07-31…08-07 it was blank outside retail);
    the raw field keeps the real department always, and the injection grain is unchanged
@@ -152,7 +155,8 @@ short location names.
 `[თვითღირებულება (გაყიდვები)]`, same exclusions as `შიდა_და_არაძითადები_ფილტრი`.
 დისტრიბუცია, კორპორატიული and საცალო are ALL bucketed by the location-mapped department name
 — every (direction, location) cell with COGS gets a basket; rows whose location resolves
-empty are dropped. ლოგისტიკა/ადმინისტრაცია have no basis (the sales-fact 'ლოგისტიკა'
+empty are dropped. The project-sales department (`vPLProjectSalesUnit`) is excluded from the
+basis entirely. ლოგისტიკა/ადმინისტრაცია have no basis (the sales-fact 'ლოგისტიკა'
 direction is an internal/non-core fallback, deliberately excluded) — their buckets receive
 dynamic money only via the even split. A (direction, location) cell can receive unmatched-key
 spread even without a sheet column of its own.
@@ -200,6 +204,28 @@ consequences:
   dynamic shares and **all direction totals move**. Judge only after a full reload;
 - `[მიმართულება (P&L, საწყისი)]` carries the overridden value — it is raw relative to the P&L
   direction rule, not to 1C.
+
+### Project-sales department (2026-09-17)
+
+Rows whose resolved department (see *Sales-sourced rows*) is `vPLProjectSalesUnit`
+(`'ELV_საპროექტო გაყიდვები'`, compared by raw 1C name) get two rules, **P&L only** — the sales
+fact, debitors and the global `[მიმართულება]` keep the contract's direction, so direction
+totals on sales sheets and on P&L differ by the project sales:
+
+1. **Direction = `'კორპორატიული'`** regardless of the contract. Precedence in `ПродажиДляПЛ`
+   (preceding load over the staging fields): internal / non-core → `'ლოგისტიკა'` first;
+   then project → `'კორპორატიული'` (even with an empty contract direction); then the contract
+   direction, empty/`'მიმართულების გარეშე'` → `'ლოგისტიკა'`. `[მიმართულება (P&L, საწყისი)]`
+   still shows the contract direction.
+2. **Out of the COGS basis.** Excluded in `ДолиСебестоимостиPre`, so it drops out of all three
+   consumers at once: dynamic (`დინამიურად`) shares, unmatched-key spread and the LOG/ADM
+   allocation-variant wave. The project rows themselves stay in the P&L; they just no longer
+   pull allocated overhead toward their location's კორპორატიული bucket.
+
+Budget mirrors both (see *Budget*): project-department sales-article rows get
+`'კორპორატიული'` and are excluded from `ДолиСебестоимостиБюджет`; there the unit is compared
+against the **normalised** form of the literal, since budget units are normalised names.
+Expect direction totals and dynamic shares to move on the first full reload.
 
 ### `[Internal EEE (P&L)]` (2026-07-29)
 
@@ -622,7 +648,9 @@ references it by name and the full reload fails without it.
   რეალიზებული პროდუქციის თვითირებულება — the latter spelled without ღ, as in 1C), and only
   their rows **with a filled `მიმართულება`** (legal values `საცალო`/`დისტრიბუცია`/
   `კორპორატიული`): those are the plan's sales injection — they bypass matching and take the
-  column's direction verbatim. Display department inside `საცალო` only.
+  column's direction verbatim — except rows of the project-sales department, which become
+  `კორპორატიული` and stay out of the basis (see *Project-sales department*). Display
+  department inside `საცალო` only.
   **A sales-article row with an EMPTY direction is NOT sales data** (user rule 2026-08-03):
   it flows through the matching sheet like any register/journal row and stays OUT of the COGS
   basis — the actuals parity being that such a posting arrives from the register/journal and
@@ -726,8 +754,8 @@ pivot object).
 8. Variant 2 → ლოგისტიკა ≈ 0 (residue only in no-COGS months); variant 3 → ადმინისტრაცია 0;
    variant 4 → both. Marker splits საკუთარი vs ლოგისტიკიდან/ადმინისტრაციიდან and the
    allocated part equals variant 1's overhead total.
-9. Last month present in P&L = month before the reload date (from the 10th of the month);
-   on days 1–5 it is the month before that.
+9. Last month present in P&L = month before the reload date (from the 5th of the month);
+   on days 1–4 it is the month before that.
 10. Articles appear in 1C order with chart sorting on Auto.
 11. Partial reload → allocated rows still in the bridge; direction + calendar still slice.
 12. `[წილები დაბალანსებულია (P&L)]='არა'` lists exactly: number-only rows with sum ≠ 100% and
