@@ -42,6 +42,10 @@ were renamed to short names (ბათუმი, აგლაძე, ალე�
 marked bucket has COGS splits **evenly (1/N)** across the marked buckets instead of falling
 to `'მიმართულების გარეშე'`; dynamic money on ლოგ/ადმ buckets takes the AS_IS variant groups.
 See *Assembly* / *COGS basis*.
+**Project-sales department 2026-09-17, deployed and user-verified** (`c3180a8`) — its sales are
+`კორპორატიული` already on the sales fact (document-level override, `docs/direction-plans.md`),
+so P&L inherits the direction; P&L itself only excludes project COGS from the share basis.
+Budget applies both rules. See *Project-sales department*.
 Script: `SD 0206. Reg. PL Directions 24.qvs` (daily/24 only).
 Source 1C analyst query the register+journal logic reimplements: [pl.txt](pl.txt).
 Extraction queries: `_ElvareAnalytics.txt` (ДоходыИРасходы register, ВидыСчетовPL catalog
@@ -768,3 +772,6 @@ pivot object).
 12. `[წილები დაბალანსებულია (P&L)]='არა'` lists exactly: number-only rows with sum ≠ 100% and
     mixed rows with sum ≥ 100%.
 13. Fact row count: expected DOWN vs the 2026-07-30 scheme — note the new number.
+14. Project sales (`[სტრუქტურული ერთეული (P&L, საწყისი)]` = `ELV_საპროექტო გაყიდვები`, sales
+    source): `[მიმართულება (P&L)]` and `[მიმართულება (P&L, საწყისი)]` both `კორპორატიული`
+    (unless internal/non-core → ლოგისტიკა); no project COGS in the dynamic/variant shares.

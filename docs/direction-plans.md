@@ -50,6 +50,9 @@ their org is the dummy `'გეგმა'`, never an org GUID.
 
 ## Document-level override: project sales (2026-09-17)
 
+Status: deployed and user-verified working 2026-09-17 (`c3180a8`, after the `_SD.txt`
+extraction change went live in 1C).
+
 **Project sales are corporate.** A sales invoice whose department is `vProjectSalesUnit`
 (`'ELV_საპროექტო გაყიდვები'`) is forced to `კორპორატიული`, whatever its contract says. Department
 per the 1C rule: the order's `СтруктурнаяЕдиницаПродажи` if that is the project unit, otherwise
@@ -77,9 +80,10 @@ ApplyMap('MapПереопределениеНаправленияОрганиз�
 - Bridge and P&L inherit it the same way as the org override; P&L additionally excludes project
   COGS from its share basis (`docs/pl-by-direction.md`, *Project-sales department*).
 - Direction plans vs actuals: project sales now count toward the კორპორატიული actuals.
-- ⚠ Deployment order: the `_SD.txt` columns/query must be live in 1C and the QVDs (including the
-  `ДокументРасходнаяНакладная-Empty` schema file) regenerated BEFORE the scripts are pushed —
-  otherwise `SD 0002` fails on the missing fields/files and every reload breaks.
+- ⚠ Extraction dependency: `SD 0002` reads `РасходнаяНакладная.Подразделение`/`Заказ` and the
+  `ЗаказПокупателя` QVD on EVERY reload, partials included. Removing those from `_SD.txt` (or a
+  `ДокументРасходнаяНакладная-Empty` schema file without the columns) breaks every reload.
+  Any future column of this kind: extraction first, script push second.
 - ⚠ `vProjectSalesUnit` is a name literal: renaming the unit in 1C silently disables the rule.
 
 ## The plan-row shape (concatenated into the sales fact)
