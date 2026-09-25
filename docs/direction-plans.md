@@ -101,6 +101,14 @@ One row per direction × day of current year, spread across working days via
   slices plan and fact together
 - Measures: `[გაყიდვები მიმართულებებით (გეგმა)]`, `[ამონაგები მიმართულებებით (გეგმა)]`
 
+⚠ The fact load itself declares both plan measures as `Null() as …`. On a partial reload
+`Replace LOAD` only drops a table whose field set matches the statement; without these two
+fields the full-reload table (fact + plan rows) survived every partial, a fresh copy
+`РегистрНакопленияПродажи-N` was created next to it, the plan rows kept being appended to the
+stale one, and the two copies joined via `$Syn` → sales amounts doubled (stale + fresh rows)
+until the next full reload. Any new field added to the plan rows must get the same `Null()`
+line in the fact load.
+
 The existing bridge code picks these rows up automatically (it resident-scans the fact),
 creating `BridgeTableOrgDate` rows (group `'PLAN'`) → `BridgeTableContrDate` rows with
 `DateForConnect = day|0` → calendar. So calendar selections and the exec-app period variables

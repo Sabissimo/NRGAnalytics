@@ -252,6 +252,12 @@ granted in the **ADMIN block only**; to expose P&L to USERs, add the same one-li
   statements consistent or partial reloads will drop/duplicate data. **Plain (unprefixed)
   LOADs are silently SKIPPED on partials** — that's how the non-bridge `AllDatesSD` blocks in
   `SD 0401` went missing from partial calendars until they got `Add` prefixes (2026-08-05).
+- **A partial `Replace LOAD` only replaces a table with the SAME field set** — the label alone
+  is not enough. If a later `Add Concatenate` widens the table with extra fields, the next
+  partial leaves the old table in place and creates a twin `Name-N` → `$Syn` + doubled sums.
+  The load that builds the table must already carry every concatenated field (`Null() as …`).
+  The sales fact (`SD 0201`) does this for the two direction-plan measures; see
+  `docs/direction-plans.md`.
 - **Only pure-numeric dates may enter key fields** — `Floor()` any `Date#`/`MakeDate` result
   used in a composite key or `DateForConnect`. A `Date#` dual's original text becomes the
   field symbol whenever the number exists nowhere else in that field, and text
