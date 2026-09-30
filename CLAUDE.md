@@ -81,6 +81,20 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   department → location `პროექტები`. One definition for both — do not re-derive it in P&L.
   Sales only: debitors keep the contract direction (payments have no department → balances
   would skew). `[ლოკაცია (გაყიდვები)]` stays warehouse-based and is NOT touched by this rule.
+- **Two unrelated location sources** — do not confuse them:
+  - `[ლოკაცია (გაყიდვები)]` (`SD 0201`) and `[ლოკაცია (მარაგები)]` (`SD 0203`, daily/24):
+    WAREHOUSE name → location via `MapЛокация` (`SD 0002`, Google Sheet *Qlik Settings* →
+    `ლოკაციები`, keyed on the raw 1C warehouse name; default `'ლოკაციის გარეშე'`). Sales use the
+    invoice's warehouse, not its department. Known gap (2026-09-30, accepted):
+    `ELVARE - პროექტები (აგლაძე)` is not in the sheet → `'ლოკაციის გარეშე'`.
+    **Planned replacement:** 1C catalog `Локация` + attribute `СтруктурныеЕдиницы.Локация`
+    are already extracted (`f8f0d26`, all four `_*.txt` batches) but not yet used by any
+    script; the field logic will move to them instead of the sheet.
+  - P&L department location: DEPARTMENT name (normalised) → location via
+    `MapЛокацияПодразделенияПЛ` (`SD 0206`, *Qlik Matching* → Location tab). Lives inside
+    `[სტრუქტურული ერთეული (P&L)]`, not in a field of its own — see `docs/pl-by-direction.md`,
+    *Location rollup*. Project warehouse `ELVARE - პროექტები (ალექსეევკა)`
+    (→ `ალექსეევკა (პროექტები)` in the first map) and P&L location `პროექტები` (second map) are different values.
 - P&L fact (`SD 0206. Reg. PL Directions 24.qvs`, daily/24): standalone fact keyed
   `orgGUID|'PL'|date|0|direction`; adds directions ლოგისტიკა/ადმინისტრაცია. Its bridge block in
   `SD 0301` is deliberately UNguarded (must re-scan the persisted fact on every partial reload).
