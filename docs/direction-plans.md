@@ -62,7 +62,7 @@ warehouse, P&L department taken from the same map) — **pushed 2026-09-30, awai
 
 Project departments (`MapПроектноеПодразделение`, 1C names): `ELV_საპროექტო გაყიდვები`,
 `ELE_საპროექტო გაყიდვები`. Project warehouses (`MapПроектныйСклад`, warehouse name → the project
-department it counts as): `ELVARE - პროექტები (ალექსეევკა)` → `ELV_საპროექტო გაყიდვები`. Both are
+department it counts as): `ELVARE - პროექტები (ალექსეევკა)`, `ELVARE - პროექტები (აგლაძე)` → `ELV_საპროექტო გაყიდვები`. Both are
 inline maps at the top of the block in `SD 0002` — extend them there, nowhere else. (Until
 2026-09-30 only condition 1–2 with the ELV unit existed, as `SET vProjectSalesUnit`; ELE project
 sales were corporate only through the org override. Mapping tables replace the SET because a

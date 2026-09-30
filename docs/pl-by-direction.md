@@ -787,5 +787,5 @@ pivot object).
     `ELE_საპროექტო გაყიდვები`, sales source): `[მიმართულება (P&L)]` and
     `[მიმართულება (P&L, საწყისი)]` both `კორპორატიული` (unless internal/non-core → ლოგისტიკა);
     `[სტრუქტურული ერთეული (P&L)]` = `პროექტები`; no project COGS in the dynamic/variant shares.
-    A sale shipped from `ELVARE - პროექტები (ალექსეევკა)` with a non-project department also
+    A sale shipped from `ELVARE - პროექტები (ალექსეევკა)` or `ELVARE - პროექტები (აგლაძე)` with a non-project department also
     lands here (as `ELV_საპროექტო გაყიდვები`).

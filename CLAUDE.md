@@ -73,7 +73,7 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
 - **Document-level override: project sales** (2026-09-17; widened 2026-09-30): an invoice is
   "project" when ANY of: order's `СтруктурнаяЕдиницаПродажи` or invoice `Подразделение` is in
   `MapПроектноеПодразделение` (`ELV_საპროექტო გაყიდვები`, `ELE_საპროექტო გაყიდვები`), or the
-  invoice warehouse is in `MapПроектныйСклад` (`ELVARE - პროექტები (ალექსეევკა)` → counts as
+  invoice warehouse is in `MapПроектныйСклад` (`ELVARE - პროექტები (ალექსეევკა)`, `ELVARE - პროექტები (აგლაძე)` → count as
   `ELV_საპროექტო გაყიდვები`). Both lists are inline maps in `SD 0002` (30-min `_SD.txt` batch —
   partials need them). Project invoice → `კორპორატიული` via `MapПереопределениеНаправленияДокумента`,
   nested INSIDE the org override at both `SD 0201` sites; the SAME computation also yields
