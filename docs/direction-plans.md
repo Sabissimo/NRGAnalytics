@@ -15,7 +15,7 @@ actuals by direction AND date, reacting to master-calendar selections including 
 | Section-access survival | `SD 0101` | `'PLAN'` pseudo-row in `СправочникКонтрагентыИерархия`; `'PLAN'` per user/admin in SA sources |
 | Direction mapping | `SD 0002` | `MapНаправленияПокупателейДоговора` (contract → direction), `MapНаправлениеДокумента` (document → contract → direction) |
 | Org-level override | `SD 0002` | `MapПереопределениеНаправленияОрганизации` (org → forced direction) — see below |
-| Document-level override | `SD 0002` | `MapПереопределениеНаправленияДокумента` (project-sales invoice → `კორპორატიული`) — see below |
+| Document-level override | `SD 0002` | `MapПереопределениеНаправленияДокумента` (project invoice — by department or warehouse → `კორპორატიული`) — see below |
 
 ## Org-level override (2026-08-06)
 
@@ -51,19 +51,36 @@ their org is the dummy `'გეგმა'`, never an org GUID.
 ## Document-level override: project sales (2026-09-17)
 
 Status: deployed and user-verified working 2026-09-17 (`c3180a8`, after the `_SD.txt`
-extraction change went live in 1C).
+extraction change went live in 1C). Widened 2026-09-30 (ELE project department + project
+warehouse, P&L department taken from the same map) — **pushed 2026-09-30, awaiting full reload + user verification**.
 
-**Project sales are corporate.** A sales invoice whose department is `vProjectSalesUnit`
-(`'ELV_საპროექტო გაყიდვები'`) is forced to `კორპორატიული`, whatever its contract says. Department
-per the 1C rule: the order's `СтруктурнаяЕдиницаПродажи` if that is the project unit, otherwise
-the invoice's `Подразделение` — so an invoice is "project" when EITHER is the project unit.
+**Project sales are corporate.** A sales invoice is "project" when ANY of these holds:
+
+1. the order's `СтруктурнаяЕдиницаПродажи` is a project department;
+2. the invoice's `Подразделение` is a project department;
+3. the invoice's warehouse (`СтруктурнаяЕдиница`) is a project warehouse.
+
+Project departments (`MapПроектноеПодразделение`, 1C names): `ELV_საპროექტო გაყიდვები`,
+`ELE_საპროექტო გაყიდვები`. Project warehouses (`MapПроектныйСклад`, warehouse name → the project
+department it counts as): `ELVARE - პროექტები (ალექსეევკა)` → `ELV_საპროექტო გაყიდვები`. Both are
+inline maps at the top of the block in `SD 0002` — extend them there, nowhere else. (Until
+2026-09-30 only condition 1–2 with the ELV unit existed, as `SET vProjectSalesUnit`; ELE project
+sales were corporate only through the org override. Mapping tables replace the SET because a
+one-element SET list loses its quotes.)
+
+A project invoice is forced to `კორპორატიული`, whatever its contract says, and gets a **project
+department** — conditions checked in order 1→2→3, the first hit supplies the department GUID
+(condition 3 resolves the department name to a GUID through `MapПроектноеПодразделениеИд`). The
+department feeds the P&L (`MapПроектнаяПродажаПодразделение`, used by `SD 0206` for
+`[_ერთეული (P&L გაყიდვები)]`), whose Location tab maps both project departments to the location
+`პროექტები`. So direction and P&L location come from ONE computation.
 
 `SD 0002` builds `MapПереопределениеНаправленияДокумента` (invoice GUID → `'კორპორატიული'`, only
 project invoices present) from the 30-min `_SD.txt` extraction: `РасходнаяНакладная` with
-`Подразделение`/`Заказ` (QVD columns `[განყოფილება]`/`[შეკვეთა]`) and `ЗаказПокупателя` with
-`СтруктурнаяЕдиницаПродажи` (`[განყოფილება]`). It must be the 30-min batch, not the daily one:
-`SD 0201` runs on every partial reload and the maps must exist there. Applied **inside** the org
-override, at both `SD 0201` sites (display field + key):
+`Подразделение`/`Заказ`/`СтруктурнаяЕдиница` (QVD columns `[განყოფილება]`/`[შეკვეთა]`/
+`[საწყობი]`) and `ЗаказПокупателя` with `СтруктурнаяЕдиницаПродажи` (`[განყოფილება]`). It must
+be the 30-min batch, not the daily one: `SD 0201` runs on every partial reload and the maps must
+exist there. Applied **inside** the org override, at both `SD 0201` sites (display field + key):
 
 ```qlik
 ApplyMap('MapПереопределениеНаправленияОрганизации', [ორგანიზაცია],
@@ -84,7 +101,11 @@ ApplyMap('MapПереопределениеНаправленияОрганиз�
   `ЗаказПокупателя` QVD on EVERY reload, partials included. Removing those from `_SD.txt` (or a
   `ДокументРасходнаяНакладная-Empty` schema file without the columns) breaks every reload.
   Any future column of this kind: extraction first, script push second.
-- ⚠ `vProjectSalesUnit` is a name literal: renaming the unit in 1C silently disables the rule.
+- `[ლოკაცია (გაყიდვები)]` (warehouse → location, Qlik Settings sheet) is NOT affected: a project
+  sale shipped from Batumi still shows `ბათუმი` there (user decision 2026-09-30).
+- ⚠ Department and warehouse names are literals: renaming either in 1C silently disables that
+  condition. A warehouse whose target department is not in the department list resolves no
+  GUID and is silently not project.
 
 ## The plan-row shape (concatenated into the sales fact)
 

@@ -70,11 +70,17 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   into the `კორპორატიული` share basket → direction totals shift. A mapping table, not a `SET`
   list: `SET` strips quotes from a single `'literal'` but not from a comma list, so a one-element
   list expands unquoted inside `match()` and reads as a field name. See `docs/direction-plans.md`.
-- **Document-level override: project sales** (2026-09-17): invoices whose department (order's
-  `СтруктурнаяЕдиницаПродажи`, else invoice `Подразделение`) is `vProjectSalesUnit` →
-  `კორპორატიული` via `MapПереопределениеНаправленияДокумента` (`SD 0002`, from the 30-min `_SD.txt`
-  batch — partials need it), nested INSIDE the org override at both `SD 0201` sites. Sales only:
-  debitors keep the contract direction (payments have no department → balances would skew).
+- **Document-level override: project sales** (2026-09-17; widened 2026-09-30): an invoice is
+  "project" when ANY of: order's `СтруктурнаяЕдиницаПродажи` or invoice `Подразделение` is in
+  `MapПроектноеПодразделение` (`ELV_საპროექტო გაყიდვები`, `ELE_საპროექტო გაყიდვები`), or the
+  invoice warehouse is in `MapПроектныйСклад` (`ELVARE - პროექტები (ალექსეევკა)` → counts as
+  `ELV_საპროექტო გაყიდვები`). Both lists are inline maps in `SD 0002` (30-min `_SD.txt` batch —
+  partials need them). Project invoice → `კორპორატიული` via `MapПереопределениеНаправленияДокумента`,
+  nested INSIDE the org override at both `SD 0201` sites; the SAME computation also yields
+  `MapПроектнаяПродажаПодразделение` (invoice → project unit GUID), which is the P&L sales
+  department → location `პროექტები`. One definition for both — do not re-derive it in P&L.
+  Sales only: debitors keep the contract direction (payments have no department → balances
+  would skew). `[ლოკაცია (გაყიდვები)]` stays warehouse-based and is NOT touched by this rule.
 - P&L fact (`SD 0206. Reg. PL Directions 24.qvs`, daily/24): standalone fact keyed
   `orgGUID|'PL'|date|0|direction`; adds directions ლოგისტიკა/ადმინისტრაცია. Its bridge block in
   `SD 0301` is deliberately UNguarded (must re-scan the persisted fact on every partial reload).
@@ -85,10 +91,13 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   only from the **5th** of the current month — on days 1–4 the last month present is two months back; the
   current month is always excluded.
   Budget rows are exempt from the window (they cover future months).
-  **Project-sales department** in P&L: direction arrives overridden from the sales fact (see
-  above; internal/non-core → ლოგისტიკა still wins); P&L additionally excludes its COGS from the
+  **Project-sales departments** in P&L: direction arrives overridden from the sales fact (see
+  above; internal/non-core → ლოგისტიკა still wins); P&L additionally excludes their COGS from the
   basis (dynamic, unmatched and LOG/ADM variant shares alike — one exclusion in
-  `ДолиСебестоимостиPre`). Budget has no upstream, so it applies both rules itself.
+  `ДолиСебестоимостиPre`), so the `კორპორატიული - პროექტები` bucket has NO basis (fixed % or
+  the even split only — accepted by the user). Budget has no upstream and no warehouse, so it
+  applies both rules itself by department, through the normalised list `MapПроектноеПодразделениеПЛ`
+  (`SD 0004`).
   Allocation variants: group field + allocated overhead copies + 12-row link table
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
