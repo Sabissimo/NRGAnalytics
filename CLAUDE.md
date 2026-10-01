@@ -62,7 +62,9 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   wins the dual); set-analysis/selections still match the text.
 - **Org-level direction override** (2026-08-06): electric sells corporate only, so every electric
   row is forced to `კორპორატიული` regardless of contract — `MapПереопределениеНаправленияОрганизации`
-  (inline, `SD 0002`) wrapped around the old expression as the ApplyMap default, at six sites:
+  (`SD 0002`; since 2026-10-01 built from the 1C flag `Организации.Проекты` instead of electric's
+  hard-coded GUID `80C6382C…`: every org flagged in 1C is forced corporate; org QVD key column is
+  `[Ссылка]`, untranslated) wrapped around the old expression as the ApplyMap default, at six sites:
   `SD 0201` sales (display field + key) and `SD 0202` debitors (display field + key, both blocks).
   Display field and key segment must move TOGETHER or the bridge stops matching. Plan rows are
   exempt (org = `'გეგმა'`); `SD 0301` and `SD 0206` inherit it from the fact fields. Knock-on in
@@ -72,26 +74,45 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   list expands unquoted inside `match()` and reads as a field name. See `docs/direction-plans.md`.
 - **Document-level override: project sales** (2026-09-17; widened 2026-09-30): an invoice is
   "project" when ANY of: order's `СтруктурнаяЕдиницаПродажи` or invoice `Подразделение` is in
-  `MapПроектноеПодразделение` (`ELV_საპროექტო გაყიდვები`, `ELE_საპროექტო გაყიდვები`), or the
-  invoice warehouse is in `MapПроектныйСклад` (`ELVARE - პროექტები (ალექსეევკა)`, `ELVARE - პროექტები (აგლაძე)` → count as
-  `ELV_საპროექტო გაყიდვები`). Both lists are inline maps in `SD 0002` (30-min `_SD.txt` batch —
-  partials need them). Project invoice → `კორპორატიული` via `MapПереопределениеНаправленияДокумента`,
+  `MapПроектноеПодразделение` — GUID-keyed, built from the 1C catalog: structural units of type
+  `'განყოფილება'` with flag `СтруктурныеЕдиницы.Проекты` (QVD column `[პროექტები]`), deletion-
+  marked included (2026-10-01; was an inline name list) — or the
+  invoice warehouse is in `MapПроектныйСклад` — GUID-keyed: structural units flagged
+  `Проекты` whose type is NOT the department type (2026-10-01; was an inline name list of
+  `ELVARE - პროექტები (ალექსეევკა)`, `ELVARE - პროექტები (აგლაძე)`); every project warehouse counts as a sale of
+  the ELV project unit `ELV_საპროექტო გაყიდვები`, hard-coded by GUID `88D9D4F5EF3EE94E11F0F5EB451274C6`. Both maps live in
+  `SD 0002` (30-min `_SD.txt` batch — partials need them). Project invoice → `კორპორატიული` via `MapПереопределениеНаправленияДокумента`,
   nested INSIDE the org override at both `SD 0201` sites; the SAME computation also yields
   `MapПроектнаяПродажаПодразделение` (invoice → project unit GUID), which is the P&L sales
   department → location `პროექტები`. One definition for both — do not re-derive it in P&L.
   Sales only: debitors keep the contract direction (payments have no department → balances
-  would skew). `[ლოკაცია (გაყიდვები)]` stays warehouse-based and is NOT touched by this rule.
+  would skew). From 2026 `[ლოკაცია (გაყიდვები)]` follows the sales department, so project sales show the
+  project department's location there too (see the location bullet below).
 - **Two unrelated location sources** — do not confuse them:
-  - `[ლოკაცია (გაყიდვები)]` (`SD 0201`) and `[ლოკაცია (მარაგები)]` (`SD 0203`, daily/24):
-    WAREHOUSE name → location via `MapЛокация` (`SD 0002`, Google Sheet *Qlik Settings* →
-    `ლოკაციები`, keyed on the raw 1C warehouse name; default `'ლოკაციის გარეშე'`). Sales use the
-    invoice's warehouse, not its department. Known gap (2026-09-30, accepted):
-    `ELVARE - პროექტები (აგლაძე)` is not in the sheet → `'ლოკაციის გარეშე'`.
-    **Planned replacement:** 1C catalog `Локация` + attribute `СтруктурныеЕдиницы.Локация`
-    are already extracted (`f8f0d26`, all four `_*.txt` batches) but not yet used by any
-    script; the field logic will move to them instead of the sheet.
+  - `[ლოკაცია (მარაგები)]` (`SD 0203`, daily/24): the stock unit's 1C attribute
+    `СтруктурныеЕдиницы.Локация` → `Локация` catalog name via `MapСтруктурнаяЕдиницаЛокация`
+    (`SD 0002`, GUID-keyed; 2026-10-01 — before: the sheet below);
+    default `'ლოკაციის გარეშე'`. Only the balances block carries it; the movements block
+    (`Concatenate`) never had a location field. Stays warehouse-based by design.
+  - `[ლოკაცია (გაყიდვები)]` (`SD 0201`, 2026-10-01): 1C `Локация` of a structural unit
+    via `MapСтруктурнаяЕдиницаЛокация`, the unit chosen by sale date:
+    before `vSalesLocationDeptFrom` (2026-01-01, `SD 0002`) — the invoice WAREHOUSE; from it — the
+    SALES DEPARTMENT (`MapДокументПодразделениеПродажи`: the project department of a project
+    invoice, else the invoice `Подразделение`). No name normalisation here (its register is only in
+    the daily batch, `SD 0201` runs on partials), so departments need `Локация` set on themselves,
+    not only on normalisation targets. Only `РасходнаяНакладная` documents resolve. Unresolved (no
+    `Локация`, or not an invoice) → `'ალექსეევკა (ადმინისტრაცია)'` (user, 2026-10-01; was `'ლოკაციის გარეშე'`).
+  - Sales app `[ლოკაცია (საწყობი)]` (`Sales 0105`): the warehouse's own 1C `Локация` via
+    `MapЛокацияНаименование` (`Sales 0002`; `_Sales.txt` extracts both the attribute and the catalog).
+  - Neither Google location tab (*Qlik Settings → ლოკაციები*, *Qlik Matching → PL Location
+    Matching*) is read by any script any more (pushed 2026-10-01; the tabs can be deleted once a full reload
+    and the Sales app reload have run clean).
+  - ⚠ The `СправочникЛокация` QVD has UNtranslated columns `[Ссылка]` / `[Наименование]` (like
+    `СправочникОрганизации`'s `[Ссылка]`), unlike most catalogs' `[მინიშნება]` / `[დასახელება]`.
   - P&L department location: DEPARTMENT name (normalised) → location via
-    `MapЛокацияПодразделенияПЛ` (`SD 0206`, *Qlik Matching* → Location tab). Lives inside
+    `MapЛокацияПодразделенияПЛ` (`SD 0206`; since 2026-10-01 from 1C: department attribute
+    `СтруктурныеЕдиницы.Локация` → catalog `Локация` name — the *Qlik Matching* Location tab is no
+    longer read). Lives inside
     `[სტრუქტურული ერთეული (P&L)]`, not in a field of its own — see `docs/pl-by-direction.md`,
     *Location rollup*. Project warehouse `ELVARE - პროექტები (ალექსეევკა)`
     (→ `ალექსეევკა (პროექტები)` in the first map) and P&L location `პროექტები` (second map) are different values.
@@ -110,8 +131,8 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   basis (dynamic, unmatched and LOG/ADM variant shares alike — one exclusion in
   `ДолиСебестоимостиPre`), so the `კორპორატიული - პროექტები` bucket has NO basis (fixed % or
   the even split only — accepted by the user). Budget has no upstream and no warehouse, so it
-  applies both rules itself by department, through the normalised list `MapПроектноеПодразделениеПЛ`
-  (`SD 0004`).
+  applies both rules itself by department, through `MapПроектноеПодразделениеПЛ` (`SD 0004`:
+  the 1C-flagged project units re-keyed by their normalised name).
   Allocation variants: group field + allocated overhead copies + 12-row link table
   on `[გადანაწილების ვარიანტი]`; app variable `vPLVariant` holds the LABEL and every P&L
   measure needs the quoted modifier `{'$(vPLVariant)'}` or it double-counts. Articles carry
@@ -155,8 +176,9 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   2026 cut-off (`vPLDeptFrom`) applies ONLY to the displayed field, for every source — the
   match key carries the (normalised) department regardless of year, because gating it would move
   money between directions. Sales rows never touch the match key at all, so their department is
-  display-only. Since 2026-08-07 a SECOND layer, `MapЛокацияПодразделенияПЛ` (Qlik Matching /
-  Location tab, unit → branch location, pass-through for unknown names), sits on top of
+  display-only. Since 2026-08-07 a SECOND layer, `MapЛокацияПодразделенияПЛ` (department name →
+  its 1C `Локация` name, pass-through for units without one; the Qlik Matching Location tab until
+  2026-10-01), sits on top of
   normalisation — but ONLY on the displayed unit and the retail COGS baskets (fact + budget);
   the match key and the `საწყისი` field stay on the PRE-location normalised name, so the
   matching sheet keys did not change.

@@ -43,16 +43,20 @@ their org is the dummy `'გეგმა'`, never an org GUID.
   monthly share basis → **direction totals move** after the first full reload.
 - `[მიმართულება (P&L, საწყისი)]`, the "raw" pre-rule direction, shows the OVERRIDDEN value —
   the override sits upstream of the P&L rule. It is raw relative to the P&L rule, not to 1C.
-- To add another org: one more line in the inline table. Deliberately a mapping table and not a
-  `SET` list — Qlik's `SET` strips the quotes from a single `'literal'` but keeps them on a
-  comma list, so a one-element list would expand unquoted inside `match()` and be read as a
-  field name.
+- **Which orgs** (2026-10-01): every organisation with the 1C flag
+  `Организации.Проекты` = true (QVD `СправочникОрганизации`, key column `[Ссылка]`, flag column
+  `[პროექტები]`, read through `MapБулево`). Adding an org = setting the flag in 1C, no script
+  edit. Until then it was an inline table holding electric's GUID `80C6382C4ABBB43711E7363EBFB98EBD`.
+  ⚠ Extraction dependency: `SD 0002` reads the flag on every reload, partials included.
+- Deliberately a mapping table and not a `SET` list — Qlik's `SET` strips the quotes from a
+  single `'literal'` but keeps them on a comma list, so a one-element list would expand unquoted
+  inside `match()` and be read as a field name.
 
 ## Document-level override: project sales (2026-09-17)
 
 Status: deployed and user-verified working 2026-09-17 (`c3180a8`, after the `_SD.txt`
 extraction change went live in 1C). Widened 2026-09-30 (ELE project department + project
-warehouse, P&L department taken from the same map) — **pushed 2026-09-30, awaiting full reload + user verification**.
+warehouse, P&L department taken from the same map) — **pushed 2026-09-30, awaiting full reload + user verification**. Project departments from the 1C flag `Проекты` instead of a name list: 2026-10-01, **pushed, awaiting full reload + user verification**.
 
 **Project sales are corporate.** A sales invoice is "project" when ANY of these holds:
 
@@ -60,19 +64,27 @@ warehouse, P&L department taken from the same map) — **pushed 2026-09-30, awai
 2. the invoice's `Подразделение` is a project department;
 3. the invoice's warehouse (`СтруктурнаяЕдиница`) is a project warehouse.
 
-Project departments (`MapПроектноеПодразделение`, 1C names): `ELV_საპროექტო გაყიდვები`,
-`ELE_საპროექტო გაყიდვები`. Project warehouses (`MapПроектныйСклад`, warehouse name → the project
-department it counts as): `ELVARE - პროექტები (ალექსეევკა)`, `ELVARE - პროექტები (აგლაძე)` → `ELV_საპროექტო გაყიდვები`. Both are
-inline maps at the top of the block in `SD 0002` — extend them there, nowhere else. (Until
+Project departments (`MapПроектноеПодразделение`, GUID → `'კი'`): since 2026-10-01 taken from
+the 1C catalog `СтруктурныеЕдиницы` — elements of type `განყოფილება`
+(`ПеречислениеТипыСтруктурныхЕдиниц`, map in `SD 0001`) with the flag `Проекты` (QVD column
+`[პროექტები]`, read through `MapБулево`); deletion-marked elements are included so old documents
+on a since-deleted unit stay project. Marking a department in 1C is all it takes — no script
+edit; renaming it no longer breaks the rule. (Before: an inline name list of
+`ELV_საპროექტო გაყიდვები`, `ELE_საპროექტო გაყიდვები`.) Project warehouses
+(`MapПроектныйСклад`, GUID → department name): since 2026-10-01 structural units flagged
+`Проекты` whose type is NOT the department type (deletion-marked included); every one of them
+counts as a sale of the ELV project unit `ELV_საპროექტო გაყიდვები`, given directly by its GUID
+`88D9D4F5EF3EE94E11F0F5EB451274C6` (hard-coded in the map; no name lookup). (Before: an inline name list of `ELVARE - პროექტები (ალექსეევკა)` and
+`ELVARE - პროექტები (აგლაძე)`.) (Until
 2026-09-30 only condition 1–2 with the ELV unit existed, as `SET vProjectSalesUnit`; ELE project
 sales were corporate only through the org override. Mapping tables replace the SET because a
 one-element SET list loses its quotes.)
 
 A project invoice is forced to `კორპორატიული`, whatever its contract says, and gets a **project
 department** — conditions checked in order 1→2→3, the first hit supplies the department GUID
-(condition 3 resolves the department name to a GUID through `MapПроектноеПодразделениеИд`). The
+(condition 3 takes the GUID straight from `MapПроектныйСклад`). The
 department feeds the P&L (`MapПроектнаяПродажаПодразделение`, used by `SD 0206` for
-`[_ერთეული (P&L გაყიდვები)]`), whose Location tab maps both project departments to the location
+`[_ერთეული (P&L გაყიდვები)]`), where both project departments carry the 1C location
 `პროექტები`. So direction and P&L location come from ONE computation.
 
 `SD 0002` builds `MapПереопределениеНаправленияДокумента` (invoice GUID → `'კორპორატიული'`, only
@@ -101,11 +113,14 @@ ApplyMap('MapПереопределениеНаправленияОрганиз�
   `ЗаказПокупателя` QVD on EVERY reload, partials included. Removing those from `_SD.txt` (or a
   `ДокументРасходнаяНакладная-Empty` schema file without the columns) breaks every reload.
   Any future column of this kind: extraction first, script push second.
-- `[ლოკაცია (გაყიდვები)]` (warehouse → location, Qlik Settings sheet) is NOT affected: a project
-  sale shipped from Batumi still shows `ბათუმი` there (user decision 2026-09-30).
-- ⚠ Department and warehouse names are literals: renaming either in 1C silently disables that
-  condition. A warehouse whose target department is not in the department list resolves no
-  GUID and is silently not project.
+- `[ლოკაცია (გაყიდვები)]`: from 2026 it is the SALES DEPARTMENT's 1C location, so a project sale shows
+  the project department's location; before 2026 the warehouse's (2026-10-01 — see
+  CLAUDE.md, location sources).
+- ⚠ The one remaining literal is the target department GUID `88D9D4F5EF3EE94E11F0F5EB451274C6` in
+  `MapПроектныйСклад`. Renaming the unit is harmless; deleting/replacing it in 1C would
+  leave warehouse-detected sales on a stale GUID (no name, no location → `პროექტები` lost).
+- ⚠ Extraction dependency: `SD 0002` reads `[ტიპი]` and `[პროექტები]` from the
+  `СправочникСтруктурныеЕдиницы` QVD on every reload — dropping them from `_SD.txt` breaks reloads.
 
 ## The plan-row shape (concatenated into the sales fact)
 

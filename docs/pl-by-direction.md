@@ -17,8 +17,8 @@ now resolves to that group node instead of landing unmatched (see *Budget*).
 `Date#` text-dual dates poisoned the composite key/`DateForConnect` for future months, which
 vanished on every partial reload; same commit `Add`-prefixed `SD 0401`'s non-bridge
 `AllDatesSD` blocks (plain LOADs are skipped on partials).
-**Department → location rollup 2026-08-07** — new `MapЛокацияПодразделенияПЛ` (Qlik Matching,
-Location tab) applied ON TOP of name normalisation, but ONLY on the displayed unit and the
+**Department → location rollup 2026-08-07** — new `MapЛокацияПодразделенияПЛ` (Qlik Matching
+Location tab; **from 1C `СтруктурныеЕдиницы.Локация` since 2026-10-01, pushed, awaiting verification**) applied ON TOP of name normalisation, but ONLY on the displayed unit and the
 retail COGS baskets (fact and budget); the match key and the `საწყისი` field stay on the
 pre-location normalised name, so sheet matching is untouched. See *Location rollup*.
 **Displayed departments un-killed outside საცალო, same day (2026-08-07)** — non-store buckets,
@@ -31,8 +31,8 @@ columns auto-load (`LOAD *`) and the header is parsed at the first hyphen:
 `მიმართულება - განყოფილება` → that bucket; hyphen-free → direction only; direction part
 validated against `SET vPLMatchingDirections`, others ignored. The COGS basis covers EVERY
 retail location (was: 3 ELV stores only; ELE etc. retail COGS re-enters the basis, so
-direction totals shift). Renaming or adding a საცალო location is now sheet-only: Location tab
-value + matching column header, no script edit. See *Assembly* / *Matching sheet semantics* /
+direction totals shift). Renaming or adding a საცალო location needs no script edit: the
+location (1C attribute `Локация` since 2026-10-01; the Location tab before) + matching column header. See *Assembly* / *Matching sheet semantics* /
 *COGS basis*.
 **All-bucket sheet + even dynamic fallback, same day (2026-08-07, last push)** — the live
 sheet now names a location in EVERY column (ლოგისტიკა/ადმინისტრაცია included) and locations
@@ -226,13 +226,14 @@ builds the direction override yields `MapПроектнаяПродажаПод�
 department GUID; conditions order unit → invoice department → project warehouse, see
 `docs/direction-plans.md`). `ПродажиДляПЛ` takes it first and falls back to the invoice's
 `Подразделение` (`MapДокументПодразделениеПЛ`, daily extraction via `SD 0004`). Both project
-departments map to the location `პროექტები` on the Location tab, so every project sale —
+departments carry the 1C location `პროექტები`, so every project sale —
 including one recognised only by its warehouse — shows `პროექტები` in
 `[სტრუქტურული ერთეული (P&L)]`. (Until 2026-09-30 P&L re-derived the rule itself from the daily
 extraction; one definition now, so direction and department cannot disagree.)
 
 What stays P&L-specific is the **COGS basis**: rows whose resolved department (see
-*Sales-sourced rows*) is in `MapПроектноеПодразделение` (1C names, `SD 0002`) are excluded in
+*Sales-sourced rows*) is in `MapПроектноеПодразделение` (GUIDs of units flagged `Проекты` in
+1C, `SD 0002`) are excluded in
 `ДолиСебестоимостиPre`, so they drop out of all three consumers at once: dynamic
 (`დინამიურად`) shares, unmatched-key spread and the LOG/ADM allocation-variant wave. The project
 rows themselves stay in the P&L; they just do not pull allocated overhead. Consequence: the
@@ -243,7 +244,7 @@ to buckets that do have COGS gives it 0 (accepted by the user 2026-09-30).
 Budget has no sales fact upstream, so it applies both rules itself (see *Budget*):
 project-department sales-article rows get `'კორპორატიული'` and are excluded from
 `ДолиСебестоимостиБюджет`; there the unit is looked up in `MapПроектноеПодразделениеПЛ`
-(`SD 0004`: the catalog units in the `SD 0002` list, re-keyed by their **normalised** name),
+(`SD 0004`: the 1C-flagged project units, re-keyed by their **normalised** name),
 since budget units are normalised names. Budget has no warehouse — only the department
 condition applies.
 Expect direction totals and dynamic shares to move on the first full reload.
@@ -334,10 +335,14 @@ unmatched since the sheet was re-authored — match their sheet rows again.
 
 ### Location rollup (2026-08-07)
 
-`MapЛокацияПодразделенияПЛ` — a second NAME→NAME layer from the **Qlik Matching / Location tab**
-(`განყოფილება` → `ლოკაცია`, worksheetKey gid `2024957535`, loaded in `SD 0206` next to the
-override maps): distribution/chain-store units collapse into the three ELV branch locations,
-both project-sales units (ELV and ELE) map to `პროექტები`, ELE branches map to themselves, any name absent from the tab passes through unchanged
+`MapЛокацияПодразделенияПЛ` — a second NAME→NAME layer, loaded in `SD 0206` next to the override
+maps. **Source since 2026-10-01: 1C**, not the sheet: department name (`[დასახელება]` of a
+structural unit of department type) → its attribute `Локация` → the `Локация` catalog name
+(`MapЛокацияНаименование`, shared map in `SD 0002`). Departments without a location are left out of the map and pass
+through unchanged; the location must be set on the normalisation TARGET unit, because the key is
+the normalised name. (Until then: *Qlik Matching / Location tab*, gid `2024957535`, no longer
+read.) Intended content, as in the old tab: distribution/chain-store units collapse into the three ELV branch locations,
+both project-sales units (ELV and ELE) map to `პროექტები`, ELE branches map to themselves, any name without a location passes through unchanged
 (two-argument `ApplyMap`, no default needed).
 
 Applied **on top of** the normalisation map, but only at:
@@ -767,10 +772,10 @@ pivot object).
    reconcile deliberately, don't treat as regression.
 5. Bucket guard: every sheet bucket shows non-zero allocated amounts in months where it has
    COGS or fixed weights. A bucket at 0 everywhere = its header's dept part doesn't
-   byte-match a Location-tab `ლოკაცია` value (silent failure).
+   byte-match a 1C `Локация` name (silent failure).
 6. Display purity: `[სტრუქტურული ერთეული (P&L)]` holds short location names; a long `ELV_…`
-   name there = a unit missing from the Location tab (pass-through incurring label) — extend
-   the tab if it matters.
+   name there = a unit without a 1C `Локация` (pass-through incurring label) — fill the
+   attribute in 1C if it matters.
 7. Mixed rows: per-key total = the full amount; each numeric column receives exactly its
    percentage; the remainder splits across the marked columns only.
 8. Variant 2 → ლოგისტიკა ≈ 0 (residue only in no-COGS months); variant 3 → ადმინისტრაცია 0;

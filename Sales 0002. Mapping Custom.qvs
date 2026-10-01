@@ -24,20 +24,13 @@ generatedNumberedColumns='false',
 skipRows=''
 );
 
-MapЛокация:
-Mapping LOAD 
-	[საწყობი] as [საწყობი], 
-	[ლოკაცია] as [ლოკაცია];
-
-SELECT [საწყობი],
-	[ლოკაცია]
-FROM GetWorksheetV2
-WITH PROPERTIES (
-worksheetKey='1-f15L80uaVKbMAD786Bp5NHDQlr7IqxFHhQoIBosNWA:_463252216',
-gidOverride='',
-generatedNumberedColumns='false',
-skipRows=''
-);
+// ლოკაცია (GUID) → დასახელება (1C-ის ცნობარი Локация; საწყობის რეკვიზიტი Локация — Sales 0105)
+MapЛокацияНаименование:
+Mapping LOAD
+    [Ссылка],
+    Trim([Наименование])
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_СправочникЛокация.qvd]
+(qvd);
 
 MapСправочникНаправленияДеятельности:
 Mapping LOAD

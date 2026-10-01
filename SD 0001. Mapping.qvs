@@ -34,6 +34,15 @@ LOAD
 FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыЗадолженностей.qvd]
 (qvd);
 
+MapПеречислениеТипыСтруктурныхЕдиниц:
+Mapping Replace LOAD
+    [Ссылка],
+    Value;
+LOAD
+    *
+FROM [lib://$(vSpace):DataFiles/$(vSpacePrefix)_$(vPrefix)_ПеречислениеТипыСтруктурныхЕдиниц.qvd]
+(qvd);
+
 
 
 
