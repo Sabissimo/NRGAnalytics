@@ -25,11 +25,7 @@ Resident РегистрНакопленияРасчетыСПокупателя�
 Where	
 	floor(AddYears([Период],-2000)) <= floor(now())
 	and match ([დოკუმენტი_TYPE],'ДокументРасходнаяНакладная','ДокументПередачаВА')	
-	and match([ორგანიზაცია],
-    '85070A94EF044E4711EB87F29D540806', // elvare
-    '80C6382C4ABBB43711E7363EBFB98EBD', // electric
-    '8653D4F5EF3EE94F11EED6FFAF64F778' // elcom
-    ) > 0
+	and ApplyMap('MapОрганизацияПродаж',[ორგანიზაცია],'არა') = 'კი'
 Group By 
 	Date(DayStart(AddYears([Период],-2000)),'DD/MM/YYYY'),
 	[ორგანიზაცია],
