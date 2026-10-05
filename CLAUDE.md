@@ -60,14 +60,6 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   მიმართულების გარეშე 6; unknown 9) via `MapНаправлениеСорт` inline in `SD 0301` — charts on
   Auto sort follow that order. ALL THREE bridge write sites must go through the map (first load
   wins the dual); set-analysis/selections still match the text.
-  Since 2026-10 ლოგისტიკა/ადმინისტრაცია are also values of the 1C enum
-  `НаправленияПокупателей`, so contracts (→ sales, debitors) may carry them too, not only P&L.
-- **Which organisations SD loads** (2026-10-05): every fact (`SD 0201` ×2, `0202`, `0203` ×2,
-  `0204`, `0206` ×3) filters `ApplyMap('MapОрганизацияПродаж',[ორგანიზაცია],'არა') = 'კი'` —
-  the 1C flag `Организации.ОрганизацияПродаж` (QVD column `[გაყიდვების ორგანიზაცია]`, map in
-  `SD 0002`, read from the 30-min org QVD; GUIDs are the same in the daily QVDs). Adding an org =
-  flag in 1C. Before: an inline 3-GUID `match()` list (elvare, electric, elcom) copied 9 times.
-  Other apps (`Accounting 0202` …) still carry their own hard-coded lists.
 - **Org-level direction override** (2026-08-06): electric sells corporate only, so every electric
   row is forced to `კორპორატიული` regardless of contract — `MapПереопределениеНаправленияОрганизации`
   (`SD 0002`; since 2026-10-01 built from the 1C flag `Организации.Проекты` instead of electric's
@@ -87,10 +79,8 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   marked included (2026-10-01; was an inline name list) — or the
   invoice warehouse is in `MapПроектныйСклад` — GUID-keyed: structural units flagged
   `Проекты` whose type is NOT the department type (2026-10-01; was an inline name list of
-  `ELVARE - პროექტები (ალექსეევკა)`, `ELVARE - პროექტები (აგლაძე)`); a project warehouse's sale
-  counts as a sale of the department in its 1C attribute `СтруктурныеЕдиницы.ПроектноеПодразделение`
-  (QVD `[საპროექტო განყოფილება]`, 2026-10-05; was the hard-coded GUID of `ELV_საპროექტო გაყიდვები`).
-  A flagged warehouse with that attribute EMPTY is not project at all. Both maps live in
+  `ELVARE - პროექტები (ალექსეევკა)`, `ELVARE - პროექტები (აგლაძე)`); every project warehouse counts as a sale of
+  the ELV project unit `ELV_საპროექტო გაყიდვები`, hard-coded by GUID `88D9D4F5EF3EE94E11F0F5EB451274C6`. Both maps live in
   `SD 0002` (30-min `_SD.txt` batch — partials need them). Project invoice → `კორპორატიული` via `MapПереопределениеНаправленияДокумента`,
   nested INSIDE the org override at both `SD 0201` sites; the SAME computation also yields
   `MapПроектнаяПродажаПодразделение` (invoice → project unit GUID), which is the P&L sales
@@ -111,9 +101,7 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
     invoice, else the invoice `Подразделение`). No name normalisation here (its register is only in
     the daily batch, `SD 0201` runs on partials), so departments need `Локация` set on themselves,
     not only on normalisation targets. Only `РасходнаяНакладная` documents resolve. Unresolved (no
-    `Локация`, or not an invoice) → the location flagged `Локация.Администрация` in 1C (QVD
-    `[ადმინისტრაცია]`, `MapЛокацияАдминистрация` in `SD 0002`, first flagged wins; none flagged →
-    `'ლოკაციის გარეშე'`). Since 2026-10-05; before, the literal `'ალექსეევკა (ადმინისტრაცია)'`.
+    `Локация`, or not an invoice) → `'ალექსეევკა (ადმინისტრაცია)'` (user, 2026-10-01; was `'ლოკაციის გარეშე'`).
   - Sales app `[ლოკაცია (საწყობი)]` (`Sales 0105`): the warehouse's own 1C `Локация` via
     `MapЛокацияНаименование` (`Sales 0002`; `_Sales.txt` extracts both the attribute and the catalog).
   - Neither Google location tab (*Qlik Settings → ლოკაციები*, *Qlik Matching → PL Location
@@ -121,8 +109,6 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
     and the Sales app reload have run clean).
   - ⚠ The `СправочникЛокация` QVD has UNtranslated columns `[Ссылка]` / `[Наименование]` (like
     `СправочникОрганизации`'s `[Ссылка]`), unlike most catalogs' `[მინიშნება]` / `[დასახელება]`.
-    Custom attributes on both ARE translated (`[ადმინისტრაცია]`, `[პროექტები]`,
-    `[გაყიდვების ორგანიზაცია]`).
   - P&L department location: DEPARTMENT name (normalised) → location via
     `MapЛокацияПодразделенияПЛ` (`SD 0206`; since 2026-10-01 from 1C: department attribute
     `СтруктурныеЕдиницы.Локация` → catalog `Локация` name — the *Qlik Matching* Location tab is no
@@ -155,8 +141,7 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   load automatically (`LOAD *`; the first 2 columns are Crosstable qualifiers — position fixed)
   and the header parses at its FIRST hyphen: `მიმართულება - განყოფილება` (e.g.
   `საცალო - ELV_ბათუმის ფილიალი`) → that bucket; hyphen-free → direction only. The direction
-  part must be a value of the 1C enum `НаправленияПокупателей` (`MapНаправлениеМатчингПЛ`,
-  2026-10-05; was `SET vPLMatchingDirections`), else the column is ignored;
+  part must be in `SET vPLMatchingDirections` (საცალო + 4 others), else the column is ignored;
   the department part must byte-match the location name or its dynamic share is silently 0.
   Renaming/adding a საცალო location is sheet-only — no script edit.
   Three parts guarded by key-marker maps: numeric cells → fixed part (joined on the match key,
@@ -176,15 +161,11 @@ P&L fact ────┘        (org|contractor|date|ნაშთია|directio
   reused**: they live on `BridgeTableOrgDate` / the items dimension, so putting them on the fact
   would add a second shared field with an already-associated table → synthetic key. P&L measures
   therefore need their own modifier, not `$(შიდა_და_არაძითადები_ფილტრი)`. A second, narrower
-  flag `[Internal EEE (P&L)]` keys off the 1C contractor flag
-  `Контрагенты.ВнутреннийКонтрагентЭлектромаркета` (QVD `[ელექტრომარკეტის შიდა კონტრაგენტი]`,
-  `MapСправочникКонтрагентыВнутреннийЭМ` in `SD 0002`) instead of the additional attribute.
-  On **non-sales rows there is no contractor**, so BOTH
-  flags come from the posting's account instead: `'კი'` when the account or any ancestor carries
-  the 1C flag `Управленческий.ВнутреннийСчетЭлектромаркета` (QVD `[ელექტრომარკეტის შიდა ანგარიში]`,
-  daily batch only; real `Hierarchy()` walk over GUIDs; the CoA parent column is
-  `[ექვემდებარება ანგარიშს]`). Both flags since 2026-10-05; before, code lists
-  `SET vPLInternalEEE` / `SET vPLInternalEEEAccounts`. They are therefore identical on non-sales rows and diverge only
+  flag `[Internal EEE (P&L)]` keys off an explicit contractor-code list (`SET vPLInternalEEE`)
+  instead of the additional attribute. On **non-sales rows there is no contractor**, so BOTH
+  flags come from the posting's account instead: `'კი'` when the account or any ancestor has a
+  code in `SET vPLInternalEEEAccounts` (real `Hierarchy()` walk; the CoA parent column is
+  `[ექვემდებარება ანგარიშს]`). They are therefore identical on non-sales rows and diverge only
   on sales rows. Any new per-row attribute on the sales injection must also go into BOTH
   injection `Group By` lists; they aggregate, so a select-list-only addition fails the reload.
   Departments: names are normalised through the SAME 1C register the Statement app uses

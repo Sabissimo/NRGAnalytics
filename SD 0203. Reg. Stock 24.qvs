@@ -35,7 +35,11 @@ Resident РегистрНакопленияЗапасыTemp
 Where	
 	floor(AddYears([Период],-2000)) <= $(vNow)
 	and Exists([აღრიცხვის ანგარიშის ტიპიTemp],ApplyMap('MapПланСчетовУправленческийТипСчета',[აღრიცხვის ანგარიში],Null()))	
-	and ApplyMap('MapОрганизацияПродаж',[ორგანიზაცია],'არა') = 'კი'
+	and match([ორგანიზაცია],
+    '85070A94EF044E4711EB87F29D540806', // elvare
+    '80C6382C4ABBB43711E7363EBFB98EBD', // electric
+    '8653D4F5EF3EE94F11EED6FFAF64F778' // elcom
+    ) > 0
 Group By 
 	Date(DayStart(AddYears([Период],-2000)),'DD/MM/YYYY'),
 	[სტრუქტურული ერთეული],
@@ -205,7 +209,11 @@ Resident РегистрНакопленияЗапасыTemp
 Where	
 	floor(AddYears([Период],-2000)) <= $(vNow)
 	and Exists([აღრიცხვის ანგარიშის ტიპიTemp],ApplyMap('MapПланСчетовУправленческийТипСчета',[აღრიცხვის ანგარიში],Null()))	
-	and ApplyMap('MapОрганизацияПродаж',[ორგანიზაცია],'არა') = 'კი';
+	and match([ორგანიზაცია],
+    '85070A94EF044E4711EB87F29D540806', // elvare
+    '80C6382C4ABBB43711E7363EBFB98EBD', // electric
+    '8653D4F5EF3EE94F11EED6FFAF64F778' // elcom
+    ) > 0;
 
 Drop Table ТипЗапасыTMP24;
 

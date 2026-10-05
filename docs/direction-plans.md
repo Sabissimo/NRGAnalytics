@@ -71,13 +71,10 @@ the 1C catalog `СтруктурныеЕдиницы` — elements of type `გ�
 on a since-deleted unit stay project. Marking a department in 1C is all it takes — no script
 edit; renaming it no longer breaks the rule. (Before: an inline name list of
 `ELV_საპროექტო გაყიდვები`, `ELE_საპროექტო გაყიდვები`.) Project warehouses
-(`MapПроектныйСклад`, warehouse GUID → department GUID): since 2026-10-01 structural units flagged
-`Проекты` whose type is NOT the department type (deletion-marked included); since 2026-10-05
-each one's sale counts as a sale of the department in its own 1C attribute
-`СтруктурныеЕдиницы.ПроектноеПодразделение` (QVD `[საპროექტო განყოფილება]`). A flagged
-warehouse whose attribute is empty is left out of the map — i.e. NOT project. (2026-10-01..05:
-every project warehouse went to the hard-coded GUID `88D9D4F5EF3EE94E11F0F5EB451274C6` of
-`ELV_საპროექტო გაყიდვები`. Before: an inline name list of `ELVARE - პროექტები (ალექსეევკა)` and
+(`MapПроектныйСклад`, GUID → department name): since 2026-10-01 structural units flagged
+`Проекты` whose type is NOT the department type (deletion-marked included); every one of them
+counts as a sale of the ELV project unit `ELV_საპროექტო გაყიდვები`, given directly by its GUID
+`88D9D4F5EF3EE94E11F0F5EB451274C6` (hard-coded in the map; no name lookup). (Before: an inline name list of `ELVARE - პროექტები (ალექსეევკა)` and
 `ELVARE - პროექტები (აგლაძე)`.) (Until
 2026-09-30 only condition 1–2 with the ELV unit existed, as `SET vProjectSalesUnit`; ELE project
 sales were corporate only through the org override. Mapping tables replace the SET because a
@@ -119,10 +116,11 @@ ApplyMap('MapПереопределениеНаправленияОрганиз�
 - `[ლოკაცია (გაყიდვები)]`: from 2026 it is the SALES DEPARTMENT's 1C location, so a project sale shows
   the project department's location; before 2026 the warehouse's (2026-10-01 — see
   CLAUDE.md, location sources).
-- No literals remain: departments, warehouses and the warehouse → department link all come from
-  1C. The linked department needs its own `Локация` (`პროექტები`) or the P&L location is lost.
-- ⚠ Extraction dependency: `SD 0002` reads `[ტიპი]`, `[პროექტები]` and `[საპროექტო განყოფილება]`
-  from the `СправочникСтруктурныеЕдиницы` QVD on every reload — dropping them from `_SD.txt` breaks reloads.
+- ⚠ The one remaining literal is the target department GUID `88D9D4F5EF3EE94E11F0F5EB451274C6` in
+  `MapПроектныйСклад`. Renaming the unit is harmless; deleting/replacing it in 1C would
+  leave warehouse-detected sales on a stale GUID (no name, no location → `პროექტები` lost).
+- ⚠ Extraction dependency: `SD 0002` reads `[ტიპი]` and `[პროექტები]` from the
+  `СправочникСтруктурныеЕдиницы` QVD on every reload — dropping them from `_SD.txt` breaks reloads.
 
 ## The plan-row shape (concatenated into the sales fact)
 

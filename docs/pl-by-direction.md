@@ -29,8 +29,7 @@ allocated rows* / *Departments*.
 **Store gate removed, same day (2026-08-07)** — `vPLRetailStores` is gone. Matching-sheet
 columns auto-load (`LOAD *`) and the header is parsed at the first hyphen:
 `მიმართულება - განყოფილება` → that bucket; hyphen-free → direction only; direction part
-validated against the direction list (since 2026-10-05 the 1C enum `НаправленияПокупателей`;
-`SET vPLMatchingDirections` before), others ignored. The COGS basis covers EVERY
+validated against `SET vPLMatchingDirections`, others ignored. The COGS basis covers EVERY
 retail location (was: 3 ELV stores only; ELE etc. retail COGS re-enters the basis, so
 direction totals shift). Renaming or adding a საცალო location needs no script edit: the
 location (1C attribute `Локация` since 2026-10-01; the Location tab before) + matching column header. See *Assembly* / *Matching sheet semantics* /
@@ -103,10 +102,8 @@ exist for exactly the months the fact can reference.
 
 Allocation targets are **buckets** = (direction, department). A sheet column header is parsed
 at its **first hyphen**: `მიმართულება - განყოფილება` → bucket (direction, department);
-a hyphen-free header → bucket (direction, ''). The direction part must be a value of the 1C
-enum `НаправленияПокупателей` (`MapНаправлениеМатчингПЛ`, built in `SD 0206` from the 30-min
-enum QVD; since 2026-10 the enum holds all five: საცალო, დისტრიბუცია, კორპორატიული, ლოგისტიკა,
-ადმინისტრაცია) — any other column is ignored. In the
+a hyphen-free header → bucket (direction, ''). The direction part must be in
+`SET vPLMatchingDirections` (საცალო + the 4 others) — any other column is ignored. In the
 live sheet EVERY column carries a location — `საცალო - ბათუმი`, `დისტრიბუცია - ალექსეევკა`,
 `ლოგისტიკა - ალექსეევკა (ადმინისტრაცია)` etc. — so a bucket is always (direction, location);
 there is no privileged store list. The two-layer "direction first, then departments within it
@@ -259,44 +256,39 @@ sales-injected rows, `'არა'` on register/journal/fractional, carried throu
 but resolved differently:
 
 - the broad flag comes from the contractor's 1C **additional attribute**;
-- `[Internal EEE (P&L)]` is `'კი'` only when the contractor carries the 1C flag
-  `Контрагенты.ВнутреннийКонтрагентЭлектромаркета` (QVD `[ელექტრომარკეტის შიდა კონტრაგენტი]`) —
-  the group's own companies appearing as counterparties.
+- `[Internal EEE (P&L)]` is `'კი'` only when the contractor's 1C **code** is in an explicit
+  list — the group's own companies appearing as counterparties.
 
-The flag is mapped once, `MapСправочникКонтрагентыВнутреннийЭМ` in `SD 0002` (30-min contractor
-QVD); a fourth company is a flag in 1C. (Until 2026-10-05: a code list `SET vPLInternalEEE`
-— `G_-000931`, `G_-010539`, `G_-002484` — matched through a contractor-code map.)
+The list lives in one place, `SET vPLInternalEEE` at the top of `SD 0206`; a fourth company is a
+one-line edit. It needs `MapСправочникКонтрагентыКод` (`SD 0002`) — nothing mapped the contractor
+code before, though the extraction has always pulled it (`_SD.txt:108`).
 
-A contractor that is internal by the broad flag but **not** EEE-flagged is `'არა'` on
+A contractor that is internal by the broad flag but **not** in the code list is `'არა'` on
 sales-injected rows — on that side the two flags are independent, not nested.
 
 **Non-sales rows resolve both flags from the account (2026-07-29).** Register and journal rows
 have no counterparty, so neither flag can key off a contractor. Both are instead `'კი'` when the
-posting's account — **or any of its ancestors** — carries the 1C flag
-`Управленческий.ВнутреннийСчетЭлектромаркета` (QVD `[ელექტრომარკეტის შიდა ანგარიში]`, daily
-`_ElvareAnalytics.txt` only; since 2026-10-05 — before, a code list `SET vPLInternalEEEAccounts`):
+posting's account — **or any of its ancestors** — has a code in `SET vPLInternalEEEAccounts`:
 
-- `Hierarchy()` over the chart of accounts builds each account's root-to-node path of *GUIDs*;
-- the path is exploded one row per ancestor and each ancestor checked against the flagged-account
-  map (`MapСчетаEEEФлагПЛ`);
-- so flagging a group account covers its whole subtree, while flagging a leaf covers only it.
+- `Hierarchy()` over the chart of accounts builds each account's root-to-node path of *codes*;
+- the path is exploded one row per ancestor and checked with `Exists` against the code list;
+- so a posting on a child of `8110/19` is flagged, while `8110` itself is not.
 
 The parent column on that catalog is `[ექვემდებარება ანგარიშს]` (same one `Accounting 0101`
 uses) — not the `Родитель`/`ჯგუფში` names other catalogs use.
 
 Two consequences to keep in mind:
 
-- **On non-sales rows the two flags are identical**, sharing one map and one account flag. They
-  diverge only on sales-injected rows. If the broad flag should ever cover more accounts than the
-  EEE flag, it needs its own 1C flag and a second map.
+- **On non-sales rows the two flags are identical**, sharing one map and one list. They diverge
+  only on sales-injected rows. If the broad flag should ever cover more accounts than the EEE
+  list, it needs its own list and a second map.
 - **The two sides are asymmetric by construction** — sales keyed on contractor, non-sales on
   account. A transaction with an EEE company can therefore be flagged on the sales side and not
-  on the register side if its account is not flagged in 1C.
+  on the register side if its account is absent from the list.
 
-⚠ Silent failure: if the QVD column is missing or renamed, every account reads `'არა'` with no
-error. Verify by listing `[ანგარიშის კოდი (P&L)]` where the flag is `'კი'` against the accounts
-flagged in 1C (the old list: 6150, 8110/19, 7231, 7240, 6170, 7420/10, 7420/11, 8110/18, 8110/15,
-8110/17, 8413, 7450/9, 7450/12, 8314, 8192, 5310, 5400).
+⚠ Silent failure: a listed code that does not exist in the chart of accounts, or differs in
+padding (`7450/09` vs `7450/9`), matches nothing and raises no error. Verify by listing
+`[ანგარიშის კოდი (P&L)]` where the flag is `'კი'` and confirming every listed code appears.
 
 ⚠ Both injection `Group By` lists carry the field. They aggregate, so adding a flag to the select
 list without adding it to the grouping fails the reload outright — the same trap applies to any
@@ -476,7 +468,7 @@ Google Sheet, PL Directions tab. The first two columns MUST be `მუხლი`
 (Crosstable qualifiers — position matters); every further column loads automatically (`LOAD *`)
 and its header is parsed at the **first hyphen**: `მიმართულება - განყოფილება` (e.g.
 `საცალო - ELV_ბათუმის ფილიალი`) → that direction + that department; hyphen-free →
-direction only. The direction part must be a value of the 1C enum `НаправленияПокупателей`;
+direction only. The direction part must be one of `vPLMatchingDirections` (საცალო + 4);
 anything else (`სულ`, strays) is ignored. Direction names contain no hyphen, so the first
 hyphen is always the separator; the department part may contain hyphens. Adding or renaming a
 column needs NO script change.
@@ -801,5 +793,4 @@ pivot object).
     `[მიმართულება (P&L, საწყისი)]` both `კორპორატიული` (unless internal/non-core → ლოგისტიკა);
     `[სტრუქტურული ერთეული (P&L)]` = `პროექტები`; no project COGS in the dynamic/variant shares.
     A sale shipped from `ELVARE - პროექტები (ალექსეევკა)` or `ELVARE - პროექტები (აგლაძე)` with a non-project department also
-    lands here (as the department in the warehouse's 1C attribute `ПроектноеПодразделение`,
-    today `ELV_საპროექტო გაყიდვები`).
+    lands here (as `ELV_საპროექტო გაყიდვები`).
